@@ -23,7 +23,7 @@ c.NotebookApp.open_browser = False
 # sets a password if jupyterPASSWORD is set in the environment
 if 'jupyterPASSWORD' in os.environ:
     password = os.environ['jupyterPASSWORD']
-    if password:
+    if password and len(password) > 8:
         c.NotebookApp.password = passwd(password)
     else:
         c.NotebookApp.password = ''
