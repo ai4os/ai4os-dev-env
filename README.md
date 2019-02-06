@@ -1,4 +1,4 @@
-DEEP-OC-dogs_breed_det
+DEEP-OC-generic-dev
 ============================================
 
 ![DEEP-Hybrid-DataCloud logo](https://docs.deep-hybrid-datacloud.eu/en/latest/_static/logo.png)
