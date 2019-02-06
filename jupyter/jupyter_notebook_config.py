@@ -25,7 +25,4 @@ if 'jupyterPASSWORD' in os.environ:
     password = os.environ['jupyterPASSWORD']
     if password and len(password) > 8:
         c.NotebookApp.password = passwd(password)
-    else:
-        c.NotebookApp.password = ''
-        c.NotebookApp.token = ''
     del os.environ['jupyterPASSWORD']
