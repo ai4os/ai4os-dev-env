@@ -78,6 +78,8 @@ One other way is to specify the jupyter password at the time of container instan
 $ docker run -ti -p 5000:5000 -p 8888:8888 -e jupyterPASSWORD=the_pass_for_jupyter deephdc/deep-oc-generic-dev
 ```
 
+N.B. The quotas are treated as parts of the password. The password has to be more than 8 characters long.
+
 
 ## Building the container
 

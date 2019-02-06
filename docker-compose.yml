@@ -22,7 +22,9 @@ services:
       extends:
         service: generic-cpu
       volumes:
-        - $HOME/.config/rclone:/srv/rclone
+        - $HOME/.config/rclone:/root/.config/rclone
       environment:
-        - RCLONE_CONFIG=/srv/rclone/rclone.conf
+        - RCLONE_CONFIG=/root/.config/rclone.conf
+        # can also specify jupyterPASSWORD e.g.:
+        # - jupyterPASSWORD=some_password
 
