@@ -1,0 +1,28 @@
+version: '2.3'
+
+services:
+    generic-cpu:
+      image: deephdc/deep-oc-generic-dev:cpu
+      # if 'docker-compose run' is used
+      # do not forget '--service-ports'!
+      ports:
+        - 5000:5000
+        - 8888:8888
+      entrypoint: ["/run_jupyter.sh", "--allow-root"]
+
+    generic-gpu:
+      image: deephdc/deep-oc-generic-dev
+      runtime: nvidia
+      ports:
+        - 5000:5000
+        - 8888:8888
+      entrypoint: ["/run_jupyter.sh", "--allow-root"]
+
+    generic-cpu-rclone:
+      extends:
+        service: generic-cpu
+      volumes:
+        - $HOME/.config/rclone:/srv/rclone
+      environment:
+        - RCLONE_CONFIG=/srv/rclone/rclone.conf
+
