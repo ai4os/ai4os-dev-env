@@ -32,11 +32,10 @@ The resulting Docker image has pre-installed:
 To run the Docker container directly from Docker Hub and start using jupyter notebook or jupyterlab run the following command:
 
 ```bash
-$ docker run -ti -p 5000:5000 -p 8888:8888 deephdc/deep-oc-generic-dev
+$ docker run -ti -p 5000:5000 -p 8888:8888 vykozlov/deep-oc-generic-dev
 ```
 
-This command will pull the Docker container from the Docker Hub
-[`deephdc`](https://hub.docker.com/u/deephdc/) organization.
+This command will pull the Docker image from the Docker Hub.
 
 Then go either to http://127.0.0.1:8888/tree for jupyter notebook or to http://127.0.0.1:8888/lab for jupyterlab.
 
@@ -51,7 +50,7 @@ direct your browser to http://127.0.0.1:5000
 If you need to mount some directories from your host into the container, please, use usual Docker way, e.g.
 
 ```bash
-$ docker run -ti -p 5000:5000 -p 8888:8888 -v $HOME/data:/srv/app/data deephdc/deep-oc-generic-dev
+$ docker run -ti -p 5000:5000 -p 8888:8888 -v $HOME/data:/srv/app/data vykozlov/deep-oc-generic-dev
 ```
 
 mounts your host directory $HOME/data into containers path /srv/app/data
@@ -63,7 +62,7 @@ docker-compose.yml allows you to run the application with various configurations
 
 **N.B!** docker-compose.yml is of version '2.3', one needs docker 17.06.0+ and docker-compose ver.1.16.0+, see https://docs.docker.com/compose/install/
 
-If you want to use Nvidia GPU (dogs-gpu), you need nvidia-docker and docker-compose ver1.19.0+ , see [nvidia/FAQ](https://github.com/NVIDIA/nvidia-docker/wiki/Frequently-Asked-Questions#do-you-support-docker-compose)
+If you want to use Nvidia GPU (generic-gpu), you need nvidia-docker and docker-compose ver1.19.0+ , see [nvidia/FAQ](https://github.com/NVIDIA/nvidia-docker/wiki/Frequently-Asked-Questions#do-you-support-docker-compose)
 
 
 ## Authenticating to Jupyter Notebook or Jupyterlab
@@ -75,10 +74,10 @@ You can also see logs of your running container by envoking ```$ docker logs con
 One other way is to specify the jupyter password at the time of container instantiation:
 
 ```bash
-$ docker run -ti -p 5000:5000 -p 8888:8888 -e jupyterPASSWORD=the_pass_for_jupyter deephdc/deep-oc-generic-dev
+$ docker run -ti -p 5000:5000 -p 8888:8888 -e jupyterPASSWORD=the_pass_for_jupyter vykozlov/deep-oc-generic-dev
 ```
 
-N.B. The quotas are treated as parts of the password. The password has to be more than 8 characters long.
+N.B. The quotes are treated as parts of the password. The password has to be more than 8 characters long.
 
 
 ## Building the container
@@ -91,7 +90,7 @@ Building the container:
 1. Get the `DEEP-OC-generic-dev` repository (this repo):
 
     ```bash
-    $ git clone https://github.com/indigo-dc/DEEP-OC-generic-dev
+    $ git clone https://github.com/vykozlov/DEEP-OC-generic-dev
     ```
 
 2. Build the container:
