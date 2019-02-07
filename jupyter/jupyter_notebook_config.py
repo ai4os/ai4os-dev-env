@@ -12,12 +12,17 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 # ==============================================================================
+""" 
+   Module to set Jupyter access password 
+   from the jupyterPASSWORD environment, if available
+   COPY of: https://github.com/tensorflow/tensorflow/blob/master/tensorflow/tools/docker/jupyter_notebook_config.py
+"""
 import os
 from IPython.lib import passwd
 
 c = c # pylint:disable=undefined-variable
 c.NotebookApp.ip = '0.0.0.0'
-c.NotebookApp.port = int(os.getenv('PORT', 8888))
+c.NotebookApp.port = int(os.getenv('jupyterPORT', 8888))
 c.NotebookApp.open_browser = False
 
 # sets a password if jupyterPASSWORD is set in the environment

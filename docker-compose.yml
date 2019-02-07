@@ -2,7 +2,7 @@ version: '2.3'
 
 services:
     generic-cpu:
-      image: deephdc/deep-oc-generic-dev:cpu
+      image: vykozlov/deep-oc-generic-dev:cpu
       # if 'docker-compose run' is used
       # do not forget '--service-ports'!
       ports:
@@ -11,7 +11,7 @@ services:
       entrypoint: ["/run_jupyter.sh", "--allow-root"]
 
     generic-gpu:
-      image: deephdc/deep-oc-generic-dev
+      image: vykozlov/deep-oc-generic-dev
       runtime: nvidia
       ports:
         - 5000:5000
@@ -27,4 +27,5 @@ services:
         - RCLONE_CONFIG=/root/.config/rclone.conf
         # can also specify jupyterPASSWORD e.g.:
         # - jupyterPASSWORD=some_password
+        - jupyterPASSWORD=rand0m%pass
 
