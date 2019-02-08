@@ -24,7 +24,7 @@ pipeline {
                 checkout scm
                 script {
                     // build different tags
-                    id = ${dockerhub_repo}
+                    id = ${env.dockerhub_repo}
 
                     // 'default': GPU + python3
                     sh "docker build --no-cache --force-rm -t ${id} \
