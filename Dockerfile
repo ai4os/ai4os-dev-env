@@ -5,7 +5,7 @@
 # If you need to change default values, during the build do:
 # docker build -t deephdc/deep-oc-generic-dev --build-arg tag=XX --build-arg pyVer=python
 
-ARG tag=1.10-gpu-py3
+ARG tag=1.10.0-gpu-py3
 # Base image, e.g. tensorflow/tensorflow:1.7.0
 FROM tensorflow/tensorflow:${tag}
 
@@ -20,6 +20,7 @@ RUN DEBIAN_FRONTEND=noninteractive apt-get update && \
          git \
          curl \
          wget \
+         openssh-client \
          $pyVer-setuptools \
          $pyVer-pip \
          $pyVer-wheel && \ 
@@ -52,9 +53,7 @@ RUN wget https://downloads.rclone.org/rclone-current-linux-amd64.deb && \
 RUN pip install --no-cache-dir \
         deepaas \
         flaat \
-        jupyter \
-        jupyterlab && \
-    $pyVer -m ipykernel.kernelspec && \
+        jupyterlab && \  
     rm -rf /root/.cache/pip/* && \
     rm -rf /tmp/*
 

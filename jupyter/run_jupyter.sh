@@ -40,6 +40,6 @@ if [[ -v jupyterCONF ]]; then
 fi
 
 # mainly for debugging:
-echo "opts: $jupyterOPTS"
+#echo "opts: $jupyterOPTS"
 
 jupyter notebook $jupyterOPTS "$@"
