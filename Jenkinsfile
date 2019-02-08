@@ -26,24 +26,24 @@ pipeline {
                     // build different tags
                     id = "${env.dockerhub_repo}"
 
-                    // 'default': GPU + python3
+                    // GPU + python3 (aka default)
                     sh "docker build --no-cache --force-rm -t ${id} \
-                        --build-arg tag=${env.tf_ver}-gpu-py3 
+                        --build-arg tag=${env.tf_ver}-gpu-py3 \
                         --build-arg pyVer=python3 ."
 
                     // CPU + python3
                     sh "docker build --no-cache --force-rm -t ${id}:cpu \
-                        --build-arg tag=${tf_ver}-py3 \
+                        --build-arg tag=${env.tf_ver}-py3 \
                         --build-arg pyVer=python3 ."
 
                     // GPU + python2
                     sh "docker build --no-cache --force-rm -t ${id}:py2 \
-                        --build-arg tag=${tf_ver}-gpu \
+                        --build-arg tag=${env.tf_ver}-gpu \
                         --build-arg pyVer=python ."
 
                     // CPU + python2
                     sh "docker build --no-cache --force-rm -t ${id}:cpu-py2 \
-                        --build-arg tag=${tf_ver} \
+                        --build-arg tag=${env.tf_ver} \
                         --build-arg pyVer=python ."
 
                 }
