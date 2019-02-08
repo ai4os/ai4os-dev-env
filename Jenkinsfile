@@ -9,6 +9,7 @@ pipeline {
 
     environment {
         dockerhub_repo = "deephdc/deep-oc-generic-dev"
+        tf_ver = "1.10.0"
     }
 
     stages {
@@ -22,12 +23,34 @@ pipeline {
             steps{
                 checkout scm
                 script {
-                    image_id = DockerBuild(dockerhub_repo, env.BRANCH_NAME)
+                    // build different tags
+                    id = $dockerhub_repo
+
+                    // 'default': GPU + python3
+                    sh "docker build --no-cache --force-rm -t $id \
+                        --build-arg tag=$tf_ver-gpu-py3 \
+                        --build-arg pyVer=python3 ."
+
+                    // CPU + python3
+                    sh "docker build --no-cache --force-rm -t $id:cpu \
+                        --build-arg tag=$tf_ver-py3 \
+                        --build-arg pyVer=python3 ."
+
+                    // GPU + python2
+                    sh "docker build --no-cache --force-rm -t $id:py2 \
+                        --build-arg tag=$tf_ver-gpu \
+                        --build-arg pyVer=python ."
+
+                    // CPU + python2
+                    sh "docker build --no-cache --force-rm -t $id:cpu-py2 \
+                        --build-arg tag=$tf_ver \
+                        --build-arg pyVer=python ."
+
                 }
             }
             post {
                 success {
-                    DockerPush(image_id)
+                    DockerPush(dockerhub_repo) // should push all tags
                 }
                 failure {
                     DockerClean()
