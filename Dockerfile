@@ -37,24 +37,20 @@ RUN wget https://downloads.rclone.org/rclone-current-linux-amd64.deb && \
     rm -rf /root/.cache/pip/* && \
     rm -rf /tmp/*
 
+# Install DEEPaaS from PyPi
 # Install FLAAT (FLAsk support for handling Access Tokens)
-RUN pip install --no-cache-dir flaat && \
+# Install Jupyter Notebook and Jupyter Lab
+RUN pip install --no-cache-dir \
+        deepaas \
+        flaat \
+        jupyter \
+        jupyterlab && \
+    python -m ipykernel.kernelspec && \
     rm -rf /root/.cache/pip/* && \
     rm -rf /tmp/*
 
 # Disable FLAAT authentication by default
 ENV DISABLE_AUTHENTICATION_AND_ASSUME_AUTHENTICATED_USER yes
-
-# Install DEEPaaS from PyPi:
-RUN pip install --no-cache-dir deepaas && \
-    rm -rf /root/.cache/pip/* && \
-    rm -rf /tmp/*
-
-# Install Jupyter Notebook and Jupyter Lab
-RUN pip --no-cache-dir install jupyter jupyterlab && \
-    python -m ipykernel.kernelspec && \
-    rm -rf /root/.cache/pip/* && \
-    rm -rf /tmp/*
 
 COPY jupyter/jupyter_notebook_config.py /root/.jupyter/
 COPY jupyter/run_jupyter.sh /
