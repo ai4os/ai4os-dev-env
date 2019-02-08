@@ -1,19 +1,28 @@
+# Dockerfile has two Arguments: tag and pyVer
+# tag - tag for Tensorflow Image (default: 1.10-gpu-py3)
+# pyVer - python versions as 'python' or 'python3' (default: python3)
+# Do not forget that 'tag' and 'pyVer' in case of Tensorflow are dependent!
+# If you need to change default values, during the build do:
+# docker build -t deephdc/deep-oc-generic-dev --build-arg tag=XX --build-arg pyVer=python
+
+ARG tag=1.10-gpu-py3
 # Base image, e.g. tensorflow/tensorflow:1.7.0
-FROM tensorflow/tensorflow:1.10.0-gpu
+FROM tensorflow/tensorflow:${tag}
 
 LABEL maintainer='V.Kozlov (KIT)'
 # Generic container for Development
 # Includes Jupyter Notebook, Jupyter Lab, DEEPaaS API
 
+ARG pyVer=python3
 # Install ubuntu updates and python related stuff
 RUN DEBIAN_FRONTEND=noninteractive apt-get update && \
     apt-get install -y --no-install-recommends \
          git \
          curl \
          wget \
-         python-setuptools \
-         python-pip \
-         python-wheel && \ 
+         $pyVer-setuptools \
+         $pyVer-pip \
+         $pyVer-wheel && \ 
     apt-get clean && \
     rm -rf /var/lib/apt/lists/* && \
     rm -rf /root/.cache/pip/* && \
@@ -45,7 +54,7 @@ RUN pip install --no-cache-dir \
         flaat \
         jupyter \
         jupyterlab && \
-    python -m ipykernel.kernelspec && \
+    $pyVer -m ipykernel.kernelspec && \
     rm -rf /root/.cache/pip/* && \
     rm -rf /tmp/*
 
