@@ -16,6 +16,7 @@ The resulting Docker image has pre-installed:
 * git
 * curl
 * wget
+* openssh-client
 * python
 * pip
 * rclone
@@ -32,7 +33,7 @@ The resulting Docker image has pre-installed:
 To run the Docker container directly from Docker Hub and start using jupyter notebook or jupyterlab run the following command:
 
 ```bash
-$ docker run -ti -p 5000:5000 -p 8888:8888 vykozlov/deep-oc-generic-dev
+$ docker run -ti -p 5000:5000 -p 8888:8888 deephdc/deep-oc-generic-dev
 ```
 
 This command will pull the Docker image from the Docker Hub.
@@ -50,7 +51,7 @@ direct your browser to http://127.0.0.1:5000
 If you need to mount some directories from your host into the container, please, use usual Docker way, e.g.
 
 ```bash
-$ docker run -ti -p 5000:5000 -p 8888:8888 -v $HOME/data:/srv/app/data vykozlov/deep-oc-generic-dev
+$ docker run -ti -p 5000:5000 -p 8888:8888 -v $HOME/data:/srv/app/data deephdc/deep-oc-generic-dev
 ```
 
 mounts your host directory $HOME/data into containers path /srv/app/data
@@ -74,7 +75,7 @@ You can also see logs of your running container by envoking ```$ docker logs con
 One other way is to specify the jupyter password at the time of container instantiation:
 
 ```bash
-$ docker run -ti -p 5000:5000 -p 8888:8888 -e jupyterPASSWORD=the_pass_for_jupyter vykozlov/deep-oc-generic-dev
+$ docker run -ti -p 5000:5000 -p 8888:8888 -e jupyterPASSWORD=the_pass_for_jupyter deephdc/deep-oc-generic-dev
 ```
 
 N.B. The quotes are treated as parts of the password. The password has to be more than 8 characters long.
@@ -90,10 +91,10 @@ Building the container:
 1. Get the `DEEP-OC-generic-dev` repository (this repo):
 
     ```bash
-    $ git clone https://github.com/vykozlov/DEEP-OC-generic-dev
+    $ git clone https://github.com/deephdc/DEEP-OC-generic-dev
     ```
 
-2. Build the container:
+2. Build the container (default with GPU and Python3 support):
 
     ```bash
     $ cd DEEP-OC-generic-dev
@@ -102,5 +103,16 @@ Building the container:
 
 These two steps will download the repository from GitHub and will build the
 Docker container locally on your machine. You can inspect and modify the
-`Dockerfile` in order to check what is going on.
+`Dockerfile` in order to check what is going on. For example, Dockerfile has two ARGs:
 
+tag: to define tag for the Tensorflow Baseimage, e.g. '1.10.0-gpu-py3' (default)
+pyVer: to specify python version as 'python' (for python2) or 'python3' (for python3)
+
+e.g.
+
+    ```bash
+    $ cd DEEP-OC-generic-dev
+    $ docker build -t deephdc/deep-oc-generic-dev:cpu-py2 --build-arg tag=1.10.0 --build-arg pyVer=python .
+    ```
+
+builds deephdc/deep-oc-generic-dev:cpu-py2 with CPU version of Tensorflow 1.10.0 and python2.
