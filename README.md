@@ -110,9 +110,9 @@ pyVer: to specify python version as 'python' (for python2) or 'python3' (for pyt
 
 e.g.
 
-    ```bash
-    $ cd DEEP-OC-generic-dev
-    $ docker build -t deephdc/deep-oc-generic-dev:cpu-py2 --build-arg tag=1.10.0 --build-arg pyVer=python .
-    ```
+```bash
+$ cd DEEP-OC-generic-dev
+$ docker build -t deephdc/deep-oc-generic-dev:cpu-py2 --build-arg tag=1.10.0 --build-arg pyVer=python .
+```
 
 builds deephdc/deep-oc-generic-dev:cpu-py2 with CPU version of Tensorflow 1.10.0 and python2.

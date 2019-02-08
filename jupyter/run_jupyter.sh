@@ -42,4 +42,7 @@ fi
 # mainly for debugging:
 #echo "opts: $jupyterOPTS"
 
-jupyter notebook $jupyterOPTS "$@"
+# activate "Quit" button: do not do this, server shuts down!
+#jupyter lab --LabApp.quit_button=True $jupyterOPTS "$@"
+
+jupyter lab $jupyterOPTS "$@"

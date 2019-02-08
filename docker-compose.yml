@@ -7,8 +7,8 @@ services:
       # do not forget '--service-ports'!
       ports:
         - 5000:5000
-        - 6006:6006
-        - 8888:8888
+        - 6006:6007
+        - 8889:8888
       entrypoint: ["/run_jupyter.sh", "--allow-root"]
 
     generic-gpu:
