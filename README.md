@@ -105,8 +105,8 @@ These two steps will download the repository from GitHub and will build the
 Docker container locally on your machine. You can inspect and modify the
 `Dockerfile` in order to check what is going on. For example, Dockerfile has two ARGs:
 
-tag: to define tag for the Tensorflow Baseimage, e.g. '1.10.0-gpu-py3' (default)
-pyVer: to specify python version as 'python' (for python2) or 'python3' (for python3)
+* tag: to define tag for the Tensorflow Baseimage, e.g. '1.10.0-gpu-py3' (default)
+* pyVer: to specify python version as 'python' (for python2) or 'python3' (for python3)
 
 e.g.
 
