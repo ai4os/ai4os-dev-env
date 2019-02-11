@@ -24,7 +24,8 @@ services:
       extends:
         service: generic-cpu
       volumes:
-        - $HOME/.config/rclone:/root/.config/rclone
+        - $HOME/.config/rclone:/srv/.rclone
       environment:
-        - RCLONE_CONFIG=/root/.config/rclone.conf
+        - RCLONE_CONFIG=/srv/.rclone/rclone.conf
+        - jupyterCONFIG_URL=deepnc:/Datasets/jupyter_
 

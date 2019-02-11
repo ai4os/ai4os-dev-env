@@ -16,7 +16,9 @@ LABEL maintainer='V.Kozlov (KIT)'
 ARG pyVer=python3
 
 # Install updates, some packages + python related stuff
-RUN apt-key adv --keyserver hkps.pool.sks-keyservers.net \
+# hkps.pool.sks-keyservers.net
+# pgp.surfnet.nl
+RUN apt-key adv --keyserver pgp.surfnet.nl \
     --recv-keys ACDFB08FDC962044D87FF00B512839863D487A87 && \
     add-apt-repository "deb http://repo.data.kit.edu/ubuntu/$(lsb_release -sr) ./" && \
     DEBIAN_FRONTEND=noninteractive apt-get update && \

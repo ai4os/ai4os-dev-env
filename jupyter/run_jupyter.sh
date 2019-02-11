@@ -15,7 +15,7 @@
 # ==============================================================================
 # 
 # modified by v.kozlov @2018-07-18 
-# to include jupyterCONF environment check
+# to include jupyterCONFIG_URL environment check
 #
 ######
 
@@ -23,24 +23,24 @@ if [[ ! -v jupyterOPTS ]]; then
     jupyterOPTS=""
 fi
 
-# Check if jupyterCONF environment is specified (can be passed to docker via "--env jupyterCONF=value")
-# If so, check for:
-#    jupyter_config_user.py - Jupyter config file defined by user, e.g. with pre-configured password
+# Check if jupyterCONFIG_URL environment is specified 
+# (can be passed to docker via "-e jupyterCONFIG_URL=value")
+# If so, try to download using rclone:
 #    jupyterSSL.key   - private key file for usage with SSL/TLS
-#    jupyterSSL.pem   - the full path to an SSL/TLS certificate file
-#
-# Idea: local directory at host machine with those files is mounted to docker container, e.g.
-#     --volume=host_dir:dir_in_container --env jupyterCONF=dir_in_container
-# such that SSL connection is established and user-defined jupyter config is used
+#    jupyterSSL.pem   - SSL/TLS certificate file
+if [[ -v jupyterCONFIG_URL ]]; then
+    DEST_DIR='/srv/.jupyter/'
+    cmd_rclone=$(rclone copy $jupyterCONFIG_URL $DEST_DIR)
 
-if [[ -v jupyterCONF ]]; then
-    [[ -f $jupyterCONF/jupyter_config_user.py ]] && jConfig="$jupyterCONF/jupyter_config_user.py" && jupyterOPTS=$jupyterOPTS" --config=u'$jConfig'"
-    [[ -f $jupyterCONF/jupyterSSL.key ]] && jKeyfile="$jupyterCONF/jupyterSSL.key" && jupyterOPTS=$jupyterOPTS" --keyfile=u'$jKeyfile'"
-    [[ -f $jupyterCONF/jupyterSSL.pem ]] && jCertfile="$jupyterCONF/jupyterSSL.pem" && jupyterOPTS=$jupyterOPTS" --certfile=u'$jCertfile'"
+    PEM_PATH=${DEST_DIR}jupyterSSL.pem
+    KEY_PATH=${DEST_DIR}jupyterSSL.key
+
+    [[ -f $KEY_PATH ]] && jupyterOPTS=$jupyterOPTS" --keyfile=u'$KEY_PATH'"
+    [[ -f $PEM_PATH ]] && jupyterOPTS=$jupyterOPTS" --certfile=u'$PEM_PATH'"
 fi
 
 # mainly for debugging:
-#echo "opts: $jupyterOPTS"
+echo "opts: $jupyterOPTS"
 
 # activate "Quit" button: do not do this, server shuts down!
 #jupyter lab --LabApp.quit_button=True $jupyterOPTS "$@"
