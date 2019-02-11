@@ -27,5 +27,4 @@ services:
         - $HOME/.config/rclone:/srv/.rclone
       environment:
         - RCLONE_CONFIG=/srv/.rclone/rclone.conf
-        - jupyterCONFIG_URL=deepnc:/Datasets/jupyter_
 
