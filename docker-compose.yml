@@ -1,10 +1,10 @@
 version: '2.3'
 
+# if 'docker-compose run' is used
+# do not forget '--service-ports'!
 services:
     generic-cpu:
       image: deephdc/deep-oc-generic-dev:cpu
-      # if 'docker-compose run' is used
-      # do not forget '--service-ports'!
       ports:
         - 5000:5000
         - 6006:6006
@@ -13,8 +13,6 @@ services:
 
     generic-cpu-py2:
       image: deephdc/deep-oc-generic-dev:cpu-py2
-      # if 'docker-compose run' is used
-      # do not forget '--service-ports'!
       ports:
         - 5000:5000
         - 6006:6006
