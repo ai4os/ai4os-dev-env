@@ -23,15 +23,15 @@ RUN apt-key adv --keyserver pgp.surfnet.nl \
     add-apt-repository "deb http://repo.data.kit.edu/ubuntu/$(lsb_release -sr) ./" && \
     DEBIAN_FRONTEND=noninteractive apt-get update && \
     apt-get install -y --no-install-recommends \
-         git \
          curl \
-         wget \
-         openssh-client \
+         git \
          mc \
          oidc-agent \
+         openssh-client \
          $pyVer-setuptools \
          $pyVer-pip \
-         $pyVer-wheel && \ 
+         $pyVer-wheel \
+         wget && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/* && \
     rm -rf /root/.cache/pip/* && \
@@ -47,8 +47,7 @@ WORKDIR /srv
 COPY oidc-agent/oidc-check.bashrc /root/
 
 # install orchent, oidc-agent, and rclone
-RUN release=$(lsb_release -cs) && \
-    wget https://github.com/indigo-dc/orchent/releases/download/1.2.2/orchent-1.2.2-amd64.deb && \
+RUN wget https://github.com/indigo-dc/orchent/releases/download/1.2.2/orchent-1.2.2-amd64.deb && \
     dpkg -i orchent-1.2.2-amd64.deb && \
     wget https://downloads.rclone.org/rclone-current-linux-amd64.deb && \
     dpkg -i rclone-current-linux-amd64.deb && \
@@ -66,6 +65,7 @@ ENV ORCHENT_BARI https://deep-paas.cloud.ba.infn.it/orchestrator
 ENV ORCHENT_CNAF https://paas.cloud.cnaf.infn.it/orchestrator
 ENV ORCHENT_URL $ORCHENT_CNAF
 ENV ORCHENT_AGENT_ACCOUNT deep-iam
+ENV OIDC_CONFIG_DIR /srv/.oidc-agent
 ENV RCLONE_CONFIG /srv/.rclone/rclone.conf
 
 # For compatibility with udocker
