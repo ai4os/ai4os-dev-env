@@ -5,9 +5,10 @@
 # If you need to change default values, during the build do:
 # docker build -t deephdc/deep-oc-generic-dev --build-arg tag=XX --build-arg pyVer=python
 
+ARG image=tensorflow/tensorflow
 ARG tag=1.10.0-gpu-py3
 # Base image, e.g. tensorflow/tensorflow:1.7.0
-FROM tensorflow/tensorflow:${tag}
+FROM ${image}:${tag}
 
 LABEL maintainer='V.Kozlov (KIT)'
 # Generic container for Development
@@ -18,7 +19,12 @@ ARG pyVer=python3
 # Install updates, some packages + python related stuff
 # hkps.pool.sks-keyservers.net
 # pgp.surfnet.nl
-RUN apt-key adv --keyserver pgp.surfnet.nl \
+RUN DEBIAN_FRONTEND=noninteractive apt-get update && \
+    apt-get install -y --no-install-recommends \
+        gnupg \
+        lsb-release \
+        software-properties-common && \
+    apt-key adv --keyserver pgp.surfnet.nl \
     --recv-keys ACDFB08FDC962044D87FF00B512839863D487A87 && \
     add-apt-repository "deb http://repo.data.kit.edu/ubuntu/$(lsb_release -sr) ./" && \
     DEBIAN_FRONTEND=noninteractive apt-get update && \
@@ -34,9 +40,15 @@ RUN apt-key adv --keyserver pgp.surfnet.nl \
          wget && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/* && \
-    rm -rf /root/.cache/pip/* && \
     rm -rf /tmp/*
 
+# link python3 to python, pip3 to pip
+RUN if [ "$pyVer" = "python3" ] ; then \
+       ln -s /usr/bin/pip3 /usr/bin/pip  && \
+       ln -s /usr/bin/python3 /usr/bin/python; \
+    fi && \
+    python --version && \
+    pip --version
 
 # Set LANG environment
 ENV LANG C.UTF-8

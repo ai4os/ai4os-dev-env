@@ -32,19 +32,25 @@ pipeline {
                         --build-arg pyVer=python3 ."
 
                     // CPU + python3
-                    sh "docker build --no-cache --force-rm -t ${id}:cpu \
+                    sh "docker build --no-cache --force-rm -t ${id}:tf-cpu \
                         --build-arg tag=${env.tf_ver}-py3 \
                         --build-arg pyVer=python3 ."
 
                     // GPU + python2
-                    sh "docker build --no-cache --force-rm -t ${id}:py2 \
+                    sh "docker build --no-cache --force-rm -t ${id}:tf-py2 \
                         --build-arg tag=${env.tf_ver}-gpu \
                         --build-arg pyVer=python ."
 
                     // CPU + python2
-                    sh "docker build --no-cache --force-rm -t ${id}:cpu-py2 \
+                    sh "docker build --no-cache --force-rm -t ${id}:tf-cpu-py2 \
                         --build-arg tag=${env.tf_ver} \
                         --build-arg pyVer=python ."
+
+                    // ubuntu-only (18.04 + python3.6)
+                    sh "docker build --no-cache --force-rm -t ${id}:u18.04 \
+                        --build-arg image=ubuntu \
+                        --build-arg tag=18.04 \
+                        --build-arg pyVer=python3 ."
 
                 }
             }

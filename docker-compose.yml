@@ -4,7 +4,7 @@ version: '2.3'
 # do not forget '--service-ports'!
 services:
     generic-cpu:
-      image: deephdc/deep-oc-generic-dev:cpu
+      image: deephdc/deep-oc-generic-dev:tf-cpu
       ports:
         - 5000:5000
         - 6006:6006
@@ -12,7 +12,7 @@ services:
       entrypoint: ["/run_jupyter.sh", "--allow-root"]
 
     generic-cpu-py2:
-      image: deephdc/deep-oc-generic-dev:cpu-py2
+      image: deephdc/deep-oc-generic-dev:tf-cpu-py2
       ports:
         - 5000:5000
         - 6006:6006
