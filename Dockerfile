@@ -44,8 +44,10 @@ RUN DEBIAN_FRONTEND=noninteractive apt-get update && \
 
 # link python3 to python, pip3 to pip
 RUN if [ "$pyVer" = "python3" ] ; then \
-       ln -s /usr/bin/pip3 /usr/bin/pip  && \
-       ln -s /usr/bin/python3 /usr/bin/python; \
+       ln -s /usr/bin/pip3 /usr/bin/pip && \
+       if [ ! -e /usr/bin/python ]; then \
+          ln -s /usr/bin/python3 /usr/bin/python; \
+       fi; \
     fi && \
     python --version && \
     pip --version
