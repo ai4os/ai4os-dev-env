@@ -1,4 +1,5 @@
-# Dockerfile has two Arguments: tag and pyVer
+# Dockerfile has three Arguments: image, tag, and pyVer
+# image - base image (default: tensorflow/tensorflow)
 # tag - tag for Tensorflow Image (default: 1.10-gpu-py3)
 # pyVer - python versions as 'python' or 'python3' (default: python3)
 # Do not forget that 'tag' and 'pyVer' in case of Tensorflow are dependent!

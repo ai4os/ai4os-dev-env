@@ -26,24 +26,24 @@ pipeline {
                     // build different tags
                     id = "${env.dockerhub_repo}"
 
-                    // GPU + python3 (aka default)
+                    // CPU + python3 (aka default)
                     sh "docker build --no-cache --force-rm -t ${id} \
-                        --build-arg tag=${env.tf_ver}-gpu-py3 \
-                        --build-arg pyVer=python3 ."
-
-                    // CPU + python3
-                    sh "docker build --no-cache --force-rm -t ${id}:tf-cpu \
                         --build-arg tag=${env.tf_ver}-py3 \
                         --build-arg pyVer=python3 ."
 
-                    // GPU + python2
-                    sh "docker build --no-cache --force-rm -t ${id}:tf-py2 \
-                        --build-arg tag=${env.tf_ver}-gpu \
-                        --build-arg pyVer=python ."
+                    // GPU + python3
+                    sh "docker build --no-cache --force-rm -t ${id}:tf-gpu \
+                        --build-arg tag=${env.tf_ver}-gpu-py3 \
+                        --build-arg pyVer=python3 ."
 
                     // CPU + python2
-                    sh "docker build --no-cache --force-rm -t ${id}:tf-cpu-py2 \
+                    sh "docker build --no-cache --force-rm -t ${id}:tf-py2 \
                         --build-arg tag=${env.tf_ver} \
+                        --build-arg pyVer=python ."
+
+                    // GPU + python2
+                    sh "docker build --no-cache --force-rm -t ${id}:tf-gpu-py2 \
+                        --build-arg tag=${env.tf_ver}-gpu \
                         --build-arg pyVer=python ."
 
                     // ubuntu-only (18.04 + python3.6)
