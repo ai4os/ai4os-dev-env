@@ -7,7 +7,7 @@
 # docker build -t deephdc/deep-oc-generic-dev --build-arg tag=XX --build-arg pyVer=python
 
 ARG image=tensorflow/tensorflow
-ARG tag=1.10.0-gpu-py3
+ARG tag=1.10.0-py3
 # Base image, e.g. tensorflow/tensorflow:1.7.0
 FROM ${image}:${tag}
 
