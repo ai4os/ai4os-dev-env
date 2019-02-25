@@ -13,13 +13,7 @@ pipeline {
     }
 
     stages {
-        stage('DockerHub delivery') {
-            //when {
-            //    anyOf {
-            //       branch 'master'
-            //       buildingTag()
-            //   }
-            //}
+        stage('Docker image building') {
             steps{
                 checkout scm
                 script {
@@ -54,9 +48,25 @@ pipeline {
                 }
             }
             post {
-                success {
+                failure {
+                    DockerClean()
+                }
+            }
+        }
+
+        stage('Docker Hub delivery') {
+            when {
+                anyOf {
+                   branch 'master'
+                   buildingTag()
+               }
+            }
+            steps{
+                script {
                     DockerPush(dockerhub_repo) // should push all tags
                 }
+            }
+            post {
                 failure {
                     DockerClean()
                 }
