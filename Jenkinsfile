@@ -26,22 +26,26 @@ pipeline {
                                              "pyVer=python3"])
 
                     // GPU + python3
-                    DockerBuild("${id}:tf-gpu", 
+                    DockerBuild(id,
+                                tag: "tf-gpu", 
                                 build_args: ["tag=${env.tf_ver}-gpu-py3",
                                              "pyVer=python3"])
 
                     // CPU + python2
-                    DockerBuild("${id}:tf-py2", 
+                    DockerBuild(id,
+                                tag: "tf-py2", 
                                 build_args: ["tag=${env.tf_ver}",
                                              "pyVer=python"])
 
                     // GPU + python2
-                    DockerBuild("${id}:tf-gpu-py2", 
+                    DockerBuild(id,
+                                tag: "tf-gpu-py2", 
                                 build_args: ["tag=${env.tf_ver}-gpu",
                                              "pyVer=python"])
 
                     // ubuntu-only (18.04 + python3.6)
-                    DockerBuild("${id}:u18.04", 
+                    DockerBuild(id,
+                                tag: "u18.04",
                                 build_args: ["image=ubuntu",
                                              "tag=18.04",
                                              "pyVer=python3"])
