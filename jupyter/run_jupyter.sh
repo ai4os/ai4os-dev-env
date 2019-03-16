@@ -28,7 +28,7 @@ fi
 # If so, try to download using rclone:
 #    jupyterSSL.key   - private key file for usage with SSL/TLS
 #    jupyterSSL.pem   - SSL/TLS certificate file
-if [[ -v jupyterCONFIG_URL ]]; then
+if [[ ! -z "${jupyterCONFIG_URL}" ]]; then
     DEST_DIR='/srv/.jupyter/'
     cmd_rclone=$(rclone copy $jupyterCONFIG_URL $DEST_DIR)
 
