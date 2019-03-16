@@ -103,8 +103,9 @@ Building the container:
 
 These two steps will download the repository from GitHub and will build the
 Docker container locally on your machine. You can inspect and modify the
-`Dockerfile` in order to check what is going on. For example, Dockerfile has two ARGs:
+`Dockerfile` in order to check what is going on. For example, Dockerfile has three ARGs:
 
+* image: base image (default: tensorflow/tensorflow)
 * tag: to define tag for the Tensorflow Baseimage, e.g. '1.10.0-gpu-py3' (default)
 * pyVer: to specify python version as 'python' (for python2) or 'python3' (for python3)
 
@@ -115,4 +116,4 @@ $ cd DEEP-OC-generic-dev
 $ docker build -t deephdc/deep-oc-generic-dev:cpu-py2 --build-arg tag=1.10.0 --build-arg pyVer=python .
 ```
 
-builds deephdc/deep-oc-generic-dev:cpu-py2 with CPU version of Tensorflow 1.10.0 and python2.
+builds deephdc/deep-oc-generic-dev:tf-py2 with CPU version of Tensorflow 1.10.0 and python2.

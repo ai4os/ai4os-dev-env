@@ -1,6 +1,6 @@
 # Dockerfile has three Arguments: image, tag, and pyVer
 # image - base image (default: tensorflow/tensorflow)
-# tag - tag for Tensorflow Image (default: 1.10-gpu-py3)
+# tag - tag for Tensorflow Image (default: 1.10-py3)
 # pyVer - python versions as 'python' or 'python3' (default: python3)
 # Do not forget that 'tag' and 'pyVer' in case of Tensorflow are dependent!
 # If you need to change default values, during the build do:
@@ -112,7 +112,7 @@ ENV SHELL /bin/bash
 EXPOSE 5000
 
 # Open Jupyter port
-# REMINDER: Tensorflow Docker Images already EXPOSE ports 6006 and 8888
-EXPOSE 8888
+# REMINDER: Tensorflow Docker Images used to EXPOSE ports 6006 and 8888
+EXPOSE 6006 8888
 
 CMD ["/run_jupyter.sh","--allow-root"]
