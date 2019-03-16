@@ -22,7 +22,7 @@ pipeline {
 
                     // CPU + python3 (aka default)
                     id_cpu = DockerBuild(id,
-                                         tag: ['latest','tf-cpu']
+                                         tag: ['latest','tf-cpu'],
                                          build_args: ["tag=${env.tf_ver}-py3",
                                                       "pyVer=python3"])
 
