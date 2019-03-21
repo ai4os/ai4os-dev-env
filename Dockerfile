@@ -70,6 +70,7 @@ RUN wget https://github.com/indigo-dc/orchent/releases/download/1.2.2/orchent-1.
     rm orchent-1.2.2-amd64.deb \
        rclone-current-linux-amd64.deb && \
     cat /root/oidc-check.bashrc >> /root/.bashrc && \
+    mkdir /srv/.oidc-agent && \
     mkdir /srv/.rclone/ && touch /srv/.rclone/rclone.conf && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/* && \
