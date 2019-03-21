@@ -33,7 +33,7 @@ RUN DEBIAN_FRONTEND=noninteractive apt-get update && \
          curl \
          git \
          mc \
-         oidc-agent \
+         oidc-agent=2.3.1 \
          openssh-client \
          $pyVer-setuptools \
          $pyVer-pip \
