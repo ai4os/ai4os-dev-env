@@ -9,10 +9,18 @@ pipeline {
 
     environment {
         dockerhub_repo = "deephdc/deep-oc-generic-dev"
-        tf_ver = "1.10.0"
+        tf_ver = "1.14.0"
     }
 
     stages {
+
+        stage('Validate metadata') {
+            steps {
+                checkout scm
+                sh 'deep-app-schema-validator metadata.json'
+            }
+        }
+
         stage('Docker image building') {
             steps{
                 checkout scm
@@ -96,6 +104,21 @@ pipeline {
                 }
                 always {
                     cleanWs()
+                }
+            }
+        }
+
+        stage("Render metadata on the marketplace") {
+            when {
+                allOf {
+                    branch 'master'
+                    changeset 'metadata.json'
+                }
+            }
+            steps {
+                script {
+                    def job_result = JenkinsBuildJob("Pipeline-as-code/deephdc.github.io/pelican")
+                    job_result_url = job_result.absoluteUrl
                 }
             }
         }
