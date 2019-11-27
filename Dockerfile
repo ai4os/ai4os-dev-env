@@ -28,18 +28,20 @@ RUN DEBIAN_FRONTEND=noninteractive apt-get update && \
     apt-get install -y --no-install-recommends \
         gnupg \
         lsb-release \
+        curl \
         software-properties-common && \
-    apt-key adv --keyserver pgp.surfnet.nl \
-    --recv-keys ACDFB08FDC962044D87FF00B512839863D487A87 && \
+    #apt-key adv --keyserver hkp://pgp.surfnet.nl \
+    #--recv-keys ACDFB08FDC962044D87FF00B512839863D487A87 && \
+    curl repo.data.kit.edu/key.pgp | apt-key add - && \
     add-apt-repository "deb http://repo.data.kit.edu/ubuntu/$(lsb_release -sr) ./" && \
     DEBIAN_FRONTEND=noninteractive apt-get update && \
     apt-get install -y --no-install-recommends \
          git \
-         curl \
          nano \
          mc \
          wget \
          openssh-client \
+         oidc-agent \
          $pyVer-setuptools \
          $pyVer-pip \
          $pyVer-wheel && \
@@ -69,12 +71,12 @@ WORKDIR /srv
 COPY oidc-agent/oidc-check.bashrc /root/
 
 # Install orchent, oidc-agent, and rclone
-RUN wget https://github.com/indigo-dc/orchent/releases/download/$orchentVer/orchent_$orchentVer_amd64.deb && \
-    dpkg -i orchent-$orchentVer-amd64.deb && \
+RUN wget https://github.com/indigo-dc/orchent/releases/download/${orchentVer}/orchent_${orchentVer}_amd64.deb && \
+    dpkg -i orchent_${orchentVer}_amd64.deb && \
     wget https://downloads.rclone.org/rclone-current-linux-amd64.deb && \
     dpkg -i rclone-current-linux-amd64.deb && \
     apt install -f && \   
-    rm orchent-$orchentVer-amd64.deb \
+    rm orchent_${orchentVer}_amd64.deb \
        rclone-current-linux-amd64.deb && \
     cat /root/oidc-check.bashrc >> /root/.bashrc && \
     mkdir /srv/.oidc-agent && \
@@ -96,13 +98,14 @@ ENV RCLONE_CONFIG /srv/.rclone/rclone.conf
 ENV USER root
 ENV HOME /root
 
-# Install DEEPaaS from PyPi
-RUN pip install --no-cache-dir deepaas && \
-    rm -rf /root/.cache/pip/* && \
-    rm -rf /tmp/*
-
-# Install FLAAT (FLAsk support for handling Access Tokens)
-RUN pip install --no-cache-dir flaat && \
+# Install:
+# cookiecutter (tool to create projects from project templates)
+# DEEPaaS API  (a REST API for providing access to machine learning models)
+# FLAAT        (FLAsk support for handling Access Tokens)
+RUN pip install --no-cache-dir \
+    cookiecutter \
+    deepaas \
+    flaat && \
     rm -rf /root/.cache/pip/* && \
     rm -rf /tmp/*
 
