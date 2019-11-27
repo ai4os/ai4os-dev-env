@@ -8,7 +8,7 @@ pipeline {
     }
 
     environment {
-        dockerhub_repo = "deephdc/deep-oc-generic-dev"
+        dockerhub_repo = "vykozlov/deep-oc-generic-dev"
         tf_ver = "1.14.0"
     }
 
@@ -117,7 +117,7 @@ pipeline {
             }
             steps {
                 script {
-                    def job_result = JenkinsBuildJob("Pipeline-as-code/deephdc.github.io/pelican")
+                    //def job_result = JenkinsBuildJob("Pipeline-as-code/deephdc.github.io/pelican")
                     job_result_url = job_result.absoluteUrl
                 }
             }

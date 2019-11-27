@@ -1,7 +1,8 @@
-# Dockerfile has three Arguments: image, tag, and pyVer
+# Dockerfile has following arguments: image, tag, pyVer, and orchentVer
 # image - base image (default: tensorflow/tensorflow)
 # tag - tag for Tensorflow Image (default: 1.10-py3)
 # pyVer - python versions as 'python' or 'python3' (default: python3)
+# orchentVer - version of orchent (see https://github.com/indigo-dc/orchent/releases/)
 # Do not forget that 'tag' and 'pyVer' in case of Tensorflow are dependent!
 # If you need to change default values, during the build do:
 # docker build -t deephdc/deep-oc-generic-dev --build-arg tag=XX --build-arg pyVer=python
@@ -18,16 +19,27 @@ LABEL maintainer='V.Kozlov (KIT)'
 # python version
 ARG pyVer=python3
 
-# If to install JupyterLab
-ARG jlab=true
+# orchent version
+ARG orchentVer=1.2.5
 
 # Install ubuntu updates and python related stuff
 # link python3 to python, pip3 to pip, if needed
 RUN DEBIAN_FRONTEND=noninteractive apt-get update && \
     apt-get install -y --no-install-recommends \
+        gnupg \
+        lsb-release \
+        software-properties-common && \
+    apt-key adv --keyserver pgp.surfnet.nl \
+    --recv-keys ACDFB08FDC962044D87FF00B512839863D487A87 && \
+    add-apt-repository "deb http://repo.data.kit.edu/ubuntu/$(lsb_release -sr) ./" && \
+    DEBIAN_FRONTEND=noninteractive apt-get update && \
+    apt-get install -y --no-install-recommends \
          git \
          curl \
+         nano \
+         mc \
          wget \
+         openssh-client \
          $pyVer-setuptools \
          $pyVer-pip \
          $pyVer-wheel && \
@@ -53,16 +65,36 @@ ENV LANG C.UTF-8
 # Set the working directory
 WORKDIR /srv
 
-# Install rclone
-RUN wget https://downloads.rclone.org/rclone-current-linux-amd64.deb && \
+# bashrc entries for oidc-agent
+COPY oidc-agent/oidc-check.bashrc /root/
+
+# Install orchent, oidc-agent, and rclone
+RUN wget https://github.com/indigo-dc/orchent/releases/download/$orchentVer/orchent_$orchentVer_amd64.deb && \
+    dpkg -i orchent-$orchentVer-amd64.deb && \
+    wget https://downloads.rclone.org/rclone-current-linux-amd64.deb && \
     dpkg -i rclone-current-linux-amd64.deb && \
-    apt install -f && \
+    apt install -f && \   
+    rm orchent-$orchentVer-amd64.deb \
+       rclone-current-linux-amd64.deb && \
+    cat /root/oidc-check.bashrc >> /root/.bashrc && \
+    mkdir /srv/.oidc-agent && \
     mkdir /srv/.rclone/ && touch /srv/.rclone/rclone.conf && \
-    rm rclone-current-linux-amd64.deb && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/* && \
     rm -rf /root/.cache/pip/* && \
     rm -rf /tmp/*
+
+# Environment settings for orchent, oidc-agent, rclone
+ENV ORCHENT_BARI https://deep-paas.cloud.ba.infn.it/orchestrator
+ENV ORCHENT_CNAF https://paas.cloud.cnaf.infn.it/orchestrator
+ENV ORCHENT_URL $ORCHENT_CNAF
+ENV ORCHENT_AGENT_ACCOUNT deep-iam
+ENV OIDC_CONFIG_DIR /srv/.oidc-agent
+ENV RCLONE_CONFIG /srv/.rclone/rclone.conf
+
+# For compatibility with udocker
+ENV USER root
+ENV HOME /root
 
 # Install DEEPaaS from PyPi
 RUN pip install --no-cache-dir deepaas && \
@@ -77,16 +109,11 @@ RUN pip install --no-cache-dir flaat && \
 # Disable FLAAT authentication by default
 ENV DISABLE_AUTHENTICATION_AND_ASSUME_AUTHENTICATED_USER yes
 
-# Install DEEP debug_log scripts:
-RUN git clone https://github.com/deephdc/deep-debug_log /srv/.debug_log
-
 # Install JupyterLab
 ENV JUPYTER_CONFIG_DIR /srv/.jupyter/
 ENV SHELL /bin/bash
-RUN if [ "$jlab" = true ]; then \
-       pip install --no-cache-dir jupyterlab ; \
-       git clone https://github.com/deephdc/deep-jupyter /srv/.jupyter ; \
-    else echo "[INFO] Skip JupyterLab installation!"; fi
+RUN pip install --no-cache-dir jupyterlab && \
+    git clone https://github.com/deephdc/deep-jupyter /srv/.jupyter
 
 # Open DEEPaaS port
 EXPOSE 5000
