@@ -37,11 +37,11 @@ RUN DEBIAN_FRONTEND=noninteractive apt-get update && \
     DEBIAN_FRONTEND=noninteractive apt-get update && \
     apt-get install -y --no-install-recommends \
          git \
-         nano \
          mc \
-         wget \
+         nano \
          openssh-client \
          oidc-agent \
+         wget \
          $pyVer-setuptools \
          $pyVer-pip \
          $pyVer-wheel && \
