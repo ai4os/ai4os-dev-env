@@ -16,6 +16,7 @@
 # 
 # modified by v.kozlov @2018-07-18 
 # to include jupyterCONFIG_URL environment check
+# variables start with "jupyter" in order not to clash with "JUPYTER_" ones.
 #
 ######
 
