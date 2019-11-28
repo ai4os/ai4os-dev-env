@@ -62,21 +62,21 @@ pipeline {
                     //}
 
                     tf_vers = getTFVers()
+                    n_vers = tf_vers.size()
 
                     // CAREFUL! For-loop might fail in some Jenkins versions
                     // Another option: 
                     // https://stackoverflow.com/questions/37594635/why-an-each-loop-in-a-jenkinsfile-stops-at-first-iteration
-                    for(int j=0; j < tf_vers.size(); j++) {
+                    for(int j=0; j < n_vers; j++) {
                         tags = ['tf'+tf_vers[j]+'-cpu', 
                                 'tf'+tf_vers[j]+'-gpu'] 
 
                         tf_tags = [tf_vers[j]+'-py3',
                                    tf_vers[j]+'-gpu-py3']
 
-                        n_tags = tags.size()
-                        for(int i=0; i < n_tags; i++) {
+                        for(int i=0; i < tags.size(); i++) {
                             tag_id = [tags[i]]
-                            if (i == (n_tags - 1)) {
+                            if (j == (n_vers - 1) && tags[i].contains("-cpu")) {
                                 tag_id = [tags[i], 'latest']
                             }
                             tf_tag = tf_tags[i]
@@ -86,7 +86,7 @@ pipeline {
                                                                  "pyVer=python3"])
                             DockerPush(id_docker)
                             id_this = id_docker[0]
-                            sh("docker rmi --force ${id_this}")
+                            sh("docker rmi --force \$(docker images -q ${id_this})")
                         }
                     }
 
