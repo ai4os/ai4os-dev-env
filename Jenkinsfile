@@ -33,26 +33,33 @@ pipeline {
                    buildingTag()
                }
             }
+            environment {
+                DOCKER_CREDS = credentials('indigobot')
+            }
             steps{
                 checkout scm
                 script {
                     // build different tags
                     id = "${env.dockerhub_repo}"
                     echo "${env.url_repo_clean}"
+                    docker_user = "${DOCKER_CREDS_USR}"
+                    echo "1 - ${docker_user}"
+                    echo "2 - ${DOCKER_CREDS_USR}"
                     // Test if we can clean whole repository:
-                    docker_credentials  = credentials('indigobot')
-                    sh "curl -u ${docker_credentials_USR}:${docker_credentials_PSW} -X \"DELETE\" ${env.url_repo_clean}"
+                    //sh "curl -u ${env.DOCKER_CREDS_USR}:${env.DOCKER_CREDS_PSW} -X 'DELETE' ${env.url_repo_clean}"
+                    //sh "curl -u ${DOCKER_CREDS_USR}:${DOCKER_CREDS_PSW} ${env.url_repo_clean}"
 
                     //withDockerRegistry([credentialsId: 'indigobot', url: '']) {
                     //withCredentials([usernamePassword(credentialsId: 'indigobot', 
                     //                 usernameVariable: 'USERNAME', 
                     //                 passwordVariable: 'PASSWORD')]) {
                     //    def url_clean = "${env.url_repo_clean}"
+                    //    echo "${url_clean}"
                     //    sh '''
                     //       echo "${url_clean}"
                     //       curl -u ${USERNAME}:${PASSWORD} -X "DELETE" ${url_clean}"
                     //       '''
-                    }
+                    //}
 
                     tf_vers = getTFVers()
 
@@ -77,8 +84,9 @@ pipeline {
                                                     tag: tag_id,
                                                     build_args: ["tag=${tf_tag}",
                                                                  "pyVer=python3"])
-                           DockerPush(id_docker)
-                           DockerClean(id_docker[0]) //id_docker is an array
+                            DockerPush(id_docker)
+                            id_this = id_docker[0]
+                            sh("docker rmi --force ${id_this}")
                         }
                     }
 
