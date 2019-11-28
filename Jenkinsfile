@@ -4,7 +4,7 @@
 
 // define which TensorFlow versions to use
 def getTFVers(){
-    return ["1.12.0", "1.14.0", "2.0.0"]
+    return ["1.12.0", "1.14.0"] //, "2.0.0"]
 }
 
 pipeline {
@@ -26,7 +26,7 @@ pipeline {
             }
         }
 
-        stage('Docker image building') {
+        stage('Docker image building (std)') {
             when {
                 anyOf {
                    branch 'master'
@@ -49,17 +49,7 @@ pipeline {
                     //sh "curl -u ${env.DOCKER_CREDS_USR}:${env.DOCKER_CREDS_PSW} -X 'DELETE' ${env.url_repo_clean}"
                     //sh "curl -u ${DOCKER_CREDS_USR}:${DOCKER_CREDS_PSW} ${env.url_repo_clean}"
 
-                    //withDockerRegistry([credentialsId: 'indigobot', url: '']) {
-                    //withCredentials([usernamePassword(credentialsId: 'indigobot', 
-                    //                 usernameVariable: 'USERNAME', 
-                    //                 passwordVariable: 'PASSWORD')]) {
-                    //    def url_clean = "${env.url_repo_clean}"
-                    //    echo "${url_clean}"
-                    //    sh '''
-                    //       echo "${url_clean}"
-                    //       curl -u ${USERNAME}:${PASSWORD} -X "DELETE" ${url_clean}"
-                    //       '''
-                    //}
+
 
                     tf_vers = getTFVers()
                     n_vers = tf_vers.size()
@@ -89,6 +79,30 @@ pipeline {
                             sh("docker rmi --force \$(docker images -q ${id_this})")
                         }
                     }
+               }
+            }
+            post {
+                failure {
+                   DockerClean()
+                }
+            }
+        }
+
+        stage('Docker image building (TF 1.12.0)') {
+            when {
+                anyOf {
+                   branch 'master'
+                   buildingTag()
+               }
+            }
+            steps{
+                checkout scm
+                script {
+                    // build different tags
+                    id = "${env.dockerhub_repo}"
+
+                    tf_vers = getTFVers()
+                    n_vers = tf_vers.size()
 
                     // For the case of TF1.12.0 we also build images with 
                     // - python2
@@ -108,6 +122,55 @@ pipeline {
 
                     pyVes_1120 = ['python', 'python', 'python3', 'python3']
 
+                    for(int i=0; i < tags_1120.size(); i++) {
+                        tag_id = [tags_1120[i]]
+                        tf_image = tf_images_1120[i]
+                        tf_tag = tf_tags_1120[i]
+                        py_ver = pyVers_1120[i]
+                        id_1120 = DockerBuild(id,
+                                              tag: tag_id,
+                                              build_args: ["image=$tf_image",
+                                                           "tag=${tf_tag}",
+                                                           "pyVer=${py_ver}"])
+                         DockerPush(id_1120)
+                         id_this = id_1120[0]
+                         sh("docker rmi --force \$(docker images -q ${id_this})")
+                    }
+               }
+            }
+            post {
+                failure {
+                   DockerClean()
+                }
+            }
+        }
+
+        stage('Docker image building (ubuntu 18.04)') {
+            when {
+                anyOf {
+                   branch 'master'
+                   buildingTag()
+               }
+            }
+            steps{
+                checkout scm
+                script {
+                    // build different tags
+                    id = "${env.dockerhub_repo}"
+
+                    tf_vers = getTFVers()
+                    n_vers = tf_vers.size()
+
+                    // Finally, we put all DEEP components in 
+                    // ubuntu 18.04 image without deep learning framework
+                    id_u1804 = DockerBuild(id,
+                                           tag: ['u18.04'],
+                                           build_args: ["image=ubuntu",
+                                                        "tag=18.04",
+                                                        "pyVer=python3"])
+                    DockerPush(id_u1804)
+                    id_this = id_u1804[0]
+                    sh("docker rmi --force \$(docker images -q ${id_this})")
                 }
             }
             post {
@@ -116,29 +179,6 @@ pipeline {
                 }
             }
         }
-
-        //stage('Docker Hub delivery') {
-        //
-        //    steps{
-        //        script {
-        //            //DockerPush(id_cpu)
-        //            //DockerPush(id_gpu)
-        //            //DockerPush(id_cpu_py2)
-        //            //DockerPush(id_gpu_py2)
-        //            //DockerPush(id_cpu_py36)
-        //            //DockerPush(id_gpu_py36)
-        //            //DockerPush(id_u1804)
-        //        }
-        //    }
-        //    post {
-        //        failure {
-        //            DockerClean()
-        //        }
-        //        always {
-        //            cleanWs()
-        //        }
-        //    }
-        //}
 
         stage("Render metadata on the marketplace") {
             when {
