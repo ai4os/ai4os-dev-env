@@ -120,7 +120,7 @@ pipeline {
                     tf_tags_1120 = ['1.12.0', '1.12.0-gpu', 
                                     'tf-py36', 'tf-gpu-py36']
 
-                    pyVes_1120 = ['python', 'python', 'python3', 'python3']
+                    pyVers_1120 = ['python', 'python', 'python3', 'python3']
 
                     for(int i=0; i < tags_1120.size(); i++) {
                         tag_id = [tags_1120[i]]
