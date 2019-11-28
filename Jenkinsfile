@@ -4,7 +4,8 @@
 
 // define which TensorFlow versions to use
 def getTFVers(){
-    return ["1.12.0", "1.14.0"] //, "2.0.0"]
+    //return ["1.12.0", "1.14.0", "2.0.0"]
+    return ["1.14.0"]
 }
 
 pipeline {
