@@ -34,23 +34,11 @@ pipeline {
                    buildingTag()
                }
             }
-            environment {
-                DOCKER_CREDS = credentials('indigobot')
-            }
             steps{
                 checkout scm
                 script {
                     // build different tags
                     id = "${env.dockerhub_repo}"
-                    echo "${env.url_repo_clean}"
-                    docker_user = "${DOCKER_CREDS_USR}"
-                    echo "1 - ${docker_user}"
-                    echo "2 - ${DOCKER_CREDS_USR}"
-                    // Test if we can clean whole repository:
-                    //sh "curl -u ${env.DOCKER_CREDS_USR}:${env.DOCKER_CREDS_PSW} -X 'DELETE' ${env.url_repo_clean}"
-                    //sh "curl -u ${DOCKER_CREDS_USR}:${DOCKER_CREDS_PSW} ${env.url_repo_clean}"
-
-
 
                     tf_vers = getTFVers()
                     n_vers = tf_vers.size()
@@ -119,7 +107,7 @@ pipeline {
                                       'deephdc/tensorflow']
 
                     tf_tags_1120 = ['1.12.0', '1.12.0-gpu', 
-                                    'tf-py36', 'tf-gpu-py36']
+                                    '1.12.0-py36', '1.12.0-gpu-py36']
 
                     pyVers_1120 = ['python', 'python', 'python3', 'python3']
 
