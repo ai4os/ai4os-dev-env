@@ -66,6 +66,7 @@ pipeline {
                             DockerPush(id_docker)
                             id_this = id_docker[0]
                             sh("docker rmi --force \$(docker images -q ${id_this})")
+                            sh("docker rmi --force \$(docker images -q tensorflow/tensorflow:${tf_tag})")
                         }
                     }
                }
@@ -118,12 +119,13 @@ pipeline {
                         py_ver = pyVers_1120[i]
                         id_1120 = DockerBuild(id,
                                               tag: tag_id,
-                                              build_args: ["image=$tf_image",
+                                              build_args: ["image=${tf_image}",
                                                            "tag=${tf_tag}",
                                                            "pyVer=${py_ver}"])
                          DockerPush(id_1120)
                          id_this = id_1120[0]
                          sh("docker rmi --force \$(docker images -q ${id_this})")
+                         sh("docker rmi --force \$(docker images -q ${tf_image}:${tf_tag})")
                     }
                }
             }
@@ -147,9 +149,6 @@ pipeline {
                     // build different tags
                     id = "${env.dockerhub_repo}"
 
-                    tf_vers = getTFVers()
-                    n_vers = tf_vers.size()
-
                     // Finally, we put all DEEP components in 
                     // ubuntu 18.04 image without deep learning framework
                     id_u1804 = DockerBuild(id,
@@ -160,6 +159,7 @@ pipeline {
                     DockerPush(id_u1804)
                     id_this = id_u1804[0]
                     sh("docker rmi --force \$(docker images -q ${id_this})")
+                    sh("docker rmi --force \$(docker images -q ubuntu:18.04)")
                 }
             }
             post {
