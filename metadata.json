@@ -1,15 +1,15 @@
 {
-    "title": "Development container",
-    "summary": "This is a Docker container for developing new modules",
+    "title": "Development Docker image",
+    "summary": "This is a Docker image for developing new modules",
     "description": [
-        "This is a Docker container for developing new modules. It comes preinstalled with DEEPaaS, Jupyter Lab and Tensorflow.",
-        "As you have access to the terminal in Jupyter Lab you can customize it with your preferred tools."
+        "This is a Docker image for developing new modules. It comes preinstalled with DEEPaaS, Jupyter Lab, Tensorflow, and a number of other tools",
+        "As you have access to the terminal of Jupyter Lab you can add your preferred tools, develop and debug your application."
 	],
     "keywords": [
-        "models", "services", "library/tensorflow", "library/keras", "docker"
+        "development", "library/tensorflow", "docker"
     ],
     "license": "MIT",
-    "date_creation": "2019-09-01",
+    "date_creation": "2019-03-01",
     "sources": {
 		"dockerfile_repo": "https://github.com/deephdc/DEEP-OC-generic-dev",
 		"docker_registry_repo": "deephdc/deep-oc-generic-dev",
@@ -21,7 +21,7 @@
     },
     "tosca": [
         {
-            "title": "Mesos (CPU)",
+            "title": "Mesos",
             "url": "https://raw.githubusercontent.com/indigo-dc/tosca-templates/master/deep-oc/deep-oc-mesos-webdav.yml",
             "inputs": [
                 "rclone_conf",

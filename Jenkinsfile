@@ -4,8 +4,7 @@
 
 // define which TensorFlow versions to use
 def getTFVers(){
-    //return ["1.12.0", "1.14.0", "2.0.0"]
-    return ["1.14.0"]
+    return ["1.12.0", "1.14.0", "2.0.0"]
 }
 
 pipeline {
@@ -14,8 +13,7 @@ pipeline {
     }
 
     environment {
-        dockerhub_repo = "vykozlov/deep-oc-generic-dev"
-        url_repo_clean = "https://cloud.docker.com/v2/repositories/${dockerhub_repo}"
+        dockerhub_repo = "deephdc/deep-oc-generic-dev"
     }
 
     stages {
@@ -44,7 +42,7 @@ pipeline {
                     n_vers = tf_vers.size()
 
                     // CAREFUL! For-loop might fail in some Jenkins versions
-                    // Another option: 
+                    // Other options: 
                     // https://stackoverflow.com/questions/37594635/why-an-each-loop-in-a-jenkinsfile-stops-at-first-iteration
                     for(int j=0; j < n_vers; j++) {
                         tags = ['tf'+tf_vers[j]+'-cpu', 
@@ -64,9 +62,11 @@ pipeline {
                                                     build_args: ["tag=${tf_tag}",
                                                                  "pyVer=python3"])
                             DockerPush(id_docker)
+
+                            // immediately remove local image
                             id_this = id_docker[0]
                             sh("docker rmi --force \$(docker images -q ${id_this})")
-                            sh("docker rmi --force \$(docker images -q tensorflow/tensorflow:${tf_tag})")
+                            //sh("docker rmi --force \$(docker images -q tensorflow/tensorflow:${tf_tag})")
                         }
                     }
                }
@@ -123,9 +123,11 @@ pipeline {
                                                            "tag=${tf_tag}",
                                                            "pyVer=${py_ver}"])
                          DockerPush(id_1120)
+
+                         // immediately remove local image
                          id_this = id_1120[0]
                          sh("docker rmi --force \$(docker images -q ${id_this})")
-                         sh("docker rmi --force \$(docker images -q ${tf_image}:${tf_tag})")
+                         //sh("docker rmi --force \$(docker images -q ${tf_image}:${tf_tag})")
                     }
                }
             }
@@ -157,9 +159,11 @@ pipeline {
                                                         "tag=18.04",
                                                         "pyVer=python3"])
                     DockerPush(id_u1804)
+
+                    // immediately remove local image
                     id_this = id_u1804[0]
                     sh("docker rmi --force \$(docker images -q ${id_this})")
-                    sh("docker rmi --force \$(docker images -q ubuntu:18.04)")
+                    //sh("docker rmi --force \$(docker images -q ubuntu:18.04)")
                 }
             }
             post {
