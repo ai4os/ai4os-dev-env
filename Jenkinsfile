@@ -78,7 +78,7 @@ pipeline {
             }
         }
 
-        stage('Docker image building (TF 1.12.0)') {
+        stage('Docker image building (TF 1.12.0 with python2, python3.6)') {
             when {
                 anyOf {
                    branch 'master'
@@ -182,7 +182,7 @@ pipeline {
             }
             steps {
                 script {
-                    //def job_result = JenkinsBuildJob("Pipeline-as-code/deephdc.github.io/pelican")
+                    def job_result = JenkinsBuildJob("Pipeline-as-code/deephdc.github.io/pelican")
                     job_result_url = job_result.absoluteUrl
                 }
             }
