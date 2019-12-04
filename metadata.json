@@ -6,7 +6,7 @@
         "As you have access to the terminal of Jupyter Lab, you can develop and debug your application, add your preferred tools."
 	],
     "keywords": [
-        "development", "tensorflow", "docker"
+        "development", "tensorflow", "docker", "jupyterlab"
     ],
     "license": "MIT",
     "date_creation": "2019-03-01",
