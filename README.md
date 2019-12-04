@@ -13,19 +13,20 @@ for the development of your application. Test it immediately and when ready, com
 
 
 The resulting Docker image has pre-installed:
-* Tensorflow 1.10
+* Tensorflow 1.12 | 1.14.0 | 2.0.0
 * git
 * curl
-* wget
+* [deepaas](https://github.com/indigo-dc/DEEPaaS)
+* [flaat](https://github.com/indigo-dc/flaat)
+* jupyter
+* jupyterlab
+* mc
+* [oidc-agent](https://github.com/indigo-dc/oidc-agent)
 * openssh-client
 * python
 * pip
 * rclone
-* flaat
-* jupyter
-* jupyterlab
-* deepaas
-
+* wget
 
 ## Running the container
 
@@ -44,7 +45,7 @@ Then go either to http://127.0.0.1:8888/tree for jupyter notebook or to http://1
 If you want to start DEEPaaS API service, go to the jupyterlab, i.e. http://127.0.0.1:8888/lab, open terminal, type:
 
 ```bash
-$ deepaas-run --listen-ip=0.0.0.0
+$ deepaas-run --listen-ip=0.0.0.0 --listen-port=5000
 ```
 
 direct your browser to http://127.0.0.1:5000
@@ -55,7 +56,7 @@ If you need to mount some directories from your host into the container, please,
 $ docker run -ti -p 5000:5000 -p 6006:6006 -p 8888:8888 -v $HOME/data:/srv/app/data deephdc/deep-oc-generic-dev
 ```
 
-mounts your host directory `$HOME/data` into containers path `/srv/app/data`.
+mounts your host directory `$HOME/data` into container's path `/srv/app/data`.
 
 ### Running via docker-compose
 
@@ -65,6 +66,9 @@ docker-compose.yml allows you to run the application with various configurations
 
 If you want to use Nvidia GPU (generic-gpu), you need nvidia-docker and docker-compose ver1.19.0+ , see [nvidia/FAQ](https://github.com/NVIDIA/nvidia-docker/wiki/Frequently-Asked-Questions#do-you-support-docker-compose)
 
+For either CPU-based or GPU-based images you can also use [udocker](https://github.com/indigo-dc/udocker).
+
+
 ### Building the container
 
 If you want to build the container directly in your machine (because you want
@@ -72,13 +76,13 @@ to modify the `Dockerfile` for instance) follow the following instructions:
 
 Building the container:
 
-1. Get the `DEEP-OC-generic-dev` repository (this repo):
+1. Get the `DEEP-OC-generic-dev` repository:
 
     ```bash
     $ git clone https://github.com/deephdc/DEEP-OC-generic-dev
     ```
 
-2. Build the container (default with GPU and Python3 support):
+2. Build the container (default is CPU and Python3 support):
 
     ```bash
     $ cd DEEP-OC-generic-dev
@@ -90,17 +94,17 @@ Docker container locally on your machine. You can inspect and modify the
 `Dockerfile` in order to check what is going on. For example, Dockerfile has three ARGs:
 
 * image: base image (default: tensorflow/tensorflow)
-* tag: to define tag for the Tensorflow Baseimage, e.g. '1.14.0-gpu-py3' (default)
+* tag: to define tag for the Tensorflow Baseimage, e.g. '1.14.0-py3' (default)
 * pyVer: to specify python version as 'python' (for python2) or 'python3' (for python3)
 
 e.g.
 
 ```bash
 $ cd DEEP-OC-generic-dev
-$ docker build -t deephdc/deep-oc-generic-dev:cpu-py3 --build-arg tag=1.14.0 --build-arg pyVer=python3 .
+$ docker build -t deephdc/deep-oc-generic-dev:tf1.14.0-cpu --build-arg tag=1.14.0-py3 --build-arg pyVer=python3 .
 ```
 
-builds `deephdc/deep-oc-generic-dev:tf-py3` with CPU version of Tensorflow 1.14.0 and python3.
+builds `deephdc/deep-oc-generic-dev:tf1.14.0-cpu` with CPU version of Tensorflow 1.14.0 and python3.
 
 
 ## Authenticating to Jupyter Notebook or Jupyterlab
