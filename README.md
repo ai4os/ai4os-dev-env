@@ -14,6 +14,7 @@ for the development of your application. Test it immediately and when ready, com
 
 The resulting Docker image has pre-installed:
 * Tensorflow 1.12 | 1.14.0 | 2.0.0
+* [cookiecutter](https://github.com/cookiecutter/cookiecutter)
 * git
 * curl
 * [deepaas](https://github.com/indigo-dc/DEEPaaS)
