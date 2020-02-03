@@ -3,8 +3,9 @@
 @Library(['github.com/indigo-dc/jenkins-pipeline-library@1.2.3']) _
 
 // define which TensorFlow versions to use
+// As from 01.2020 we STOP supporting python2 [!]
 def getTFVers(){
-    return ["1.12.0", "1.14.0", "2.0.0"]
+    return ["1.14.0", "1.15.0", "2.0.0"]
 }
 
 pipeline {
@@ -78,7 +79,7 @@ pipeline {
             }
         }
 
-        stage('Docker image building (TF 1.12.0 with python2, python3.6)') {
+        stage('Docker image building (custom TF 1.12.0 with python3.6)') {
             when {
                 anyOf {
                    branch 'master'
@@ -94,34 +95,24 @@ pipeline {
                     tf_vers = getTFVers()
                     n_vers = tf_vers.size()
 
-                    // For the case of TF1.12.0 we also build images with 
-                    // - python2
-                    // - custom images with Ubuntu 18.04 + python3.6
-                    tags_1120 = ['tf1.12.0-cpu-py2', 
-                                 'tf1.12.0-gpu-py2',
-                                 'tf1.12.0-cpu-py36',
+                    // For the case of TF1.12.0 we also build images with
+                    // custom images with Ubuntu 18.04 + python3.6
+
+                    tf_image_1120 = 'deephdc/tensorflow'
+
+                    tags_1120 = ['tf1.12.0-cpu-py36',
                                  'tf1.12.0-gpu-py36' ]
 
-                    tf_images_1120 = ['tensorflow/tensorflow',
-                                      'tensorflow/tensorflow',
-                                      'deephdc/tensorflow',
-                                      'deephdc/tensorflow']
-
-                    tf_tags_1120 = ['1.12.0', '1.12.0-gpu', 
-                                    '1.12.0-py36', '1.12.0-gpu-py36']
-
-                    pyVers_1120 = ['python', 'python', 'python3', 'python3']
+                    tf_tags_1120 = ['1.12.0-py36', '1.12.0-gpu-py36']
 
                     for(int i=0; i < tags_1120.size(); i++) {
                         tag_id = [tags_1120[i]]
-                        tf_image = tf_images_1120[i]
                         tf_tag = tf_tags_1120[i]
-                        py_ver = pyVers_1120[i]
                         id_1120 = DockerBuild(id,
                                               tag: tag_id,
-                                              build_args: ["image=${tf_image}",
+                                              build_args: ["image=${tf_image_1120}",
                                                            "tag=${tf_tag}",
-                                                           "pyVer=${py_ver}"])
+                                                           "pyVer=python3"])
                          DockerPush(id_1120)
 
                          // immediately remove local image

@@ -2,11 +2,14 @@
     "title": "Development Docker image",
     "summary": "This is a Docker image for developing new modules",
     "description": [
-        "This is a Docker image for developing new modules. It comes preinstalled with DEEPaaS, Jupyter Lab, Tensorflow, and a number of other tools (see [here](ttp://github.com/deephdc/DEEP-OC-generic-dev))",
+        "This is a Docker image for developing new modules. It comes preinstalled with DEEPaaS, Jupyter Lab, Tensorflow, and a number of other tools (see [here](http://github.com/deephdc/DEEP-OC-generic-dev))",
         "As you have access to the terminal of Jupyter Lab, you can develop and debug your application, add your preferred tools."
 	],
     "keywords": [
-        "development", "tensorflow", "docker", "jupyterlab"
+        "development",
+        "tensorflow",
+        "jupyterlab",
+        "api-v2"
     ],
     "license": "MIT",
     "date_creation": "2019-03-01",
@@ -21,8 +24,8 @@
     },
     "tosca": [
         {
-            "title": "Mesos (CPU)",
-            "url": "https://raw.githubusercontent.com/indigo-dc/tosca-templates/master/deep-oc/deep-oc-mesos-webdav.yml",
+            "title": "Marathon (CPU)",
+            "url": "https://raw.githubusercontent.com/indigo-dc/tosca-templates/master/deep-oc/deep-oc-marathon-webdav.yml",
             "inputs": [
                 "rclone_conf",
                 "rclone_url",
