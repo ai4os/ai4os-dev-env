@@ -99,7 +99,7 @@ ENV RCLONE_CONFIG /srv/.rclone/rclone.conf
 ENV USER root
 ENV HOME /root
 
-# INSTALL oneclient for ONEDATA
+# INSTALL oneclient for ONEDATA 19.02
 RUN curl -sS  http://get.onedata.org/oneclient-1902.sh | bash && \
     apt-get clean && \
     mkdir -p /mnt/onedata && \
@@ -110,7 +110,7 @@ RUN curl -sS  http://get.onedata.org/oneclient-1902.sh | bash && \
 # cookiecutter (tool to create projects from project templates)
 # DEEPaaS API  (a REST API for providing access to machine learning models)
 # FLAAT        (FLAsk support for handling Access Tokens)
-# JupyterLab
+# JupyterLab   (see https://jupyterlab.readthedocs.io )
 RUN pip install --no-cache-dir \
     cookiecutter \
     'deepaas>=1.0.1' \
@@ -128,9 +128,12 @@ ENV SHELL /bin/bash
 
 # EXPERIMENTAL: install deep-start script
 # N.B.: This repository also contains run_jupyter.sh
+# For compatibility, create symlink /srv/.jupyter/run_jupyter.sh
 RUN git clone https://github.com/deephdc/deep-start /srv/.deep-start && \
     ln -s /srv/.deep-start/deep-start.sh /usr/local/bin/deep-start && \
-    ln -s /srv/.deep-start/run_jupyter.sh /usr/local/bin/run_jupyter
+    ln -s /srv/.deep-start/run_jupyter.sh /usr/local/bin/run_jupyter && \
+    mkdir -p /srv/.jupyter && \
+    ln -s /srv/.deep-start/run_jupyter.sh /srv/.jupyter/run_jupyter.sh
 
 # Open DEEPaaS port
 EXPOSE 5000
