@@ -44,6 +44,7 @@ RUN DEBIAN_FRONTEND=noninteractive apt-get update && \
          wget \
          $pyVer-setuptools \
          $pyVer-pip \
+         $pyVer-dev \
          $pyVer-wheel && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/* && \
@@ -98,25 +99,38 @@ ENV RCLONE_CONFIG /srv/.rclone/rclone.conf
 ENV USER root
 ENV HOME /root
 
+# INSTALL oneclient for ONEDATA
+RUN curl -sS  http://get.onedata.org/oneclient-1902.sh | bash && \
+    apt-get clean && \
+    mkdir -p /mnt/onedata && \
+    rm -rf /var/lib/apt/lists/* && \
+    rm -rf /tmp/*
+
 # Install:
 # cookiecutter (tool to create projects from project templates)
 # DEEPaaS API  (a REST API for providing access to machine learning models)
 # FLAAT        (FLAsk support for handling Access Tokens)
+# JupyterLab
 RUN pip install --no-cache-dir \
     cookiecutter \
-    deepaas>=1.0.0 \
-    flaat && \
+    'deepaas>=1.0.1' \
+    flaat \
+    jupyterlab && \
     rm -rf /root/.cache/pip/* && \
     rm -rf /tmp/*
 
 # Disable FLAAT authentication by default
 ENV DISABLE_AUTHENTICATION_AND_ASSUME_AUTHENTICATED_USER yes
 
-# Install JupyterLab
-ENV JUPYTER_CONFIG_DIR /srv/.jupyter/
+# JupyterLab environment settings
+ENV JUPYTER_CONFIG_DIR /srv/.deep-start/
 ENV SHELL /bin/bash
-RUN pip install --no-cache-dir jupyterlab && \
-    git clone https://github.com/deephdc/deep-jupyter /srv/.jupyter
+
+# EXPERIMENTAL: install deep-start script
+# N.B.: This repository also contains run_jupyter.sh
+RUN git clone https://github.com/deephdc/deep-start /srv/.deep-start && \
+    ln -s /srv/.deep-start/deep-start.sh /usr/local/bin/deep-start && \
+    ln -s /srv/.deep-start/run_jupyter.sh /usr/local/bin/run_jupyter
 
 # Open DEEPaaS port
 EXPOSE 5000
@@ -128,4 +142,4 @@ EXPOSE 6006
 EXPOSE 8888
 
 # Run Jupyter Lab
-CMD ["/srv/.jupyter/run_jupyter.sh", "--allow-root"]
+CMD ["run_jupyter", "--allow-root"]
