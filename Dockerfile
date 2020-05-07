@@ -22,6 +22,9 @@ ARG pyVer=python3
 # orchent version
 ARG orchentVer=1.2.5
 
+# Oneclient version, has to match OneData Provider and Linux version
+ARG oneclient_ver=19.02.0.rc2-1~bionic
+
 # Install ubuntu updates and python related stuff
 # link python3 to python, pip3 to pip, if needed
 RUN DEBIAN_FRONTEND=noninteractive apt-get update && \
@@ -99,8 +102,8 @@ ENV RCLONE_CONFIG /srv/.rclone/rclone.conf
 ENV USER root
 ENV HOME /root
 
-# INSTALL oneclient for ONEDATA 19.02
-RUN curl -sS  http://get.onedata.org/oneclient-1902.sh | bash && \
+# INSTALL oneclient for ONEDATA
+RUN curl -sS  http://get.onedata.org/oneclient-1902.sh  | bash -s -- oneclient="$oneclient_ver" && \
     apt-get clean && \
     mkdir -p /mnt/onedata && \
     rm -rf /var/lib/apt/lists/* && \

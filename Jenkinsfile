@@ -8,6 +8,18 @@ def getTFVers(){
     return ["1.14.0", "1.15.0", "2.0.0"]
 }
 
+def getPyTorchTags(){
+    return ["1.2-cuda10.0-cudnn7-runtime", "1.4-cuda10.1-cudnn7-runtime"]
+}
+
+def getPyTorchVers(){
+    return ["1.2", "1.4"]
+}
+
+def getPyTorchOnedata(){
+    return ["19.02.0.rc2-1~xenial", "19.02.0.rc2-1~bionic"]
+}
+
 pipeline {
     agent {
         label 'docker-build'
@@ -39,6 +51,33 @@ pipeline {
                     // build different tags
                     id = "${env.dockerhub_repo}"
 
+                    // pyTorch
+                    pytorch_tags = getPyTorchTags()
+                    pytorch_vers = getPyTorchVers()
+                    pytorch_onedata = getPyTorchOnedata()
+                    p_vers = pytorch_vers.size()
+
+                    // CAREFUL! For-loop might fail in some Jenkins versions
+                    // Other options: 
+                    // https://stackoverflow.com/questions/37594635/why-an-each-loop-in-a-jenkinsfile-stops-at-first-iteration
+                    for(int j=0; j < p_vers; j++) {
+                        tag_id = ['pytorch'+pytorch_vers[j]]
+                        pytorch_tag = pytorch_tags[j]
+                        pytorch_oneclient_ver = pytorch_onedata[j]
+                        id_pytorch = DockerBuild(id,
+                                                 tag: tag_id,
+                                                 build_args: ["image=pytorch/pytorch",
+                                                              "tag=${pytorch_tag}",
+                                                              "pyVer=python3",
+                                                              "oneclient_ver=${pytorch_oneclient_ver}"])
+                        DockerPush(id_pytorch)
+
+                        // immediately remove local image
+                        id_this = id_pytorch[0]
+                        sh("docker rmi --force \$(docker images -q ${id_this})")
+                    }
+
+                    // TensorFlow
                     tf_vers = getTFVers()
                     n_vers = tf_vers.size()
 
@@ -52,6 +91,8 @@ pipeline {
                         tf_tags = [tf_vers[j]+'-py3',
                                    tf_vers[j]+'-gpu-py3']
 
+                        tf_oneclient_ver="19.02.0.rc2-1~bionic"
+
                         for(int i=0; i < tags.size(); i++) {
                             tag_id = [tags[i]]
                             if (j == (n_vers - 1) && tags[i].contains("-cpu")) {
@@ -61,7 +102,8 @@ pipeline {
                             id_docker = DockerBuild(id,
                                                     tag: tag_id,
                                                     build_args: ["tag=${tf_tag}",
-                                                                 "pyVer=python3"])
+                                                                 "pyVer=python3",
+                                                                 "oneclient_ver=${tf_oneclient_ver}"])
                             DockerPush(id_docker)
 
                             // immediately remove local image
