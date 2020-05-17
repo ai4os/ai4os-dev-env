@@ -1,5 +1,5 @@
 {
-    "title": "Development Docker image",
+    "title": "DEEP Development Environment",
     "summary": "This is a Docker image for developing new modules",
     "description": [
         "This is a Docker image for developing new modules. It comes preinstalled with DEEPaaS, Jupyter Lab, Tensorflow, and a number of other tools (see [here](http://github.com/deephdc/DEEP-OC-generic-dev))",
@@ -22,9 +22,23 @@
         "build_status_badge": "https://jenkins.indigo-datacloud.eu/buildStatus/icon?job=Pipeline-as-code/DEEP-OC-org/DEEP-OC-generic-dev/master",
         "build_status_url": "https://jenkins.indigo-datacloud.eu/job/Pipeline-as-code/job/DEEP-OC-org/job/DEEP-OC-generic-dev/job/master"
     },
+    "docker_tags": [
+        "latest",
+        "tf2.0.0-cpu",
+        "tf2.0.0-gpu",
+        "tf1.15.0-cpu",
+        "tf1.15.0-gpu",
+        "tf1.14.0-cpu",
+        "tf1.14.0-gpu",
+        "tf1.12.0-cpu-py36",
+        "tf1.12.0-gpu-py36",
+        "pytorch1.4",
+        "pytorch1.2",
+        "u18.04"
+    ],
     "tosca": [
         {
-            "title": "Marathon (CPU)",
+            "title": "Marathon",
             "url": "https://raw.githubusercontent.com/indigo-dc/tosca-templates/master/deep-oc/deep-oc-marathon-webdav.yml",
             "inputs": [
                 "rclone_conf",

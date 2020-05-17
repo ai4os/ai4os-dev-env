@@ -40,6 +40,7 @@ RUN DEBIAN_FRONTEND=noninteractive apt-get update && \
     DEBIAN_FRONTEND=noninteractive apt-get update && \
     apt-get install -y --no-install-recommends \
          git \
+         jq \
          mc \
          nano \
          openssh-client \
@@ -116,7 +117,7 @@ RUN curl -sS  http://get.onedata.org/oneclient-1902.sh  | bash -s -- oneclient="
 # JupyterLab   (see https://jupyterlab.readthedocs.io )
 RUN pip install --no-cache-dir \
     cookiecutter \
-    'deepaas>=1.0.1' \
+    'deepaas>=1.3.0' \
     flaat \
     jupyterlab && \
     rm -rf /root/.cache/pip/* && \
@@ -137,6 +138,10 @@ RUN git clone https://github.com/deephdc/deep-start /srv/.deep-start && \
     ln -s /srv/.deep-start/run_jupyter.sh /usr/local/bin/run_jupyter && \
     mkdir -p /srv/.jupyter && \
     ln -s /srv/.deep-start/run_jupyter.sh /srv/.jupyter/run_jupyter.sh
+
+COPY INFO.md /srv
+COPY lab/deep-workspace.json /srv/.deep-start/lab
+RUN jupyter lab workspaces import /srv/.deep-start/lab/deep-workspace.json
 
 # Open DEEPaaS port
 EXPOSE 5000
