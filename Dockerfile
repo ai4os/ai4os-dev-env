@@ -46,6 +46,7 @@ RUN DEBIAN_FRONTEND=noninteractive apt-get update && \
          openssh-client \
          oidc-agent \
          wget \
+         psmisc \
          $pyVer-setuptools \
          $pyVer-pip \
          $pyVer-dev \
