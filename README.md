@@ -4,7 +4,9 @@
 
 # DEEP-OC-generic-dev
 
-[![Build Status](https://jenkins.indigo-datacloud.eu/buildStatus/icon?job=Pipeline-as-code/DEEP-OC-org/DEEP-OC-generic-dev/master)](https://jenkins.indigo-datacloud.eu/job/Pipeline-as-code/job/DEEP-OC-org/job/DEEP-OC-generic-dev/job/master)
+**This branch is to maintain the code of the release-v1 of the DEEP Development Environment**
+
+[![Build Status](https://jenkins.indigo-datacloud.eu/buildStatus/icon?job=Pipeline-as-code/DEEP-OC-org/DEEP-OC-generic-dev/release-v1)](https://jenkins.indigo-datacloud.eu/job/Pipeline-as-code/job/DEEP-OC-org/job/DEEP-OC-generic-dev/job/release-v1)
 
 This is a container that exposes Jupyter notebook and Jupyter Lab together with the DEEP as a Service API component. There is **no application code** inside!
 
@@ -22,6 +24,7 @@ The resulting Docker image has pre-installed:
 * jupyter
 * jupyterlab
 * mc
+* nano
 * [oidc-agent](https://github.com/indigo-dc/oidc-agent)
 * openssh-client
 * python
