@@ -15,7 +15,7 @@ for the development of your application. Test it immediately and when ready, com
 
 
 The resulting Docker image has pre-installed:
-* Tensorflow 1.12 | 1.14.0 | 2.0.0
+* Tensorflow 1.12 | 1.14.0 | 2.0.0 OR PyTorch 1.2 | 1.4
 * [cookiecutter](https://github.com/cookiecutter/cookiecutter)
 * git
 * curl
