@@ -59,15 +59,13 @@ Comprehensive documentation on DEEP tools and components can be found in:
 * [DEEP-IAM](https://iam.deep-hybrid-datacloud.eu/login) : DEEP central authentication and authorisation 
 * [DEEP Open Catalog](https://marketplace.deep-hybrid-datacloud.eu/) : a curated repository of applications ready to be used or extended
 * [Training Dashboard](https://train.deep-hybrid-datacloud.eu/): Dashboard that allows users to interact with the modules hosted at the DEEP Open Catalog, as well as deploying external Docker images hosted in Dockerhub.
-* [DEEP as a Service](https://deepaas.deep-hybrid-datacloud.eu/) :  allows any user to automatically exploit any module from the browser or via the offered API (prediction only).
-* [Nextcloud storage](https://nc.deep-hybrid-datacloud.eu/) :  a sync&share solution to host and share data.
-* [OneData distributed solution](https://onezone.cloud.cnaf.infn.it/) : global data access solution for science.
+* [Nextcloud storage](https://data-deep.a.incd.pt/) :  a sync&share solution to host and share data.
 
 ## List of installed tools
 DEEP Development Environment uses as a base a Docker Image of either 
-* [TensorFlow](https://tensorflow.org) framework (1.14.0 | 1.15.0 | 2.0.0)
-* [PyTorch](https://pytorch.org/) (1.2 | 1.4)
-* or Ubuntu 18.04
+* [TensorFlow](https://tensorflow.org) framework (2.10.0 | 2.11.0)
+* [PyTorch](https://pytorch.org/) (1.12 | 1.13)
+* or Ubuntu 20.04 (Focal)
 
 It leverages 
 * [JupyterLab](https://jupyterlab.readthedocs.io/en/stable/index.html) web-based user interface for developing and debugging your code (hint: use **Shift+Right click** to copy/paste);
@@ -87,13 +85,14 @@ Python related packages:
 
 And a number of external tools to facilitate the development:
 * git
-* curl
+* curl : command line tool for transferring data with URL syntax
 * jq : lightweight and flexible command-line JSON processor
 * [mc](https://midnight-commander.org/) : Midnight Commander, a visual file manager
+* nano : a simple terminal-based text editor
 * [oneclient](https://onedata.org/docs/doc/using_onedata/oneclient.html) : a command-line based client for Onedata
 * openssh-client
 * [rclone](https://rclone.org) : a command line program to sync files and directories to and from cloud storages
-* wget
+* wget : a free utility for non-interactive download of files from the Web
 
 ## Acknowledgements
 

@@ -24,6 +24,10 @@
     },
     "docker_tags": [
         "latest",
+        "tf2.11.0-cpu",
+        "tf2.11.0-gpu",
+        "tf2.10.0-cpu",
+        "tf2.10.0-gpu",
         "tf2.0.0-cpu",
         "tf2.0.0-gpu",
         "tf1.15.0-cpu",
@@ -32,8 +36,11 @@
         "tf1.14.0-gpu",
         "tf1.12.0-cpu-py36",
         "tf1.12.0-gpu-py36",
+        "pytorch1.13",
+        "pytorch1.12",
         "pytorch1.4",
         "pytorch1.2",
+        "u20.04",
         "u18.04"
     ],
     "tosca": [

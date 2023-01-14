@@ -3,21 +3,20 @@
 @Library(['github.com/indigo-dc/jenkins-pipeline-library@1.2.3']) _
 
 // define which TensorFlow versions to use
-// As from 01.2020 we STOP supporting python2 [!]
 def getTFVers(){
-    return ["1.14.0", "1.15.0", "2.0.0"]
+    return ["2.12.0", "2.13.0"]
 }
 
 def getPyTorchTags(){
-    return ["1.2-cuda10.0-cudnn7-runtime", "1.4-cuda10.1-cudnn7-runtime"]
+    return ["1.12.0-cuda11.3-cudnn8-runtime", "1.13.0-cuda11.6-cudnn8-runtime"]
 }
 
 def getPyTorchVers(){
-    return ["1.2", "1.4"]
+    return ["1.12", "1.13"]
 }
 
 def getPyTorchOnedata(){
-    return ["19.02.0.rc2-1~xenial", "19.02.0.rc2-1~bionic"]
+    return ["20.02.19-1~focal", "20.02.19-1~focal"]
 }
 
 pipeline {
@@ -54,7 +53,6 @@ pipeline {
                     // pyTorch
                     pytorch_tags = getPyTorchTags()
                     pytorch_vers = getPyTorchVers()
-                    pytorch_onedata = getPyTorchOnedata()
                     p_vers = pytorch_vers.size()
 
                     // CAREFUL! For-loop might fail in some Jenkins versions
@@ -63,13 +61,10 @@ pipeline {
                     for(int j=0; j < p_vers; j++) {
                         tag_id = ['pytorch'+pytorch_vers[j]]
                         pytorch_tag = pytorch_tags[j]
-                        pytorch_oneclient_ver = pytorch_onedata[j]
                         id_pytorch = DockerBuild(id,
                                                  tag: tag_id,
                                                  build_args: ["image=pytorch/pytorch",
-                                                              "tag=${pytorch_tag}",
-                                                              "pyVer=python3",
-                                                              "oneclient_ver=${pytorch_oneclient_ver}"])
+                                                              "tag=${pytorch_tag}"])
                         DockerPush(id_pytorch)
 
                         // immediately remove local image
@@ -88,10 +83,8 @@ pipeline {
                         tags = ['tf'+tf_vers[j]+'-cpu', 
                                 'tf'+tf_vers[j]+'-gpu'] 
 
-                        tf_tags = [tf_vers[j]+'-py3',
-                                   tf_vers[j]+'-gpu-py3']
-
-                        tf_oneclient_ver="19.02.0.rc2-1~bionic"
+                        tf_tags = [tf_vers[j],
+                                   tf_vers[j]+'-gpu']
 
                         for(int i=0; i < tags.size(); i++) {
                             tag_id = [tags[i]]
@@ -101,9 +94,7 @@ pipeline {
                             tf_tag = tf_tags[i]
                             id_docker = DockerBuild(id,
                                                     tag: tag_id,
-                                                    build_args: ["tag=${tf_tag}",
-                                                                 "pyVer=python3",
-                                                                 "oneclient_ver=${tf_oneclient_ver}"])
+                                                    build_args: ["tag=${tf_tag}"])
                             DockerPush(id_docker)
 
                             // immediately remove local image
@@ -121,57 +112,7 @@ pipeline {
             }
         }
 
-        stage('Docker image building (custom TF 1.12.0 with python3.6)') {
-            when {
-                anyOf {
-                   branch 'master'
-                   buildingTag()
-               }
-            }
-            steps{
-                checkout scm
-                script {
-                    // build different tags
-                    id = "${env.dockerhub_repo}"
-
-                    tf_vers = getTFVers()
-                    n_vers = tf_vers.size()
-
-                    // For the case of TF1.12.0 we also build images with
-                    // custom images with Ubuntu 18.04 + python3.6
-
-                    tf_image_1120 = 'deephdc/tensorflow'
-
-                    tags_1120 = ['tf1.12.0-cpu-py36',
-                                 'tf1.12.0-gpu-py36' ]
-
-                    tf_tags_1120 = ['1.12.0-py36', '1.12.0-gpu-py36']
-
-                    for(int i=0; i < tags_1120.size(); i++) {
-                        tag_id = [tags_1120[i]]
-                        tf_tag = tf_tags_1120[i]
-                        id_1120 = DockerBuild(id,
-                                              tag: tag_id,
-                                              build_args: ["image=${tf_image_1120}",
-                                                           "tag=${tf_tag}",
-                                                           "pyVer=python3"])
-                         DockerPush(id_1120)
-
-                         // immediately remove local image
-                         id_this = id_1120[0]
-                         sh("docker rmi --force \$(docker images -q ${id_this})")
-                         //sh("docker rmi --force \$(docker images -q ${tf_image}:${tf_tag})")
-                    }
-               }
-            }
-            post {
-                failure {
-                   DockerClean()
-                }
-            }
-        }
-
-        stage('Docker image building (ubuntu 18.04)') {
+        stage('Docker image building (ubuntu 20.04)') {
             when {
                 anyOf {
                    branch 'master'
@@ -185,16 +126,15 @@ pipeline {
                     id = "${env.dockerhub_repo}"
 
                     // Finally, we put all DEEP components in 
-                    // ubuntu 18.04 image without deep learning framework
-                    id_u1804 = DockerBuild(id,
-                                           tag: ['u18.04'],
+                    // ubuntu 20.04 image without deep learning framework
+                    id_u2004 = DockerBuild(id,
+                                           tag: ['u20.04'],
                                            build_args: ["image=ubuntu",
-                                                        "tag=18.04",
-                                                        "pyVer=python3"])
-                    DockerPush(id_u1804)
+                                                        "tag=20.04"])
+                    DockerPush(id_u2004)
 
                     // immediately remove local image
-                    id_this = id_u1804[0]
+                    id_this = id_u2004[0]
                     sh("docker rmi --force \$(docker images -q ${id_this})")
                     //sh("docker rmi --force \$(docker images -q ubuntu:18.04)")
                 }
