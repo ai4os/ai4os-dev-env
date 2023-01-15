@@ -45,7 +45,7 @@ RUN DEBIAN_FRONTEND=noninteractive apt-get update && \
          python3-setuptools \
          python3-pip \
          python3-dev \
-         pyhton3-wheel && \
+         python3-wheel && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/* && \
     rm -rf /root/.cache/pip/* && \
@@ -64,11 +64,11 @@ WORKDIR /srv
 COPY oidc-agent/oidc-check.bashrc /root/
 
 # Install orchent, oidc-agent, and rclone
-RUN wget https://github.com/indigo-dc/orchent/releases/download/${orchentVer}/orchent_${orchentVer}_amd64.deb && \
+RUN wget https://github.com/indigo-dc/orchent/releases/download/v${orchentVer}/orchent_${orchentVer}_amd64.deb && \
     dpkg -i orchent_${orchentVer}_amd64.deb && \
     wget https://downloads.rclone.org/rclone-current-linux-amd64.deb && \
     dpkg -i rclone-current-linux-amd64.deb && \
-    apt install -f && \   
+    apt-get install -f && \   
     rm orchent_${orchentVer}_amd64.deb \
        rclone-current-linux-amd64.deb && \
     cat /root/oidc-check.bashrc >> /root/.bashrc && \

@@ -32,7 +32,7 @@ $ git config --global user.email "your_email_for_git_account@domain.zone"
 
 ## Start your project with DEEP Data Science template
 
-Create your new project using our [Data Science template](https://github.com/indigo-dc/cookiecutter-data-science) for easier integration with DEEP components ([DEEPaaS API](https://docs.deep-hybrid-datacloud.eu/projects/deepaas/en/latest/), Dockerfile, Jenkinsfiles etc):
+Create your new project using our [Data Science template](https://github.com/deephdc/cookiecutter-deep) for easier integration with DEEP components ([DEEPaaS API](https://docs.deep-hybrid-datacloud.eu/projects/deepaas/en/latest/), Dockerfile, Jenkinsfiles etc):
 
 ```bash
 $ cookiecutter https://github.com/indigo-dc/cookiecutter-data-science
@@ -41,7 +41,7 @@ $ cookiecutter https://github.com/indigo-dc/cookiecutter-data-science
 ## Access remote storages
 
 You can use 
-* [rclone](https://rclone.org) to sync with a remote cloud storage (e.g. [DEEP Nextcloud](https://nc.deep-hybrid-datacloud.eu/)), or 
+* [rclone](https://rclone.org) to sync with a remote cloud storage (e.g. [DEEP Nextcloud](https://data-deep.a.incd.pt/)), or 
 * [oneclient](https://onedata.org/docs/doc/using_onedata/oneclient.html) to access OneData distributed storage.
 
 
@@ -71,7 +71,7 @@ It leverages
 * [JupyterLab](https://jupyterlab.readthedocs.io/en/stable/index.html) web-based user interface for developing and debugging your code (hint: use **Shift+Right click** to copy/paste);
 
 Includes: 
-* [cookiecutter](https://cookiecutter.readthedocs.io/en/latest/) template tool to start or integrate your project with DEEP solutions profiting from [DEEP Data Science template](https://github.com/indigo-dc/cookiecutter-data-science):
+* [cookiecutter](https://cookiecutter.readthedocs.io/en/latest/) template tool to start or integrate your project with DEEP solutions profiting from [DEEP Data Science template](https://github.com/deephdc/cookiecutter-deep):
 
 Contains DEEP components:
 * [DEEP as a Service API](https://docs.deep-hybrid-datacloud.eu/projects/deepaas/en/latest/) is REST API that provids access to machine learning models;
