@@ -7,6 +7,10 @@ def getTFVers(){
     return ["2.12.0", "2.13.0"]
 }
 
+def getDefaultOneclient(){
+    return "20.02.19-1~focal"
+}
+
 def getPyTorchTags(){
     return ["1.12.0-cuda11.3-cudnn8-runtime", "1.13.0-cuda11.6-cudnn8-runtime"]
 }
@@ -15,8 +19,8 @@ def getPyTorchVers(){
     return ["1.12", "1.13"]
 }
 
-def getPyTorchOnedata(){
-    return ["20.02.19-1~focal", "20.02.19-1~focal"]
+def getPyTorchOneclient(){
+    return ["20.02.19-1~bionic", "20.02.19-1~bionic"]
 }
 
 pipeline {
@@ -51,26 +55,29 @@ pipeline {
                     id = "${env.dockerhub_repo}"
 
                     // pyTorch
-                    pytorch_tags = getPyTorchTags()
-                    pytorch_vers = getPyTorchVers()
-                    p_vers = pytorch_vers.size()
-
-                    // CAREFUL! For-loop might fail in some Jenkins versions
-                    // Other options: 
-                    // https://stackoverflow.com/questions/37594635/why-an-each-loop-in-a-jenkinsfile-stops-at-first-iteration
-                    for(int j=0; j < p_vers; j++) {
-                        tag_id = ['pytorch'+pytorch_vers[j]]
-                        pytorch_tag = pytorch_tags[j]
-                        id_pytorch = DockerBuild(id,
-                                                 tag: tag_id,
-                                                 build_args: ["image=pytorch/pytorch",
-                                                              "tag=${pytorch_tag}"])
-                        DockerPush(id_pytorch)
-
-                        // immediately remove local image
-                        id_this = id_pytorch[0]
-                        sh("docker rmi --force \$(docker images -q ${id_this})")
-                    }
+//                    pytorch_tags = getPyTorchTags()
+//                    pytorch_vers = getPyTorchVers()
+//                    pytorch_oneclient_vers = getPyTorchOneclient()
+//                    p_vers = pytorch_vers.size()
+//
+//                    // CAREFUL! For-loop might fail in some Jenkins versions
+//                    // Other options: 
+//                    // https://stackoverflow.com/questions/37594635/why-an-each-loop-in-a-jenkinsfile-stops-at-first-iteration
+//                    for(int j=0; j < p_vers; j++) {
+//                        tag_id = ['pytorch'+pytorch_vers[j]]
+//                        pytorch_tag = pytorch_tags[j]
+//                        oneclient_ver = pytorch_oneclient_vers[j]
+//                        id_pytorch = DockerBuild(id,
+//                                                 tag: tag_id,
+//                                                 build_args: ["image=pytorch/pytorch",
+//                                                              "tag=${pytorch_tag}",
+//                                                              "oneclient_ver=${oneclient_ver}"])
+//                        DockerPush(id_pytorch)
+//
+//                        // immediately remove local image
+//                        id_this = id_pytorch[0]
+//                        sh("docker rmi --force \$(docker images -q ${id_this})")
+//                    }
 
                     // TensorFlow
                     tf_vers = getTFVers()
@@ -86,6 +93,8 @@ pipeline {
                         tf_tags = [tf_vers[j],
                                    tf_vers[j]+'-gpu']
 
+                        tf_oneclient_ver = getDefaultOneclient()
+
                         for(int i=0; i < tags.size(); i++) {
                             tag_id = [tags[i]]
                             if (j == (n_vers - 1) && tags[i].contains("-cpu")) {
@@ -94,7 +103,8 @@ pipeline {
                             tf_tag = tf_tags[i]
                             id_docker = DockerBuild(id,
                                                     tag: tag_id,
-                                                    build_args: ["tag=${tf_tag}"])
+                                                    build_args: ["tag=${tf_tag}",
+                                                                 "oneclient_ver=${tf_oneclient_ver}"])
                             DockerPush(id_docker)
 
                             // immediately remove local image
@@ -127,10 +137,12 @@ pipeline {
 
                     // Finally, we put all DEEP components in 
                     // ubuntu 20.04 image without deep learning framework
+                    oneclient_ver = getDefaultOneclient()
                     id_u2004 = DockerBuild(id,
                                            tag: ['u20.04'],
                                            build_args: ["image=ubuntu",
-                                                        "tag=20.04"])
+                                                        "tag=20.04",
+                                                        "oneclient_ver=${oneclient_ver}"])
                     DockerPush(id_u2004)
 
                     // immediately remove local image

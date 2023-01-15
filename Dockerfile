@@ -94,7 +94,7 @@ ENV USER root
 ENV HOME /root
 
 # INSTALL oneclient for ONEDATA
-RUN curl -sS  http://get.onedata.org/oneclient-2002.sh  | bash -s -- oneclient="$oneclient_ver" && \
+RUN curl -sS  http://get.onedata.org/oneclient.sh  | bash -s -- oneclient="$oneclient_ver" && \
     apt-get clean && \
     mkdir -p /mnt/onedata && \
     rm -rf /var/lib/apt/lists/* && \
