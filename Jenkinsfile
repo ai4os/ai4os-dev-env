@@ -4,7 +4,7 @@
 
 // define which TensorFlow versions to use
 def getTFVers(){
-    return ["2.12.0", "2.13.0"]
+    return ["2.10.0", "2.11.0"]
 }
 
 def getDefaultOneclient(){
