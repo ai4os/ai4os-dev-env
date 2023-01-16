@@ -20,8 +20,7 @@ ARG orchentVer=1.2.9
 # Oneclient version, has to match OneData Provider and Linux version
 ARG oneclient_ver=20.02.19-1~focal
 
-# Install ubuntu updates and python related stuff
-# link python3 to python, pip3 to pip, if needed
+# Install ubuntu updates and python3 related stuff
 RUN DEBIAN_FRONTEND=noninteractive apt-get update && \
     apt-get install -y --no-install-recommends \
         gnupg \
@@ -50,8 +49,8 @@ RUN DEBIAN_FRONTEND=noninteractive apt-get update && \
     rm -rf /var/lib/apt/lists/* && \
     rm -rf /root/.cache/pip/* && \
     rm -rf /tmp/* && \
-    python --version && \
-    pip --version
+    python3 --version && \
+    pip3 --version
 
 
 # Set LANG environment
