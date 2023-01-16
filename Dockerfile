@@ -38,7 +38,7 @@ RUN DEBIAN_FRONTEND=noninteractive apt-get update && \
          mc \
          nano \
          openssh-client \
-         oidc-agent \
+         oidc-agent-cli \
          wget \
          psmisc \
          python3-setuptools \

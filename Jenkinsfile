@@ -55,29 +55,29 @@ pipeline {
                     id = "${env.dockerhub_repo}"
 
                     // pyTorch
-//                    pytorch_tags = getPyTorchTags()
-//                    pytorch_vers = getPyTorchVers()
-//                    pytorch_oneclient_vers = getPyTorchOneclient()
-//                    p_vers = pytorch_vers.size()
-//
-//                    // CAREFUL! For-loop might fail in some Jenkins versions
-//                    // Other options: 
-//                    // https://stackoverflow.com/questions/37594635/why-an-each-loop-in-a-jenkinsfile-stops-at-first-iteration
-//                    for(int j=0; j < p_vers; j++) {
-//                        tag_id = ['pytorch'+pytorch_vers[j]]
-//                        pytorch_tag = pytorch_tags[j]
-//                        oneclient_ver = pytorch_oneclient_vers[j]
-//                        id_pytorch = DockerBuild(id,
-//                                                 tag: tag_id,
-//                                                 build_args: ["image=pytorch/pytorch",
-//                                                              "tag=${pytorch_tag}",
-//                                                              "oneclient_ver=${oneclient_ver}"])
-//                        DockerPush(id_pytorch)
-//
-//                        // immediately remove local image
-//                        id_this = id_pytorch[0]
-//                        sh("docker rmi --force \$(docker images -q ${id_this})")
-//                    }
+                    pytorch_tags = getPyTorchTags()
+                    pytorch_vers = getPyTorchVers()
+                    pytorch_oneclient_vers = getPyTorchOneclient()
+                    p_vers = pytorch_vers.size()
+
+                    // CAREFUL! For-loop might fail in some Jenkins versions
+                    // Other options: 
+                    // https://stackoverflow.com/questions/37594635/why-an-each-loop-in-a-jenkinsfile-stops-at-first-iteration
+                    for(int j=0; j < p_vers; j++) {
+                        tag_id = ['pytorch'+pytorch_vers[j]]
+                        pytorch_tag = pytorch_tags[j]
+                        oneclient_ver = pytorch_oneclient_vers[j]
+                        id_pytorch = DockerBuild(id,
+                                                 tag: tag_id,
+                                                 build_args: ["image=pytorch/pytorch",
+                                                              "tag=${pytorch_tag}",
+                                                              "oneclient_ver=${oneclient_ver}"])
+                        DockerPush(id_pytorch)
+
+                        // immediately remove local image
+                        id_this = id_pytorch[0]
+                        sh("docker rmi --force \$(docker images -q ${id_this})")
+                    }
 
                     // TensorFlow
                     tf_vers = getTFVers()
