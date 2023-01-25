@@ -120,13 +120,10 @@ ENV JUPYTER_CONFIG_DIR /srv/.deep-start/
 ENV SHELL /bin/bash
 
 # Install deep-start script
-# N.B.: This repository also contains run_jupyter.sh
-# For compatibility, create symlink /srv/.jupyter/run_jupyter.sh
-RUN git clone https://github.com/deephdc/deep-start /srv/.deep-start && \
+# N.B.: This repository also contains run_jupyter.sh (GOING TO BE DEPRECATED!)
+RUN git clone --depth 1 https://github.com/deephdc/deep-start /srv/.deep-start && \
     ln -s /srv/.deep-start/deep-start.sh /usr/local/bin/deep-start && \
-    ln -s /srv/.deep-start/run_jupyter.sh /usr/local/bin/run_jupyter && \
-    mkdir -p /srv/.jupyter && \
-    ln -s /srv/.deep-start/run_jupyter.sh /srv/.jupyter/run_jupyter.sh
+    ln -s /srv/.deep-start/run_jupyter.sh /usr/local/bin/run_jupyter
 
 COPY INFO.md /srv
 COPY lab/deep-workspace.json /srv/.deep-start/lab
@@ -141,5 +138,5 @@ EXPOSE 6006
 # Open JupyterLab port
 EXPOSE 8888
 
-# Run Jupyter Lab
-CMD ["run_jupyter", "--allow-root"]
+# By default run Jupyter Lab
+CMD ["deep-start", "-j"]
