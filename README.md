@@ -13,21 +13,24 @@ for the development of your application. Test it immediately and when ready, com
 
 
 The resulting Docker image has pre-installed:
-* Tensorflow 1.12 | 1.14.0 | 2.0.0
+* Tensorflow or PyTorch or (just) Ubuntu
 * [cookiecutter](https://github.com/cookiecutter/cookiecutter)
 * git
 * curl
 * [deepaas](https://github.com/indigo-dc/DEEPaaS)
+* [deep-start](https://github.com/deephdc/deep-start)
 * [flaat](https://github.com/indigo-dc/flaat)
 * jupyter
 * jupyterlab
 * mc
+* nano
 * [oidc-agent](https://github.com/indigo-dc/oidc-agent)
 * openssh-client
-* python
-* pip
+* python3
+* pip3
 * rclone
 * wget
+
 
 ## Running the container
 
@@ -39,7 +42,7 @@ To run the Docker container directly from Docker Hub and start using jupyter not
 $ docker run -ti -p 5000:5000 -p 6006:6006 -p 8888:8888 deephdc/deep-oc-generic-dev
 ```
 
-This command will pull the Docker image from the Docker Hub.
+This command will pull the Docker image from the Docker Hub and start the default command `deep-start -j´, which starts Jupyter Lab.
 
 Then go either to http://127.0.0.1:8888/tree for jupyter notebook or to http://127.0.0.1:8888/lab for jupyterlab.
 
@@ -50,6 +53,12 @@ $ deepaas-run --listen-ip=0.0.0.0 --listen-port=5000
 ```
 
 direct your browser to http://127.0.0.1:5000
+
+Since Jan-2023, [deep-start](https://github.com/deephdc/deep-start) also allows to start VSCode ([code-server](https://github.com/coder/code-server)) via `deep-start -s´ :
+
+```bash
+$ docker run -ti -p 5000:5000 -p 6006:6006 -p 8888:8888 deephdc/deep-oc-generic-dev deep-start -s
+```
 
 If you need to mount some directories from your host into the container, please, use usual Docker way, e.g.
 

@@ -4,29 +4,38 @@ version: '2.3'
 # do not forget '--service-ports'!
 services:
     generic-cpu:
-      image: deephdc/deep-oc-generic-dev:tf-cpu
+      image: deephdc/deep-oc-generic-dev:latest
       ports:
         - 5000:5000
         - 6006:6006
         - 8888:8888
-      entrypoint: ["/run_jupyter.sh", "--allow-root"]
+      entrypoint: ["deep-start", "-j"]
 
-    generic-cpu-py2:
-      image: deephdc/deep-oc-generic-dev:tf-cpu-py2
+    generic-cpu-vscode:
+      image: deephdc/deep-oc-generic-dev:latest
       ports:
         - 5000:5000
         - 6006:6006
         - 8888:8888
-      entrypoint: ["/run_jupyter.sh", "--allow-root"]
+      entrypoint: ["deep-start", "-s"]
 
     generic-gpu:
-      image: deephdc/deep-oc-generic-dev
+      image: deephdc/deep-oc-generic-dev:latest-gpu
       runtime: nvidia
       ports:
         - 5000:5000
         - 6006:6006
         - 8888:8888
-      entrypoint: ["/run_jupyter.sh", "--allow-root"]
+      entrypoint: ["deep-start", "-j"]
+
+    generic-gpu-vscode:
+      image: deephdc/deep-oc-generic-dev:latest-gpu
+      runtime: nvidia
+      ports:
+        - 5000:5000
+        - 6006:6006
+        - 8888:8888
+      entrypoint: ["deep-start", "-s"]
 
     generic-cpu-rclone:
       extends:

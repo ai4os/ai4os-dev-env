@@ -97,8 +97,13 @@ pipeline {
 
                         for(int i=0; i < tags.size(); i++) {
                             tag_id = [tags[i]]
+                            // tag last cpu tag as "latest"
                             if (j == (n_vers - 1) && tags[i].contains("-cpu")) {
                                 tag_id = [tags[i], 'latest']
+                            }
+                            // tag last gpu tag as "latest-gpu"
+                            if (j == (n_vers - 1) && tags[i].contains("-gpu")) {
+                                tag_id = [tags[i], 'latest-gpu']
                             }
                             tf_tag = tf_tags[i]
                             id_docker = DockerBuild(id,
