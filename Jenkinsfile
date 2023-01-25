@@ -1,6 +1,6 @@
 #!/usr/bin/groovy
 
-@Library(['github.com/indigo-dc/jenkins-pipeline-library@1.4.0']) _
+@Library(['github.com/indigo-dc/jenkins-pipeline-library@1.2.3']) _
 
 // define which TensorFlow versions to use
 def getTFVers(){
