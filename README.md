@@ -1,15 +1,14 @@
 <div align="center">
-<img src="https://marketplace.deep-hybrid-datacloud.eu/images/logo-deep.png" alt="logo" width="300"/>
+<img src="https://ai4eosc.eu/wp-content/uploads/sites/10/2022/09/horizontal-transparent.png" alt="logo" width="300"/>
 </div>
 
-# DEEP-OC-generic-dev
+# DEEP-OC-generic-dev (AI4OSDev)
 
 [![Build Status](https://jenkins.indigo-datacloud.eu/buildStatus/icon?job=Pipeline-as-code/DEEP-OC-org/DEEP-OC-generic-dev/master)](https://jenkins.indigo-datacloud.eu/job/Pipeline-as-code/job/DEEP-OC-org/job/DEEP-OC-generic-dev/job/master)
 
-This is a container that exposes Jupyter notebook and Jupyter Lab together with the DEEP as a Service API component. There is **no application code** inside!
+This is a container that exposes Jupyter notebook and Jupyter Lab or VSCode together with the DEEP as a Service API component. There is **no application code** inside!
 
-You can either mount host volume with the code into the container, or as, there is git installed, run jupyterlab terminal (e.g. http://127.0.0.1:8888/lab) to pull your code and use either jupyter notebook or jupyter lab 
-for the development of your application. Test it immediately and when ready, commit your changes back to your repository.
+You can either mount host volume with the code into the container, or run jupyterlab terminal (e.g. http://127.0.0.1:8888/lab) to use git to pull your code and use either jupyter notebook or jupyter lab or vscode for the development of your application. Test it immediately and when ready, commit your changes back to your repository.
 
 
 The resulting Docker image has pre-installed:
@@ -20,8 +19,7 @@ The resulting Docker image has pre-installed:
 * [deepaas](https://github.com/indigo-dc/DEEPaaS)
 * [deep-start](https://github.com/deephdc/deep-start)
 * [flaat](https://github.com/indigo-dc/flaat)
-* jupyter
-* jupyterlab
+* jupyter, jupyterlab OR vscode ([code-server](https://github.com/coder/code-server))
 * mc
 * nano
 * [oidc-agent](https://github.com/indigo-dc/oidc-agent)
@@ -36,7 +34,7 @@ The resulting Docker image has pre-installed:
 
 ### Directly from Docker Hub
 
-To run the Docker container directly from Docker Hub and start using jupyter notebook or jupyterlab run the following command:
+To run the Docker container directly from Docker Hub and start using jupyter notebook / jupyterlab or vscode run the following command:
 
 ```bash
 $ docker run -ti -p 5000:5000 -p 6006:6006 -p 8888:8888 deephdc/deep-oc-generic-dev
@@ -49,7 +47,7 @@ Then go either to http://127.0.0.1:8888/tree for jupyter notebook or to http://1
 If you want to start DEEPaaS API service, go to the jupyterlab, i.e. http://127.0.0.1:8888/lab, open terminal, type:
 
 ```bash
-$ deepaas-run --listen-ip=0.0.0.0 --listen-port=5000
+$ deep-start
 ```
 
 direct your browser to http://127.0.0.1:5000
@@ -104,20 +102,19 @@ Docker container locally on your machine. You can inspect and modify the
 `Dockerfile` in order to check what is going on. For example, Dockerfile has three ARGs:
 
 * image: base image (default: tensorflow/tensorflow)
-* tag: to define tag for the Tensorflow Baseimage, e.g. '1.14.0-py3' (default)
-* pyVer: to specify python version as 'python' (for python2) or 'python3' (for python3)
+* tag: to define tag for the Tensorflow Baseimage, e.g. '2.10.0' (default)
 
 e.g.
 
 ```bash
 $ cd DEEP-OC-generic-dev
-$ docker build -t deephdc/deep-oc-generic-dev:tf1.14.0-cpu --build-arg tag=1.14.0-py3 --build-arg pyVer=python3 .
+$ docker build -t deephdc/deep-oc-generic-dev:tf2.10.0-cpu --build-arg tag=2.10.0 .
 ```
 
-builds `deephdc/deep-oc-generic-dev:tf1.14.0-cpu` with CPU version of Tensorflow 1.14.0 and python3.
+builds `deephdc/deep-oc-generic-dev:tf2.10.0-cpu` with CPU version of Tensorflow 2.10.0.
 
 
-## Authenticating to Jupyter Notebook or Jupyterlab
+## Authenticating to Jupyter Notebook or Jupyterlab or VSCode
 
 If you call http://127.0.0.1:8888/tree or http://127.0.0.1:8888/lab for the first time, you will get to "login" page. If you run the container locally, 
 you will see in the terminal where the container started printed token to access Jupyter Notebook or Jupyter Lab. 
@@ -126,7 +123,7 @@ You can also see logs of your running container by envoking ```$ docker logs con
 One other way is to specify the jupyter password at the time of container instantiation:
 
 ```bash
-$ docker run -ti -p 5000:5000 -p 6006:6006 -p 8888:8888 -e jupyterPASSWORD=the_pass_for_jupyter deephdc/deep-oc-generic-dev
+$ docker run -ti -p 5000:5000 -p 6006:6006 -p 8888:8888 -e idePASSWORD=the_pass_for_ide deephdc/deep-oc-generic-dev
 ```
 
-N.B. The quotes are treated as parts of the password. The password has to be more than 8 characters long.
+N.B. The quotes are treated as parts of the password. The password has to be more than 8 characters long!
