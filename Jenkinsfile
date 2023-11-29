@@ -34,7 +34,7 @@ pipeline {
             }
         }
 
-        stage('Docker image building (std)') {
+        stage('Docker image building (pytorch)') {
             when {
                 anyOf {
                    branch 'master'
@@ -68,6 +68,27 @@ pipeline {
                         id_this = id_pytorch[0]
                         sh("docker rmi --force \$(docker images -q ${id_this})")
                     }
+               }
+            }
+            post {
+                failure {
+                   DockerClean()
+                }
+            }
+        }
+
+        stage('Docker image building (tensorflow)') {
+            when {
+                anyOf {
+                   branch 'master'
+                   buildingTag()
+               }
+            }
+            steps{
+                checkout scm
+                script {
+                    // build different tags
+                    id = "${env.dockerhub_repo}"
 
                     // TensorFlow
                     tf_vers = getTFVers()

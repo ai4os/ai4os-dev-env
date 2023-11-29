@@ -3,7 +3,7 @@
 # tag - tag for Tensorflow Image (default: 2.10.0)
 # orchentVer - version of orchent (see https://github.com/indigo-dc/orchent/releases/)
 # If you need to change default values, during the build do:
-# docker build -t deephdc/deep-oc-generic-dev --build-arg tag=XX
+# docker build -t deephdc/deep-oc-generic-dev --build-arg tag=XX .
 
 ARG image=tensorflow/tensorflow
 ARG tag=2.10.0
@@ -18,6 +18,7 @@ LABEL maintainer='V.Kozlov (KIT)'
 ARG orchentVer=1.2.9
 
 # Install ubuntu updates and python3 related stuff
+# gcc is needed in Pytorch images because deepaas installation might break otherwise (see docs) (it is already installed in tensorflow images)
 RUN DEBIAN_FRONTEND=noninteractive apt-get update && \
     apt-get install -y --no-install-recommends \
         gnupg \
@@ -31,6 +32,7 @@ RUN DEBIAN_FRONTEND=noninteractive apt-get update && \
     DEBIAN_FRONTEND=noninteractive apt-get update && \
     apt-get install -y --no-install-recommends \
          git \
+         gcc \
          jq \
          mc \
          nano \
