@@ -7,10 +7,6 @@ def getTFVers(){
     return ["2.9.3", "2.10.0", "2.11.0", "2.12.0", "2.13.0"]
 }
 
-def getDefaultOneclient(){
-    return "20.02.19-1~focal"
-}
-
 def getPyTorchTags(){
     return ["1.11.0-cuda11.3-cudnn8-runtime", "1.12.0-cuda11.3-cudnn8-runtime", "1.13.0-cuda11.6-cudnn8-runtime", "2.0.0-cuda11.7-cudnn8-runtime", "2.1.0-cuda11.8-cudnn8-runtime"]
 }
@@ -19,9 +15,6 @@ def getPyTorchVers(){
     return ["1.11", "1.12", "1.13", "2.0", "2.1"]
 }
 
-def getPyTorchOneclient(){
-    return ["20.02.19-1~bionic", "20.02.19-1~bionic", "20.02.19-1~bionic", "20.02.19-1~focal", "20.02.19-1~focal"]
-}
 
 pipeline {
     agent {
@@ -70,8 +63,7 @@ pipeline {
                         id_pytorch = DockerBuild(id,
                                                  tag: tag_id,
                                                  build_args: ["image=pytorch/pytorch",
-                                                              "tag=${pytorch_tag}",
-                                                              "oneclient_ver=${oneclient_ver}"])
+                                                              "tag=${pytorch_tag}"])
                         DockerPush(id_pytorch)
 
                         // immediately remove local image
@@ -93,8 +85,6 @@ pipeline {
                         tf_tags = [tf_vers[j],
                                    tf_vers[j]+'-gpu']
 
-                        tf_oneclient_ver = getDefaultOneclient()
-
                         for(int i=0; i < tags.size(); i++) {
                             tag_id = [tags[i]]
                             // tag last cpu tag as "latest"
@@ -108,8 +98,8 @@ pipeline {
                             tf_tag = tf_tags[i]
                             id_docker = DockerBuild(id,
                                                     tag: tag_id,
-                                                    build_args: ["tag=${tf_tag}",
-                                                                 "oneclient_ver=${tf_oneclient_ver}"])
+                                                    build_args: ["image=tensorflow/tensorflow",
+                                                                 "tag=${tf_tag}"])
                             DockerPush(id_docker)
 
                             // immediately remove local image
@@ -127,7 +117,7 @@ pipeline {
             }
         }
 
-        stage('Docker image building (ubuntu 20.04)') {
+        stage('Docker image building (ubuntu)') {
             when {
                 anyOf {
                    branch 'master'
@@ -140,18 +130,24 @@ pipeline {
                     // build different tags
                     id = "${env.dockerhub_repo}"
 
-                    // Finally, we put all DEEP components in 
+                    // Finally, we put all AI4OS components in 
                     // ubuntu 20.04 image without deep learning framework
-                    oneclient_ver = getDefaultOneclient()
                     id_u2004 = DockerBuild(id,
                                            tag: ['u20.04'],
                                            build_args: ["image=ubuntu",
-                                                        "tag=20.04",
-                                                        "oneclient_ver=${oneclient_ver}"])
+                                                        "tag=20.04"])
                     DockerPush(id_u2004)
+
+                    id_u2204 = DockerBuild(id,
+                                           tag: ['u22.04'],
+                                           build_args: ["image=ubuntu",
+                                                        "tag=22.04"])
+                    DockerPush(id_u2204)
 
                     // immediately remove local image
                     id_this = id_u2004[0]
+                    sh("docker rmi --force \$(docker images -q ${id_this})")
+                    id_this = id_u2204[0]
                     sh("docker rmi --force \$(docker images -q ${id_this})")
                     //sh("docker rmi --force \$(docker images -q ubuntu:18.04)")
                 }
@@ -163,19 +159,5 @@ pipeline {
             }
         }
 
-        stage("Render metadata on the marketplace") {
-            when {
-                allOf {
-                    branch 'master'
-                    changeset 'metadata.json'
-                }
-            }
-            steps {
-                script {
-                    def job_result = JenkinsBuildJob("Pipeline-as-code/deephdc.github.io/pelican")
-                    job_result_url = job_result.absoluteUrl
-                }
-            }
-        }
     }
 }

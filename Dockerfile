@@ -7,7 +7,7 @@
 
 ARG image=tensorflow/tensorflow
 ARG tag=2.10.0
-# Base image, e.g. tensorflow/tensorflow:1.7.0
+# Base image, e.g. tensorflow/tensorflow:2.10.0
 FROM ${image}:${tag}
 
 LABEL maintainer='V.Kozlov (KIT)'
@@ -16,9 +16,6 @@ LABEL maintainer='V.Kozlov (KIT)'
 
 # orchent version
 ARG orchentVer=1.2.9
-
-# Oneclient version, has to match OneData Provider and Linux version
-ARG oneclient_ver=20.02.19-1~focal
 
 # Install ubuntu updates and python3 related stuff
 RUN DEBIAN_FRONTEND=noninteractive apt-get update && \
@@ -61,8 +58,9 @@ WORKDIR /srv
 
 # bashrc entries for oidc-agent
 COPY oidc-agent/oidc-check.bashrc /root/
+RUN cat /root/oidc-check.bashrc >> /root/.bashrc && mkdir /srv/.oidc-agent
 
-# Install orchent, oidc-agent, and rclone
+# Install orchent and rclone
 RUN wget https://github.com/indigo-dc/orchent/releases/download/v${orchentVer}/orchent_${orchentVer}_amd64.deb && \
     dpkg -i orchent_${orchentVer}_amd64.deb && \
     wget https://downloads.rclone.org/rclone-current-linux-amd64.deb && \
@@ -70,8 +68,6 @@ RUN wget https://github.com/indigo-dc/orchent/releases/download/v${orchentVer}/o
     apt-get install -f && \   
     rm orchent_${orchentVer}_amd64.deb \
        rclone-current-linux-amd64.deb && \
-    cat /root/oidc-check.bashrc >> /root/.bashrc && \
-    mkdir /srv/.oidc-agent && \
     mkdir /srv/.rclone/ && touch /srv/.rclone/rclone.conf && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/* && \
@@ -93,7 +89,9 @@ ENV USER root
 ENV HOME /root
 
 # INSTALL oneclient for ONEDATA
-RUN curl -sS  http://get.onedata.org/oneclient.sh  | bash -s -- oneclient="$oneclient_ver" && \
+# Usually oneclient version has to match OneData Provider and Linux version
+# here we let oneclient.sh install script to decide
+RUN curl -sS  http://get.onedata.org/oneclient.sh | bash && \
     apt-get clean && \
     mkdir -p /mnt/onedata && \
     rm -rf /var/lib/apt/lists/* && \
