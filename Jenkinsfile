@@ -50,7 +50,6 @@ pipeline {
                     // pyTorch
                     pytorch_tags = getPyTorchTags()
                     pytorch_vers = getPyTorchVers()
-                    pytorch_oneclient_vers = getPyTorchOneclient()
                     p_vers = pytorch_vers.size()
 
                     // CAREFUL! For-loop might fail in some Jenkins versions
@@ -59,7 +58,6 @@ pipeline {
                     for(int j=0; j < p_vers; j++) {
                         tag_id = ['pytorch'+pytorch_vers[j]]
                         pytorch_tag = pytorch_tags[j]
-                        oneclient_ver = pytorch_oneclient_vers[j]
                         id_pytorch = DockerBuild(id,
                                                  tag: tag_id,
                                                  build_args: ["image=pytorch/pytorch",
