@@ -4,7 +4,7 @@
 
 // define which TensorFlow versions to use
 def getTFVers(){
-    return ["2.9.3", "2.10.0", "2.11.0"]
+    return ["2.9.3", "2.10.0", "2.11.0", "2.12.0", "2.13.0"]
 }
 
 def getDefaultOneclient(){
@@ -12,15 +12,15 @@ def getDefaultOneclient(){
 }
 
 def getPyTorchTags(){
-    return ["1.11.0-cuda11.3-cudnn8-runtime", "1.12.0-cuda11.3-cudnn8-runtime", "1.13.0-cuda11.6-cudnn8-runtime"]
+    return ["1.11.0-cuda11.3-cudnn8-runtime", "1.12.0-cuda11.3-cudnn8-runtime", "1.13.0-cuda11.6-cudnn8-runtime", "2.0.0-cuda11.7-cudnn8-runtime", "2.1.0-cuda11.8-cudnn8-runtime"]
 }
 
 def getPyTorchVers(){
-    return ["1.11", "1.12", "1.13"]
+    return ["1.11", "1.12", "1.13", "2.0", "2.1"]
 }
 
 def getPyTorchOneclient(){
-    return ["20.02.19-1~bionic", "20.02.19-1~bionic", "20.02.19-1~bionic"]
+    return ["20.02.19-1~bionic", "20.02.19-1~bionic", "20.02.19-1~bionic", "20.02.19-1~focal", "20.02.19-1~focal"]
 }
 
 pipeline {
