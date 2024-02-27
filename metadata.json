@@ -1,14 +1,16 @@
 {
-    "title": "DEEP Development Environment",
+    "title": "AI4OS Development Environment",
     "summary": "This is a Docker image for developing new modules",
     "description": [
-        "This is a Docker image for developing new modules. It comes preinstalled with DEEPaaS, Jupyter Lab, Tensorflow, and a number of other tools (see [here](http://github.com/deephdc/DEEP-OC-generic-dev))",
-        "As you have access to the terminal of Jupyter Lab, you can develop and debug your application, add your preferred tools."
+        "This is a Docker image for developing new modules. It comes preinstalled with DEEPaaS, JupyterLab or VSCode, Tensorflow or PyTorch, and a number of other tools (see [here](http://github.com/deephdc/DEEP-OC-generic-dev))",
+        "As you have access to the terminal of JupyterLab or VSCode, you can develop and debug your application, add your preferred tools."
 	],
     "keywords": [
         "development",
         "tensorflow",
+        "pytorch",
         "jupyterlab",
+        "vscode",
         "api-v2"
     ],
     "license": "MIT",
@@ -24,6 +26,12 @@
     },
     "docker_tags": [
         "latest",
+        "tf2.11.0-cpu",
+        "tf2.11.0-gpu",
+        "tf2.10.0-cpu",
+        "tf2.10.0-gpu",
+        "tf2.9.3-cpu",
+        "tf2.9.3-gpu",
         "tf2.0.0-cpu",
         "tf2.0.0-gpu",
         "tf1.15.0-cpu",
@@ -32,8 +40,12 @@
         "tf1.14.0-gpu",
         "tf1.12.0-cpu-py36",
         "tf1.12.0-gpu-py36",
+        "pytorch1.13",
+        "pytorch1.12",
+        "pytorch1.11",
         "pytorch1.4",
         "pytorch1.2",
+        "u20.04",
         "u18.04"
     ],
     "tosca": [
