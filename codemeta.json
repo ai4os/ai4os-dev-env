@@ -2,8 +2,8 @@
     "@context": "https://doi.org/10.5063/schema/codemeta-2.0",
     "@type": "SoftwareSourceCode",
     "license": "https://spdx.org/licenses/MIT",
-    "codeRepository": "https://github.com/deephdc/DEEP-OC-generic-dev",
-    "issueTracker": "https://github.com/deephdc/DEEP-OC-generic-dev/issues",
+    "codeRepository": "https://github.com/ai4os-hub/ai4os-dev-env",
+    "issueTracker": "https://github.com/ai4os-hub/ai4os-dev-env/issues",
     "name": "deep-oc-generic-dev",
     "description": "This is a container that exposes Jupyter notebook and Jupyter Lab or VSCode together with the DEEP as a Service API component. ",
     "keywords": [

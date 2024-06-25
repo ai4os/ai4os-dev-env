@@ -4,7 +4,7 @@ version: '2.3'
 # do not forget '--service-ports'!
 services:
     generic-cpu:
-      image: deephdc/deep-oc-generic-dev:latest
+      image: ai4oshub/ai4os-dev-env:latest
       ports:
         - 5000:5000
         - 6006:6006
@@ -12,7 +12,7 @@ services:
       entrypoint: ["deep-start", "-j"]
 
     generic-cpu-vscode:
-      image: deephdc/deep-oc-generic-dev:latest
+      image: ai4oshub/ai4os-dev-env:latest
       ports:
         - 5000:5000
         - 6006:6006
@@ -20,7 +20,7 @@ services:
       entrypoint: ["deep-start", "-s"]
 
     generic-gpu:
-      image: deephdc/deep-oc-generic-dev:latest-gpu
+      image: ai4oshub/ai4os-dev-env:latest-gpu
       runtime: nvidia
       ports:
         - 5000:5000
@@ -29,7 +29,7 @@ services:
       entrypoint: ["deep-start", "-j"]
 
     generic-gpu-vscode:
-      image: deephdc/deep-oc-generic-dev:latest-gpu
+      image: ai4oshub/ai4os-dev-env:latest-gpu
       runtime: nvidia
       ports:
         - 5000:5000

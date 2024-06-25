@@ -2,9 +2,9 @@
 <img src="https://ai4eosc.eu/wp-content/uploads/sites/10/2022/09/horizontal-transparent.png" alt="logo" width="300"/>
 </div>
 
-# DEEP-OC-generic-dev (AI4OSDev)
+# AI4OS Development Environment (AI4OSDev)
 
-[![Build Status](https://jenkins.indigo-datacloud.eu/buildStatus/icon?job=Pipeline-as-code/DEEP-OC-org/DEEP-OC-generic-dev/master)](https://jenkins.indigo-datacloud.eu/job/Pipeline-as-code/job/DEEP-OC-org/job/DEEP-OC-generic-dev/job/master)
+[![Build Status](https://jenkins.services.ai4os.eu/buildStatus/icon?job=AI4OS-hub/ai4os-dev-env/master)](https://jenkins.services.ai4os.eu/job/AI4OS-hub/job/ai4os-dev-env/job/master)
 [![Contributor Covenant](https://img.shields.io/badge/Contributor%20Covenant-1.4-4baaaa.svg)](CODE_OF_CONDUCT.md)
 
 This is a container that exposes Jupyter notebook and Jupyter Lab or VSCode together with the DEEP as a Service API component. There is **no application code** inside!
@@ -17,8 +17,8 @@ The resulting Docker image has pre-installed:
 * [cookiecutter](https://github.com/cookiecutter/cookiecutter)
 * git
 * curl
-* [deepaas](https://github.com/indigo-dc/DEEPaaS)
-* [deep-start](https://github.com/deephdc/deep-start)
+* [deepaas](https://github.com/ai4os/DEEPaaS)
+* [deep-start](https://github.com/ai4os/deep-start)
 * [flaat](https://github.com/indigo-dc/flaat)
 * jupyter, jupyterlab OR vscode ([code-server](https://github.com/coder/code-server))
 * mc
@@ -53,16 +53,16 @@ $ deep-start
 
 direct your browser to http://127.0.0.1:5000
 
-Since Jan-2023, [deep-start](https://github.com/deephdc/deep-start) also allows to start VSCode ([code-server](https://github.com/coder/code-server)) via `deep-start -s´ :
+Since Jan-2023, [deep-start](https://github.com/ai4os/deep-start) also allows to start VSCode ([code-server](https://github.com/coder/code-server)) via `deep-start -s´ :
 
 ```bash
-$ docker run -ti -p 5000:5000 -p 6006:6006 -p 8888:8888 deephdc/deep-oc-generic-dev deep-start -s
+$ docker run -ti -p 5000:5000 -p 6006:6006 -p 8888:8888 ai4oshub/ai4os-dev-env deep-start -s
 ```
 
 If you need to mount some directories from your host into the container, please, use usual Docker way, e.g.
 
 ```bash
-$ docker run -ti -p 5000:5000 -p 6006:6006 -p 8888:8888 -v $HOME/data:/srv/app/data deephdc/deep-oc-generic-dev
+$ docker run -ti -p 5000:5000 -p 6006:6006 -p 8888:8888 -v $HOME/data:/srv/app/data ai4oshub/ai4os-dev-env
 ```
 
 mounts your host directory `$HOME/data` into container's path `/srv/app/data`.
@@ -85,17 +85,17 @@ to modify the `Dockerfile` for instance) follow the following instructions:
 
 Building the container:
 
-1. Get the `DEEP-OC-generic-dev` repository:
+1. Get the `ai4os-dev-env` repository:
 
     ```bash
-    $ git clone https://github.com/deephdc/DEEP-OC-generic-dev
+    $ git clone https://github.com/ai4os-hub/ai4os-dev-env
     ```
 
 2. Build the container (default is CPU and Python3 support):
 
     ```bash
-    $ cd DEEP-OC-generic-dev
-    $ docker build -t deephdc/deep-oc-generic-dev .
+    $ cd ai4os-dev-env
+    $ docker build -t ai4oshub/ai4os-dev-env .
     ```
 
 These two steps will download the repository from GitHub and will build the
@@ -103,16 +103,16 @@ Docker container locally on your machine. You can inspect and modify the
 `Dockerfile` in order to check what is going on. For example, Dockerfile has three ARGs:
 
 * image: base image (default: tensorflow/tensorflow)
-* tag: to define tag for the Tensorflow Baseimage, e.g. '2.10.0' (default)
+* tag: to define tag for the Tensorflow Base image, e.g. '2.10.0' (default)
 
 e.g.
 
 ```bash
-$ cd DEEP-OC-generic-dev
-$ docker build -t deephdc/deep-oc-generic-dev:tf2.10.0-cpu --build-arg tag=2.10.0 .
+$ cd ai4os-dev-env
+$ docker build -t ai4oshub/ai4os-dev-env:tf2.10.0-cpu --build-arg tag=2.10.0 .
 ```
 
-builds `deephdc/deep-oc-generic-dev:tf2.10.0-cpu` with CPU version of Tensorflow 2.10.0.
+builds `ai4oshub/ai4os-dev-env:tf2.10.0-cpu` with CPU version of Tensorflow 2.10.0.
 
 
 ## Authenticating to Jupyter Notebook or Jupyterlab or VSCode
@@ -124,7 +124,7 @@ You can also see logs of your running container by envoking ```$ docker logs con
 One other way is to specify the jupyter password at the time of container instantiation:
 
 ```bash
-$ docker run -ti -p 5000:5000 -p 6006:6006 -p 8888:8888 -e idePASSWORD=the_pass_for_ide deephdc/deep-oc-generic-dev
+$ docker run -ti -p 5000:5000 -p 6006:6006 -p 8888:8888 -e idePASSWORD=the_pass_for_ide ai4oshub/ai4os-dev-env
 ```
 
 N.B. The quotes are treated as parts of the password. The password has to be more than 8 characters long!

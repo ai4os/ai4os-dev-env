@@ -22,7 +22,7 @@ pipeline {
     }
 
     environment {
-        dockerhub_repo = "deephdc/deep-oc-generic-dev"
+        dockerhub_repo = "ai4oshub/ai4os-dev-env"
     }
 
     stages {

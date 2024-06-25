@@ -2,7 +2,7 @@
 # Visit https://bit.ly/cffinit to generate yours today!
 
 cff-version: 1.2.0
-title: deep-oc-generic-dev
+title: ai4os-dev-env
 message: >-
   This is a container that exposes Jupyter notebook and
   Jupyter Lab or VSCode together with the DEEP as a Service
@@ -17,7 +17,7 @@ authors:
     family-names: Orviz
   - given-names: Valentin
     family-names: Valentin
-repository-code: 'https://github.com/deephdc/DEEP-OC-generic-dev'
+repository-code: 'https://github.com/ai4os-hub/ai4os-dev-env'
 keywords:
   - docker
   - development environment

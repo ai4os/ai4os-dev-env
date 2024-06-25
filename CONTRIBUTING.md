@@ -8,7 +8,7 @@ Please note we have a [code of conduct](CODE_OF_CONDUCT.md), please follow it in
 
 
 ## Reporting bugs
-Report bugs at https://github.com/deephdc/DEEP-OC-generic-dev/issues
+Report bugs at https://github.com/ai4os-hub/ai4os-dev-env/issues
 
 If you are reporting a bug, please include:
 
@@ -22,7 +22,7 @@ If you are reporting a bug, please include:
 ### Submit Feedback
 The best way to send feedback is to file an issue at the follwing URL:
 
-https://github.com/deephdc/DEEP-OC-generic-dev/issues
+https://github.com/ai4os-hub/ai4os-dev-env/issues
 
 If you are proposing a feature:
 

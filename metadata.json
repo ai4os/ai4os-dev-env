@@ -16,13 +16,13 @@
     "license": "MIT",
     "date_creation": "2019-03-01",
     "sources": {
-		"dockerfile_repo": "https://github.com/deephdc/DEEP-OC-generic-dev",
-		"docker_registry_repo": "deephdc/deep-oc-generic-dev",
-		"code": "http://github.com/deephdc/DEEP-OC-generic-dev"
+		"dockerfile_repo": "https://github.dev/ai4os-hub/ai4os-dev-env",
+		"docker_registry_repo": "ai4oshub/ai4os-dev-env",
+		"code": "https://github.dev/ai4os-hub/ai4os-dev-env"
 	},
     "continuous_integration": {
-        "build_status_badge": "https://jenkins.indigo-datacloud.eu/buildStatus/icon?job=Pipeline-as-code/DEEP-OC-org/DEEP-OC-generic-dev/master",
-        "build_status_url": "https://jenkins.indigo-datacloud.eu/job/Pipeline-as-code/job/DEEP-OC-org/job/DEEP-OC-generic-dev/job/master"
+        "build_status_badge": "https://jenkins.services.ai4os.eu/buildStatus/icon?job=AI4OS-hub/ai4os-dev-env/master",
+        "build_status_url": "https://jenkins.services.ai4os.eu/job/AI4OS-hub/job/ai4os-dev-env/job/master"
     },
     "docker_tags": [
         "latest",
