@@ -15,14 +15,6 @@ def getPyTorchVers(){
     return ["1.11", "1.12", "1.13", "2.0", "2.1"]
 }
 
-def push_docker_image(List image_ids) {
-    docker.withRegistry(env.AI4OS_REGISTRY, credentials('AIOS-registry-credentials')) {
-        image_ids.each {
-            docker.image(it).push()
-        }
-    }
-}
-
 pipeline {
     agent {
         label 'docker-build'
@@ -62,7 +54,11 @@ pipeline {
                                                  tag: tag_id,
                                                  build_args: ["image=pytorch/pytorch",
                                                               "tag=${pytorch_tag}"])
-                        push_docker_image([id_pytorch])
+
+                        docker.withRegistry(env.AI4OS_REGISTRY, 
+                                            credentials('AIOS-registry-credentials')) {
+                            docker.image(id_pytorch).push()
+                        }
 
                         // immediately remove local image
                         id_this = id_pytorch[0]
@@ -119,7 +115,11 @@ pipeline {
                                                     tag: tag_id,
                                                     build_args: ["image=tensorflow/tensorflow",
                                                                  "tag=${tf_tag}"])
-                            push_docker_image([id_docker])
+
+                            docker.withRegistry(env.AI4OS_REGISTRY,
+                                                credentials('AIOS-registry-credentials')) {
+                                docker.image(id_docker).push()
+                            }
 
                             // immediately remove local image
                             id_this = id_docker[0]
