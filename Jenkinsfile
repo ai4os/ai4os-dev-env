@@ -15,6 +15,13 @@ def getPyTorchVers(){
     return ["1.11", "1.12", "1.13", "2.0", "2.1"]
 }
 
+def push_docker_image(List image_ids) {
+    docker.withRegistry(env.AI4OS_REGISTRY, credentials('AIOS-registry-credentials')) {
+        image_ids.each {
+            docker.image(it).push()
+        }
+    }
+}
 
 pipeline {
     agent {
@@ -55,7 +62,7 @@ pipeline {
                                                  tag: tag_id,
                                                  build_args: ["image=pytorch/pytorch",
                                                               "tag=${pytorch_tag}"])
-                        DockerPush(id_pytorch)
+                        push_docker_image([id_pytorch])
 
                         // immediately remove local image
                         id_this = id_pytorch[0]
@@ -112,7 +119,7 @@ pipeline {
                                                     tag: tag_id,
                                                     build_args: ["image=tensorflow/tensorflow",
                                                                  "tag=${tf_tag}"])
-                            DockerPush(id_docker)
+                            push_docker_image([id_docker])
 
                             // immediately remove local image
                             id_this = id_docker[0]
@@ -148,13 +155,13 @@ pipeline {
                                            tag: ['u20.04'],
                                            build_args: ["image=ubuntu",
                                                         "tag=20.04"])
-                    DockerPush(id_u2004)
+                    push_docker_image([id_u2004])
 
                     id_u2204 = DockerBuild(id,
                                            tag: ['u22.04'],
                                            build_args: ["image=ubuntu",
                                                         "tag=22.04"])
-                    DockerPush(id_u2204)
+                    push_docker_image([id_u2204])
 
                     // immediately remove local image
                     id_this = id_u2004[0]
