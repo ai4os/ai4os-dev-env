@@ -1,14 +1,34 @@
 #!/usr/bin/groovy
 
-@Library(['github.com/indigo-dc/jenkins-pipeline-library@1.2.3']) _
+//@Library(['github.com/indigo-dc/jenkins-pipeline-library@1.2.3']) _
 
+// function to build a docker image
+def docker_build(image, base_image, base_tag) {
+    docker.build(image,
+                "--no-cache --force-rm --build-arg image=${base_image} --build-arg tag=${base_tag} .")
+
+}
+// function to push image to registry
 def docker_push(id_this) {
-    println("[DEBUG] ${docker_registry}")
-    println("[DEBUG] ${docker_repository}")
     docker.withRegistry(docker_registry, 
         docker_registry_credentials) {
         id_this.push()
     }
+}
+
+def docker_clean() {
+    def dangling_images = sh(
+		returnStdout: true,
+		script: "docker images -f 'dangling=true' -q"
+	)
+    if (dangling_images) {
+        sh(script: "docker rmi --force $dangling_images")
+    }
+}
+
+// define which Ubuntu versions to use
+def getUbuntuVers(){
+    return ["20.04", "22.04"]
 }
 
 // define which TensorFlow versions to use
@@ -31,10 +51,6 @@ pipeline {
         label 'docker-build'
     }
 
-    environment {
-        docker_image_name = "ai4os-dev-env"
-    }
-
     stages {
 
         stage("Variable initialization") {
@@ -47,11 +63,12 @@ pipeline {
                     withFolderProperties{
                         docker_registry = env.AI4OS_REGISTRY
                         docker_registry_credentials = env.AI4OS_REGISTRY_CREDENTIALS
-                        docker_repository = env.AI4OS_REGISTRY_REPOSITORY
+                        docker_registry_org = env.AI4OS_REGISTRY_REPOSITORY
                     }
                     // get docker image name from metadata.json
                     meta = readJSON file: "metadata.json"
                     image_name = meta["sources"]["docker_registry_repo"].split("/")[1]
+                    docker_repository = docker_registry_org + "/" + image_name
                     println("[DEBUG] ${docker_registry}")
                     println("[DEBUG] ${docker_repository}")
                 }
@@ -68,41 +85,33 @@ pipeline {
             steps{
                 checkout scm
                 script {
-                    // build different tags
-                    id = "${env.docker_image_name}"
-
-                    // Finally, we put all AI4OS components in 
-                    // ubuntu 20.04 image without deep learning framework
-                    image = docker_repository + "/" + image_name + ":" + "u20.04"
-                    println("[DEBUG] ${image}")
+                    // clone check-artifact script
+                    sh "git clone https://github.com/ai4os/ai4os-hub-check-artifact"
+                    // Let's put all AI4OS components in 
+                    // ubuntu images without deep learning framework
                     base_image="ubuntu"
-                    base_tag="20.04"
-                    id_u2004 = docker.build(image,
-                                            "--no-cache --force-rm --build-arg image=${base_image} --build-arg tag=${base_tag} .")
-                    docker.withRegistry(docker_registry, 
-                        docker_registry_credentials) {
-                        id_u2004.push()
+                    ubuntu_vers = getUbuntuVers()
+                    u_vers = ubuntu_vers.size()
+                    for(int j=0; j < u_vers; j++) {
+                        image = docker_repository + ":u" + ubuntu_vers[j]
+                        println("[DEBUG] ${image}")
+                        id_ubuntu = docker_build(image, $base_image, ubuntu_vers[j])
+
+                        // let's check builded artifact
+                        sh "bash ai4os-hub-check-artifact/check-artifact ${image} 8888"
+
+                        // if OK, push to registry
+                        docker_push(id_ubuntu)
+
+                        // immediately remove local image
+                        sh("docker rmi --force \$(docker images -q ${id_ubuntu})")
                     }
-                    println("[DEBUG] NOW BUILDING VIA FUNCTION")
-                    docker_push(id_u2004)
-
-                    id_u2204 = DockerBuild(image,
-                                           tag: ['u22.04'],
-                                           build_args: ["image=ubuntu",
-                                                        "tag=22.04"])
-                    docker_push(id_u2204[0]) // DockerBuild returns array (!)
-
-                    // immediately remove local image
-                    id_this = id_u2004[0]
-                    sh("docker rmi --force \$(docker images -q ${id_this})")
-                    id_this = id_u2204[0]
-                    sh("docker rmi --force \$(docker images -q ${id_this})")
-                    //sh("docker rmi --force \$(docker images -q ubuntu:18.04)")
+                    sh "rm -rf ai4os-hub-check-artifact"
                 }
             }
             post {
                 failure {
-                    DockerClean()
+                    docker_clean()
                 }
             }
         }
