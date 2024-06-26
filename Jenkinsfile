@@ -3,6 +3,8 @@
 @Library(['github.com/indigo-dc/jenkins-pipeline-library@1.2.3']) _
 
 def docker_push(id_this) {
+    println("[DEBUG] ${docker_registry}")
+    println("[DEBUG] ${docker_repository}")
     docker.withRegistry(docker_registry, 
         docker_registry_credentials) {
         id_this.push()
@@ -30,7 +32,7 @@ pipeline {
     }
 
     environment {
-        dockerhub_repo = "ai4oshub/ai4os-dev-env"
+        docker_image_name = "ai4os-dev-env"
     }
 
     stages {
@@ -40,14 +42,18 @@ pipeline {
                 AI4OS_REGISTRY_CREDENTIALS = credentials('AIOS-registry-credentials')
             }
             steps {
+                checkout scm
                 script {
                     withFolderProperties{
                         docker_registry = env.AI4OS_REGISTRY
                         docker_registry_credentials = env.AI4OS_REGISTRY_CREDENTIALS
                         docker_repository = env.AI4OS_REGISTRY_REPOSITORY
                     }
-                println("[DEBUG] ${docker_registry}")
-                println("[DEBUG] ${docker_repository}")
+                    // get docker image name from metadata.json
+                    meta = readJSON file: "metadata.json"
+                    image_name = meta["sources"]["docker_registry_repo"].split("/")[1]
+                    println("[DEBUG] ${docker_registry}")
+                    println("[DEBUG] ${docker_repository}")
                 }
             }
         }
@@ -63,18 +69,24 @@ pipeline {
                 checkout scm
                 script {
                     // build different tags
-                    id = "${env.dockerhub_repo}"
+                    id = "${env.docker_image_name}"
 
                     // Finally, we put all AI4OS components in 
                     // ubuntu 20.04 image without deep learning framework
-                    id_u2004 = DockerBuild(id,
-                                           tag: ['u20.04'],
-                                           build_args: ["image=ubuntu",
-                                                        "tag=20.04"])
+                    image = docker_repository + "/" + image_name + ":" + "u20.04"
+                    println("[DEBUG] ${image}")
+                    base_image="ubuntu"
+                    base_tag="20.04"
+                    id_u2004 = docker.build(image,
+                                            "--no-cache --force-rm --build-arg image=${base_image} --build-arg tag=${base_tag} .")
+                    docker.withRegistry(docker_registry, 
+                        docker_registry_credentials) {
+                        id_u2004.push()
+                    }
+                    println("[DEBUG] NOW BUILDING VIA FUNCTION")
+                    docker_push(id_u2004)
 
-                    docker_push(id_u2004[0]) // DockerBuild returns array (!)
-
-                    id_u2204 = DockerBuild(id,
+                    id_u2204 = DockerBuild(image,
                                            tag: ['u22.04'],
                                            build_args: ["image=ubuntu",
                                                         "tag=22.04"])
