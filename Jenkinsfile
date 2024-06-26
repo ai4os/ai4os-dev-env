@@ -95,7 +95,7 @@ pipeline {
                     for(int j=0; j < u_vers; j++) {
                         image = docker_repository + ":u" + ubuntu_vers[j]
                         println("[DEBUG] ${image}")
-                        id_ubuntu = docker_build(image, $base_image, ubuntu_vers[j])
+                        id_ubuntu = docker_build(image, base_image, ubuntu_vers[j])
 
                         // let's check builded artifact
                         sh "bash ai4os-hub-check-artifact/check-artifact ${image} 8888"
