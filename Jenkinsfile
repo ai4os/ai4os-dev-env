@@ -2,15 +2,24 @@
 
 @Library(['github.com/indigo-dc/jenkins-pipeline-library@1.2.3']) _
 
+def docker_push(id_this) {
+    docker.withRegistry(docker_registry, 
+        docker_registry_credentials) {
+        id_this.push()
+    }
+}
+
 // define which TensorFlow versions to use
 def getTFVers(){
     return ["2.9.3", "2.10.0", "2.11.0", "2.12.0", "2.13.0"]
 }
 
+// define which pytorch tags to use
 def getPyTorchTags(){
     return ["1.11.0-cuda11.3-cudnn8-runtime", "1.12.0-cuda11.3-cudnn8-runtime", "1.13.0-cuda11.6-cudnn8-runtime", "2.0.0-cuda11.7-cudnn8-runtime", "2.1.0-cuda11.8-cudnn8-runtime"]
 }
 
+// define which pytorch versions to use
 def getPyTorchVers(){
     return ["1.11", "1.12", "1.13", "2.0", "2.1"]
 }
@@ -62,20 +71,14 @@ pipeline {
                                            tag: ['u20.04'],
                                            build_args: ["image=ubuntu",
                                                         "tag=20.04"])
-                    registry = env.AI4OS_REGISTRY
-                    credentials = credentials('AIOS-registry-credentials')
-                    println("[DEBUG] ${registry}")
-                    println("[DEBUG] ${credentials}")
-                    docker.withRegistry(docker_registry, 
-                                        docker_registry_credentials) {
-                        id_u2004.push()
-                    }
+
+                    docker_push(id_u2004[0]) // DockerBuild returns array (!)
 
                     id_u2204 = DockerBuild(id,
                                            tag: ['u22.04'],
                                            build_args: ["image=ubuntu",
                                                         "tag=22.04"])
-                    push_docker_image([id_u2204])
+                    docker_push(id_u2204[0]) // DockerBuild returns array (!)
 
                     // immediately remove local image
                     id_this = id_u2004[0]
