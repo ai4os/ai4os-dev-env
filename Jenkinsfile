@@ -75,7 +75,7 @@ pipeline {
             }
         }
 
-        stage('Docker image building (ubuntu)') {
+        stage('Docker images building (ubuntu)') {
             when {
                 anyOf {
                    branch 'master'
@@ -86,6 +86,7 @@ pipeline {
                 checkout scm
                 script {
                     // clone check-artifact script
+                    sh "rm -rf ai4os-hub-check-artifact"
                     sh "git clone https://github.com/ai4os/ai4os-hub-check-artifact"
                     // Let's put all AI4OS components in 
                     // ubuntu images without deep learning framework
@@ -112,11 +113,12 @@ pipeline {
             post {
                 failure {
                     docker_clean()
+                    sh "rm -rf ai4os-hub-check-artifact"
                 }
             }
         }
     
-        stage('Docker image building (pytorch)') {
+        stage('Docker images building (pytorch)') {
             when {
                 anyOf {
                    branch 'master'
@@ -163,7 +165,7 @@ pipeline {
             }
         }
 
-        stage('Docker image building (tensorflow)') {
+        stage('Docker images building (tensorflow)') {
             when {
                 anyOf {
                    branch 'master'
