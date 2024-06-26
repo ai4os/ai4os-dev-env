@@ -1,7 +1,5 @@
 #!/usr/bin/groovy
 
-//@Library(['github.com/indigo-dc/jenkins-pipeline-library@1.2.3']) _
-
 // function to build a docker image
 def docker_build(image, base_image, base_tag) {
     docker.build(image,
@@ -10,10 +8,12 @@ def docker_build(image, base_image, base_tag) {
 }
 // function to push image to registry
 def docker_push(id_this) {
+    println ("[DEBUG] $id_this")
     docker.withRegistry(docker_registry, 
         docker_registry_credentials) {
         id_this.push()
     }
+
 }
 
 def docker_clean() {
@@ -105,7 +105,7 @@ pipeline {
                         docker_push(id_ubuntu)
 
                         // immediately remove local image
-                        sh("docker rmi --force \$(docker images -q ${id_ubuntu})")
+                        sh("docker rmi --force \$(docker images -q ${image})")
                     }
                     sh "rm -rf ai4os-hub-check-artifact"
                 }
@@ -128,39 +128,39 @@ pipeline {
             steps{
                 checkout scm
                 script {
-                    // build different tags
-                    id = "${env.dockerhub_repo}"
+                    // clone check-artifact script
+                    sh "rm -rf ai4os-hub-check-artifact"
+                    sh "git clone https://github.com/ai4os/ai4os-hub-check-artifact"
 
                     // pyTorch
-                    pytorch_tags = getPyTorchTags()
+                    base_image = "pytorch/pytorch"
                     pytorch_vers = getPyTorchVers()
+                    pytorch_tags = getPyTorchTags()
                     p_vers = pytorch_vers.size()
 
                     // CAREFUL! For-loop might fail in some Jenkins versions
                     // Other options: 
                     // https://stackoverflow.com/questions/37594635/why-an-each-loop-in-a-jenkinsfile-stops-at-first-iteration
                     for(int j=0; j < p_vers; j++) {
-                        tag_id = ['pytorch'+pytorch_vers[j]]
-                        pytorch_tag = pytorch_tags[j]
-                        id_pytorch = DockerBuild(id,
-                                                 tag: tag_id,
-                                                 build_args: ["image=pytorch/pytorch",
-                                                              "tag=${pytorch_tag}"])
+                        image = docker_repository + ":" + "pytorch" + pytorch_vers[j]
+                        println("[DEBUG] ${image}")
+                        id_pytorch = docker_build(image, base_image, pytorch_tags[j])
 
-                        docker.withRegistry(env.AI4OS_REGISTRY, 
-                                            credentials('AIOS-registry-credentials')) {
-                            docker.image(id_pytorch).push()
-                        }
+                        // let's check builded artifact
+                        sh "bash ai4os-hub-check-artifact/check-artifact ${image} 8888"
+
+                        // if OK, push to registry
+                        docker_push(id_pytorch)
 
                         // immediately remove local image
-                        id_this = id_pytorch[0]
-                        sh("docker rmi --force \$(docker images -q ${id_this})")
+                        sh("docker rmi --force \$(docker images -q ${image})")
                     }
                }
             }
             post {
                 failure {
-                   DockerClean()
+                    docker_clean()
+                    sh "rm -rf ai4os-hub-check-artifact"
                 }
             }
         }
@@ -175,10 +175,12 @@ pipeline {
             steps{
                 checkout scm
                 script {
-                    // build different tags
-                    id = "${env.dockerhub_repo}"
+                    // clone check-artifact script
+                    sh "rm -rf ai4os-hub-check-artifact"
+                    sh "git clone https://github.com/ai4os/ai4os-hub-check-artifact"
 
                     // TensorFlow
+                    base_image = "tensorflow/tensorflow"
                     tf_vers = getTFVers()
                     n_vers = tf_vers.size()
 
@@ -193,37 +195,36 @@ pipeline {
                                    tf_vers[j]+'-gpu']
 
                         for(int i=0; i < tags.size(); i++) {
-                            tag_id = [tags[i]]
+                            image = docker_repository + ":" + tags[i]
+                            println("[DEBUG] ${image}")
+                            id_tf = docker_build(image, base_image, tf_tags[i])
+
+                            // let's check builded artifact (only "cpu" image)
+                            if (tags[i].contains("-cpu")) {
+                                sh "bash ai4os-hub-check-artifact/check-artifact ${image} 8888"
+                            }
+
+                            // if OK, push to registry
+                            docker_push(id_tf)
                             // tag last cpu tag as "latest"
                             if (j == (n_vers - 1) && tags[i].contains("-cpu")) {
-                                tag_id = [tags[i], 'latest']
+                                println ("[DEBUG] $id_tf")
                             }
                             // tag last gpu tag as "latest-gpu"
                             if (j == (n_vers - 1) && tags[i].contains("-gpu")) {
-                                tag_id = [tags[i], 'latest-gpu']
-                            }
-                            tf_tag = tf_tags[i]
-                            id_docker = DockerBuild(id,
-                                                    tag: tag_id,
-                                                    build_args: ["image=tensorflow/tensorflow",
-                                                                 "tag=${tf_tag}"])
-
-                            docker.withRegistry(env.AI4OS_REGISTRY,
-                                                credentials('AIOS-registry-credentials')) {
-                                docker.image(id_docker).push()
+                                println ("[DEBUG] $id_tf")
                             }
 
                             // immediately remove local image
-                            id_this = id_docker[0]
-                            sh("docker rmi --force \$(docker images -q ${id_this})")
-                            //sh("docker rmi --force \$(docker images -q tensorflow/tensorflow:${tf_tag})")
+                            sh("docker rmi --force \$(docker images -q ${image})")
                         }
                     }
                }
             }
             post {
                 failure {
-                   DockerClean()
+                    docker_clean()
+                    sh "rm -rf ai4os-hub-check-artifact"
                 }
             }
         }
