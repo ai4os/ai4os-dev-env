@@ -26,6 +26,72 @@ pipeline {
 
     stages {
 
+        stage("Variable initialization") {
+            environment {
+                AI4OS_REGISTRY_CREDENTIALS = credentials('AIOS-registry-credentials')
+            }
+            steps {
+                script {
+                    withFolderProperties{
+                        docker_registry = env.AI4OS_REGISTRY
+                        docker_registry_credentials = env.AI4OS_REGISTRY_CREDENTIALS
+                        docker_repository = env.AI4OS_REGISTRY_REPOSITORY
+                    }
+                println("[DEBUG] ${docker_registry}")
+                println("[DEBUG] ${docker_repository}")
+                }
+            }
+        }
+
+        stage('Docker image building (ubuntu)') {
+            when {
+                anyOf {
+                   branch 'master'
+                   buildingTag()
+               }
+            }
+            steps{
+                checkout scm
+                script {
+                    // build different tags
+                    id = "${env.dockerhub_repo}"
+
+                    // Finally, we put all AI4OS components in 
+                    // ubuntu 20.04 image without deep learning framework
+                    id_u2004 = DockerBuild(id,
+                                           tag: ['u20.04'],
+                                           build_args: ["image=ubuntu",
+                                                        "tag=20.04"])
+                    registry = env.AI4OS_REGISTRY
+                    credentials = credentials('AIOS-registry-credentials')
+                    println("[DEBUG] ${registry}")
+                    println("[DEBUG] ${credentials}")
+                    docker.withRegistry(docker_registry, 
+                                        docker_registry_credentials) {
+                        id_u2004.push()
+                    }
+
+                    id_u2204 = DockerBuild(id,
+                                           tag: ['u22.04'],
+                                           build_args: ["image=ubuntu",
+                                                        "tag=22.04"])
+                    push_docker_image([id_u2204])
+
+                    // immediately remove local image
+                    id_this = id_u2004[0]
+                    sh("docker rmi --force \$(docker images -q ${id_this})")
+                    id_this = id_u2204[0]
+                    sh("docker rmi --force \$(docker images -q ${id_this})")
+                    //sh("docker rmi --force \$(docker images -q ubuntu:18.04)")
+                }
+            }
+            post {
+                failure {
+                    DockerClean()
+                }
+            }
+        }
+    
         stage('Docker image building (pytorch)') {
             when {
                 anyOf {
@@ -132,48 +198,6 @@ pipeline {
             post {
                 failure {
                    DockerClean()
-                }
-            }
-        }
-
-        stage('Docker image building (ubuntu)') {
-            when {
-                anyOf {
-                   branch 'master'
-                   buildingTag()
-               }
-            }
-            steps{
-                checkout scm
-                script {
-                    // build different tags
-                    id = "${env.dockerhub_repo}"
-
-                    // Finally, we put all AI4OS components in 
-                    // ubuntu 20.04 image without deep learning framework
-                    id_u2004 = DockerBuild(id,
-                                           tag: ['u20.04'],
-                                           build_args: ["image=ubuntu",
-                                                        "tag=20.04"])
-                    push_docker_image([id_u2004])
-
-                    id_u2204 = DockerBuild(id,
-                                           tag: ['u22.04'],
-                                           build_args: ["image=ubuntu",
-                                                        "tag=22.04"])
-                    push_docker_image([id_u2204])
-
-                    // immediately remove local image
-                    id_this = id_u2004[0]
-                    sh("docker rmi --force \$(docker images -q ${id_this})")
-                    id_this = id_u2204[0]
-                    sh("docker rmi --force \$(docker images -q ${id_this})")
-                    //sh("docker rmi --force \$(docker images -q ubuntu:18.04)")
-                }
-            }
-            post {
-                failure {
-                    DockerClean()
                 }
             }
         }
