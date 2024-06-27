@@ -136,12 +136,10 @@ pipeline {
                         checkout scm
                         script {
                             // Ubuntu versions
-                            base_image = "ubuntu"
-                            base_image_tags = getUbuntuVers()
                             ubuntu_vers = getUbuntuVers()
-                            dev_env_tags = []
-                            ubuntu_vers.each { dev_env_tags.add("u$it")}
-                            dev_env_build(base_image, base_image_tags, dev_env_tags, true)
+                            dev_env_u_tags = []
+                            ubuntu_vers.each { dev_env_u_tags.add("u$it")}
+                            dev_env_build("ubuntu", getUbuntuVers(), dev_env_u_tags, true)
                         }
                     }
                     post {
@@ -171,12 +169,10 @@ pipeline {
                         checkout scm
                         script {
                             // nvidia CUDA versions
-                            base_image = "nvidia/cuda"
-                            base_image_tags = getNVCudaTags()
-                            dev_env_tags = []
+                            dev_env_cuda_tags = []
                             cuda_vers = getNVCudaVers()
-                            cuda_vers.each { dev_env_tags.add("cuda$it")}
-                            dev_env_build(base_image, base_image_tags, dev_env_tags, true)
+                            cuda_vers.each { dev_env_cuda_tags.add("cuda$it")}
+                            dev_env_build("nvidia/cuda", getNVCudaTags(), dev_env_cuda_tags, true)
                        }
                     }
                     post {
@@ -206,12 +202,9 @@ pipeline {
                         checkout scm
                         script {
                             // Pytorch versions
-                            base_image = "pytorch/pytorch"
-                            base_image_tags = getPyTorchTags()
-                            dev_env_tags = []
                             pytorch_vers = getPyTorchVers()
-                            pytorch_vers.each { dev_env_tags.add("pytorch$it")}
-                            dev_env_build(base_image, base_image_tags, dev_env_tags, true)
+                            pytorch_vers.each { dev_env_torch_tags.add("pytorch$it")}
+                            dev_env_build("pytorch/pytorch", getPyTorchTags(), dev_env_torch_tags, true)
                        }
                     }
                     post {
@@ -241,12 +234,10 @@ pipeline {
                         checkout scm
                         script {
                             // TensorFlow - CPU versions
-                            base_image = "tensorflow/tensorflow"
-                            tf_vers = getTFVers()
-                            base_image_tags = tf_vers
-                            dev_env_tags = []
-                            tf_vers.each { dev_env_tags.add("tf$it"+"-cpu")}
-                            dev_env_build(base_image, base_image_tags, dev_env_tags, true)
+                            tfcpu_vers = getTFVers()
+                            dev_env_tfcpu_tags = []
+                            tfcpu_vers.each { dev_env_tfcpu_tags.add("tf$it"+"-cpu")}
+                            dev_env_build("tensorflow/tensorflow", tfcpu_vers, dev_env_tfcpu_tags, true)
                        }
                     }
                     post {
@@ -276,13 +267,12 @@ pipeline {
                         checkout scm
                         script {
                             // TensorFlow - GPU versions
-                            base_image = "tensorflow/tensorflow"
-                            tf_vers = getTFVers()
-                            base_image_tags = []
-                            tf_vers.each { base_image_tags.add("$it"+"-gpu")}
-                            dev_env_tags = []
-                            tf_vers.each { dev_env_tags.add("tf$it"+"-gpu")}
-                            dev_env_build(base_image, base_image_tags, dev_env_tags, false)
+                            tfgpu_vers = getTFVers()
+                            base_image_tfgpu_tags = []
+                            tfgpu_vers.each { base_image_tfgpu_tags.add("$it"+"-gpu")}
+                            dev_env_tfgpu_tags = []
+                            tfgpu_vers.each { dev_env_tfgpu_tags.add("tf$it"+"-gpu")}
+                            dev_env_build("tensorflow/tensorflow", base_image_tfgpu_tags, dev_env_tfgpu_tags, false)
                        }
                     }
                     post {
