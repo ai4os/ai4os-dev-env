@@ -78,8 +78,6 @@ def dev_env_build(base_image, base_image_tags, dev_env_tags, check){
         }
         // if OK, push to registry
         docker_push(id_docker)
-        image_registry = docker_registry + "/" + image
-        sh("docker push ${image_registry}")
         // immediately remove local image
         sh("docker rmi --force \$(docker images -q ${image})")
     }
@@ -118,6 +116,7 @@ pipeline {
         // attempt to run builds in parallel
         stage('Build') {
             parallel {
+
                 stage('Docker images building (ubuntu)') {
                     agent { label 'docker-build' }
                     when {
