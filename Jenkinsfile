@@ -43,7 +43,7 @@ def docker_build(image, base_image, base_tag) {
 }
 // function to push image to registry
 def docker_push(id_this) {
-    println ("[DEBUG] $id_this")
+    println ("[DEBUG] Docker image to push: $id_this")
     docker.withRegistry(docker_registry, 
         docker_registry_credentials) {
         id_this.push()
@@ -67,11 +67,11 @@ def dev_env_build(base_image, base_image_tags, dev_env_tags, check){
         sh "rm -rf ai4os-hub-check-artifact"
         sh "git clone https://github.com/ai4os/ai4os-hub-check-artifact"
     }
-    n_tags = dev_env_tags.size()
+    def n_tags = dev_env_tags.size()
     for(int j=0; j < n_tags; j++) {
-        image = docker_repository + ":" + dev_env_tags[j]
-        println("[DEBUG] ${image}")
-        id_docker = docker_build(image, base_image, base_image_tags[j])
+        def image = docker_repository + ":" + dev_env_tags[j]
+        println("[DEBUG] Docker image to build: ${image}")
+        def id_docker = docker_build(image, base_image, base_image_tags[j])
         // let's check builded artifact
         if (check) {
             sh "bash ai4os-hub-check-artifact/check-artifact ${image} 8888"
@@ -107,8 +107,6 @@ pipeline {
                     meta = readJSON file: "metadata.json"
                     image_name = meta["sources"]["docker_registry_repo"].split("/")[1]
                     docker_repository = docker_registry_org + "/" + image_name
-                    println("[DEBUG] ${docker_registry}")
-                    println("[DEBUG] ${docker_repository}")
                 }
             }
         }
@@ -136,8 +134,8 @@ pipeline {
                         checkout scm
                         script {
                             // Ubuntu versions
-                            ubuntu_vers = getUbuntuVers()
-                            dev_env_u_tags = []
+                            def dev_env_u_tags = []
+                            def ubuntu_vers = getUbuntuVers()
                             ubuntu_vers.each { dev_env_u_tags.add("u$it")}
                             dev_env_build("ubuntu", getUbuntuVers(), dev_env_u_tags, true)
                         }
@@ -169,8 +167,8 @@ pipeline {
                         checkout scm
                         script {
                             // nvidia CUDA versions
-                            dev_env_cuda_tags = []
-                            cuda_vers = getNVCudaVers()
+                            def dev_env_cuda_tags = []
+                            def cuda_vers = getNVCudaVers()
                             cuda_vers.each { dev_env_cuda_tags.add("cuda$it")}
                             dev_env_build("nvidia/cuda", getNVCudaTags(), dev_env_cuda_tags, true)
                        }
@@ -202,7 +200,8 @@ pipeline {
                         checkout scm
                         script {
                             // Pytorch versions
-                            pytorch_vers = getPyTorchVers()
+                            def dev_env_torch_tags = []
+                            def pytorch_vers = getPyTorchVers()
                             pytorch_vers.each { dev_env_torch_tags.add("pytorch$it")}
                             dev_env_build("pytorch/pytorch", getPyTorchTags(), dev_env_torch_tags, true)
                        }
@@ -234,8 +233,8 @@ pipeline {
                         checkout scm
                         script {
                             // TensorFlow - CPU versions
-                            tfcpu_vers = getTFVers()
-                            dev_env_tfcpu_tags = []
+                            def tfcpu_vers = getTFVers()
+                            def dev_env_tfcpu_tags = []
                             tfcpu_vers.each { dev_env_tfcpu_tags.add("tf$it"+"-cpu")}
                             dev_env_build("tensorflow/tensorflow", tfcpu_vers, dev_env_tfcpu_tags, true)
                        }
@@ -267,10 +266,10 @@ pipeline {
                         checkout scm
                         script {
                             // TensorFlow - GPU versions
-                            tfgpu_vers = getTFVers()
-                            base_image_tfgpu_tags = []
+                            def base_image_tfgpu_tags = []
+                            def tfgpu_vers = getTFVers()
                             tfgpu_vers.each { base_image_tfgpu_tags.add("$it"+"-gpu")}
-                            dev_env_tfgpu_tags = []
+                            def dev_env_tfgpu_tags = []
                             tfgpu_vers.each { dev_env_tfgpu_tags.add("tf$it"+"-gpu")}
                             dev_env_build("tensorflow/tensorflow", base_image_tfgpu_tags, dev_env_tfgpu_tags, false)
                        }
