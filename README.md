@@ -4,7 +4,7 @@
 
 # AI4OS Development Environment (AI4OSDev)
 
-[![Build Status](https://jenkins.services.ai4os.eu/buildStatus/icon?job=AI4OS-hub/ai4os-dev-env/master)](https://jenkins.services.ai4os.eu/job/AI4OS-hub/job/ai4os-dev-env/job/master)
+[![Build Status](https://jenkins.services.ai4os.eu/buildStatus/icon?job=AI4OS/ai4os-dev-env/main)](https://jenkins.services.ai4os.eu/job/AI4OS/job/ai4os-dev-env/job/main)
 [![Contributor Covenant](https://img.shields.io/badge/Contributor%20Covenant-1.4-4baaaa.svg)](CODE_OF_CONDUCT.md)
 
 This is a container that exposes Jupyter notebook and Jupyter Lab or VSCode together with the DEEP as a Service API component. There is **no application code** inside!
@@ -38,7 +38,7 @@ The resulting Docker image has pre-installed:
 To run the Docker container directly from Docker Hub and start using jupyter notebook / jupyterlab or vscode run the following command:
 
 ```bash
-$ docker run -ti -p 5000:5000 -p 6006:6006 -p 8888:8888 deephdc/deep-oc-generic-dev
+$ docker run -ti -p 5000:5000 -p 6006:6006 -p 8888:8888 ai4oshub/ai4os-dev-env
 ```
 
 This command will pull the Docker image from the Docker Hub and start the default command `deep-start -j´, which starts Jupyter Lab.
@@ -88,7 +88,7 @@ Building the container:
 1. Get the `ai4os-dev-env` repository:
 
     ```bash
-    $ git clone https://github.com/ai4os-hub/ai4os-dev-env
+    $ git clone https://github.com/ai4os/ai4os-dev-env
     ```
 
 2. Build the container (default is CPU and Python3 support):

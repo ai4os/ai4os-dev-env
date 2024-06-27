@@ -30,7 +30,7 @@ $ git config --global user.email "your_email_for_git_account@domain.zone"
 
 ## Start your project with AI4OS Data Science template
 
-Create your new project using our [AI4OS templates](https://github.com/deephdc/cookiecutter-deep) for easier integration with AI4OS components ([DEEPaaS API](https://docs.deep-hybrid-datacloud.eu/projects/deepaas/en/latest/), Dockerfile, Jenkinsfiles etc). You can use either:
+Create your new project using our [AI4OS templates](https://github.com/orgs/ai4os/repositories?q=ai4-template) for easier integration with AI4OS components ([DEEPaaS API](https://docs.ai4os.eu/projects/deepaas/en/stable/), Dockerfile, Jenkinsfiles etc). You can use either:
 
 * Our web-interface: [https://templates.cloud.ai4eosc.eu/](https://templates.cloud.ai4eosc.eu/)
 
@@ -39,30 +39,29 @@ OR
 * external command-line tool [cookiecutter](https://pypi.org/project/cookiecutter/):
 
 ```bash
-$ cookiecutter https://github.com/deephdc/cookiecutter-deep
+$ cookiecutter https://github.com/ai4os/ai4-template
 ```
 
 ## Access remote storages
 
 You can use 
-* [rclone](https://rclone.org) to sync with a remote cloud storage (e.g. [AI4OS Nextcloud](https://data-deep.a.incd.pt/)), or 
-* [oneclient](https://onedata.org/docs/doc/using_onedata/oneclient.html) to access OneData distributed storage.
+* [rclone](https://rclone.org) to sync with a remote cloud storage (e.g. [AI4OS Nextcloud](https://share.services.ai4os.eu/))
 
 
 ## AI4OS Documentation
 
 Comprehensive documentation on AI4OS tools and components can be found in:
 
-* [AI4OS documentation](https://docs.ai4eosc.eu/)
-    * [Quickstart guide](https://docs.ai4eosc.eu/en/latest/user/quickstart.html)
-    * [Overview](https://docs.ai4eosc.eu/en/latest/user/index.html#overview)
-    * [HowTo's](https://docs.ai4eosc.eu/en/latest/user/index.html#how-to-s)
+* [AI4OS documentation](https://docs.ai4os.eu/)
+    * [Quickstart guide](https://docs.ai4os.eu/en/latest/user/quickstart.html)
+    * [Overview](https://docs.ai4os.eu/en/latest/user/index.html#overview)
+    * [HowTo's](https://docs.ai4os.eu/en/latest/user/index.html#how-to-s)
 * [YouTube channel](https://www.youtube.com/playlist?list=PLJ9x9Zk1O-J_UZfNO2uWp2pFMmbwLvzXa) with tutorials
 
 ## AI4OS related services
 * [AI4OS AAI](https://aai.egi.eu/registry/co_petitions/start/coef:550) : Join our Virtual Organisation (VO) in order to access the services
 * [AI4OS Open Catalog and the Dashboard](https://dashboard.cloud.ai4eosc.eu/) : a curated repository of applications ready to be used or extended. Logged-in users can deploy modules directly on the platform.
-* [Nextcloud storage](https://data-deep.a.incd.pt/) :  a sync&share solution to host and share data.
+* [Nextcloud storage](https://share.services.ai4os.eu/) :  a sync&share solution to host and share data.
 
 ## List of installed tools
 AI4OS Development Environment uses as a base a Docker Image of either 
@@ -75,10 +74,10 @@ It leverages
 * [VS Code in the browser](https://coder.com/docs/code-server/latest) VS Code that runs in the browser, see [code-server](https://github.com/coder/code-server)
 
 Includes: 
-* [cookiecutter](https://cookiecutter.readthedocs.io/en/latest/) template tool to start or integrate your project with AI4OS solutions profiting from [AI4OS Data Science template](https://github.com/deephdc/cookiecutter-deep):
+* [cookiecutter](https://cookiecutter.readthedocs.io/en/latest/) template tool to start or integrate your project with AI4OS solutions profiting from [AI4OS Data Science templates](https://github.com/orgs/ai4os/repositories?q=ai4-template):
 
 Contains AI4OS components:
-* [DEEP as a Service API](https://docs.deep-hybrid-datacloud.eu/projects/deepaas/en/latest/) is REST API that provids access to machine learning models;
+* [DEEP as a Service API](https://docs.ai4os.eu/projects/deepaas/en/stable/) is REST API that provids access to machine learning models;
 * [flaat](https://github.com/indigo-dc/flaat) : FLAsk support for handling oidc Access Tokens;
 * [oidc-agent](https://github.com/indigo-dc/oidc-agent) : a set of tools to manage OpenID Connect tokens and make them easily usable from the command line;
 

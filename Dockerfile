@@ -3,7 +3,7 @@
 # tag - tag for Tensorflow Image (default: 2.10.0)
 # orchentVer - version of orchent (see https://github.com/indigo-dc/orchent/releases/)
 # If you need to change default values, during the build do:
-# docker build -t deephdc/deep-oc-generic-dev --build-arg tag=XX .
+# docker build -t ai4oshub/ai4os-dev-env --build-arg tag=XX .
 
 ARG image=tensorflow/tensorflow
 ARG tag=2.10.0
@@ -46,7 +46,6 @@ RUN DEBIAN_FRONTEND=noninteractive apt-get update && \
          python3-wheel && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/* && \
-    rm -rf /root/.cache/pip/* && \
     rm -rf /tmp/* && \
     python3 --version && \
     pip3 --version
@@ -73,7 +72,6 @@ RUN wget https://github.com/indigo-dc/orchent/releases/download/v${orchentVer}/o
     mkdir /srv/.rclone/ && touch /srv/.rclone/rclone.conf && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/* && \
-    rm -rf /root/.cache/pip/* && \
     rm -rf /tmp/*
 
 # Environment settings for orchent, oidc-agent, rclone
@@ -135,6 +133,11 @@ EXPOSE 6006
 
 # Open JupyterLab port
 EXPOSE 8888
+
+# Copy entrypoint to update INFO.md from remote URL
+COPY entrypoint.sh /entrypoint.sh
+RUN chmod +x /entrypoint.sh
+ENTRYPOINT ["/entrypoint.sh"]
 
 # By default run Jupyter Lab
 CMD ["deep-start", "-j"]

@@ -17,7 +17,7 @@ authors:
     family-names: Orviz
   - given-names: Valentin
     family-names: Valentin
-repository-code: 'https://github.com/ai4os-hub/ai4os-dev-env'
+repository-code: 'https://github.com/ai4os/ai4os-dev-env'
 keywords:
   - docker
   - development environment

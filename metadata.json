@@ -16,37 +16,34 @@
     "license": "MIT",
     "date_creation": "2019-03-01",
     "sources": {
-		"dockerfile_repo": "https://github.dev/ai4os-hub/ai4os-dev-env",
+		"dockerfile_repo": "https://github.com/ai4os/ai4os-dev-env",
 		"docker_registry_repo": "ai4oshub/ai4os-dev-env",
-		"code": "https://github.dev/ai4os-hub/ai4os-dev-env"
+		"code": "https://github.com/ai4os/ai4os-dev-env"
 	},
     "continuous_integration": {
-        "build_status_badge": "https://jenkins.services.ai4os.eu/buildStatus/icon?job=AI4OS-hub/ai4os-dev-env/master",
-        "build_status_url": "https://jenkins.services.ai4os.eu/job/AI4OS-hub/job/ai4os-dev-env/job/master"
+        "build_status_badge": "https://jenkins.services.ai4os.eu/buildStatus/icon?job=AI4OS/ai4os-dev-env/main",
+        "build_status_url": "https://jenkins.services.ai4os.eu/job/AI4OS/job/ai4os-dev-env/job/main"
     },
     "docker_tags": [
-        "latest",
+        "tf2.14.0-cpu",
+        "tf2.14.0-gpu",
+        "tf2.13.0-cpu",
+        "tf2.13.0-gpu",
+        "tf2.12.0-cpu",
+        "tf2.12.0-gpu",
         "tf2.11.0-cpu",
         "tf2.11.0-gpu",
         "tf2.10.0-cpu",
         "tf2.10.0-gpu",
         "tf2.9.3-cpu",
         "tf2.9.3-gpu",
-        "tf2.0.0-cpu",
-        "tf2.0.0-gpu",
-        "tf1.15.0-cpu",
-        "tf1.15.0-gpu",
-        "tf1.14.0-cpu",
-        "tf1.14.0-gpu",
-        "tf1.12.0-cpu-py36",
-        "tf1.12.0-gpu-py36",
+        "pytorch2.1",
+        "pytorch2.0",
         "pytorch1.13",
         "pytorch1.12",
         "pytorch1.11",
-        "pytorch1.4",
-        "pytorch1.2",
         "u20.04",
-        "u18.04"
+        "u22.04"
     ],
     "tosca": [
         {
