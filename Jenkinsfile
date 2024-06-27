@@ -93,6 +93,7 @@ pipeline {
     stages {
 
         stage("Variable initialization") {
+            agent any
             environment {
                 AI4OS_REGISTRY_CREDENTIALS = credentials('AIOS-registry-credentials')
             }
