@@ -2,7 +2,7 @@
     "title": "AI4OS Development Environment",
     "summary": "This is a Docker image for developing new modules",
     "description": [
-        "This is a Docker image for developing new modules. It comes preinstalled with DEEPaaS, JupyterLab or VSCode, Tensorflow or PyTorch, and a number of other tools (see [here](http://github.com/deephdc/DEEP-OC-generic-dev))",
+        "This is a Docker image for developing new modules. It comes preinstalled with DEEPaaS, JupyterLab or VSCode, Tensorflow or PyTorch, and a number of other tools (see [here](http://github.com/ai4os/ai4os-dev-env))",
         "As you have access to the terminal of JupyterLab or VSCode, you can develop and debug your application, add your preferred tools."
 	],
     "keywords": [

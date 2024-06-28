@@ -17,45 +17,48 @@ LABEL maintainer='V.Kozlov (KIT)'
 # orchent version
 ARG orchentVer=1.2.9
 
-# Install ubuntu updates and python3 related stuff
-# gcc is needed in Pytorch images because deepaas installation might break otherwise (see docs) (it is already installed in tensorflow images)
+# Install ubuntu updates, python3 related stuff, some tools
+# gcc is needed in Pytorch images because deepaas installation might break otherwise (see docs) 
+# (gcc is already installed in tensorflow images)
 RUN DEBIAN_FRONTEND=noninteractive apt-get update && \
     apt-get install -y --no-install-recommends \
-        gnupg \
-        lsb-release \
         curl \
+        gnupg \
+        git \
+        gcc \
+        jq \
+        lsb-release \
+        mc \
+        nano \
+        openssh-client \
+        wget \
+        psmisc \
+        python3-setuptools \
+        python3-pip \
+        python3-dev \
+        python3-wheel \
         software-properties-common && \
-    #apt-key adv --keyserver hkp://pgp.surfnet.nl \
-    #--recv-keys ACDFB08FDC962044D87FF00B512839863D487A87 && \
-    curl repo.data.kit.edu/key.pgp | apt-key add - && \
-    add-apt-repository "deb http://repo.data.kit.edu/ubuntu/$(lsb_release -sr) ./" && \
-    DEBIAN_FRONTEND=noninteractive apt-get update && \
-    apt-get install -y --no-install-recommends \
-         git \
-         gcc \
-         jq \
-         mc \
-         nano \
-         openssh-client \
-         oidc-agent-cli \
-         wget \
-         psmisc \
-         python3-setuptools \
-         python3-pip \
-         python3-dev \
-         python3-wheel && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/* && \
     rm -rf /tmp/* && \
     python3 --version && \
     pip3 --version
 
-
 # Set LANG environment
 ENV LANG C.UTF-8
 
 # Set the working directory
 WORKDIR /srv
+
+# install oidc-agent
+RUN curl repo.data.kit.edu/repo-data-kit-edu-key.gpg | gpg --dearmor > /etc/apt/trusted.gpg.d/kitrepo-archive.gpg && \
+    #add-apt-repository "deb http://repo.data.kit.edu/ubuntu/$(lsb_release -sr) ./"
+    #add-apt-repository is broken in tensorflow/tensorflow:2.14.0, use manually adding to sources.list
+    echo "deb https://repo.data.kit.edu//ubuntu/$(lsb_release -sr) ./" | tee -a /etc/apt/sources.list && \
+    DEBIAN_FRONTEND=noninteractive apt-get update && \
+    apt-get install -y --no-install-recommends oidc-agent-cli && \
+    apt-get clean && \
+    rm -rf /var/lib/apt/lists/*
 
 # bashrc entries for oidc-agent
 COPY oidc-agent/oidc-check.bashrc /root/

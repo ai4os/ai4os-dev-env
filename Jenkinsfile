@@ -1,37 +1,40 @@
 #!/usr/bin/groovy
 
+//////////        !!! IMPORTANT !!!        //////////
 //////////  DEFINE WHAT VERSIONS TO BUILD  //////////
 // define which Ubuntu versions to use
 def getUbuntuVers(){
-    return ["20.04", "22.04"]
+    //return ["20.04", "22.04"]
+    return []
 }
 
 // define which nvidia/cuda versions to use
 def getNVCudaVers(){
-    return["11.3.1","12.3.2"]
+    //return["11.3.1","12.3.2"]
+    return []
 }
 // define which nvidia/cuda tags to use
 def getNVCudaTags(){
-    return ["11.3.1-cudnn8-runtime-ubuntu20.04",
-            "12.3.2-cudnn9-runtime-ubuntu22.04"]
-}
-
-// define which TensorFlow versions to use
-def getTFVers(){
-    return ["2.9.3", "2.10.0", "2.11.0", "2.12.0", "2.13.0", "2.14.0"]
+    //return ["11.3.1-cudnn8-runtime-ubuntu20.04", "12.3.2-cudnn9-runtime-ubuntu22.04"]
+    return []
 }
 
 // define which pytorch versions to use
 def getPyTorchVers(){
-    return ["1.11", "1.12", "1.13", "2.0", "2.1"]
+    //return ["1.11", "1.12", "1.13", "2.0", "2.1"]
+    return []
 }
 // define which pytorch tags to use
 def getPyTorchTags(){
-    return ["1.11.0-cuda11.3-cudnn8-runtime", 
-            "1.12.0-cuda11.3-cudnn8-runtime", 
-            "1.13.0-cuda11.6-cudnn8-runtime", 
-            "2.0.0-cuda11.7-cudnn8-runtime", 
-            "2.1.0-cuda11.8-cudnn8-runtime"]
+    //return ["1.11.0-cuda11.3-cudnn8-runtime", "1.12.0-cuda11.3-cudnn8-runtime", "1.13.0-cuda11.6-cudnn8-runtime", 
+    //        "2.0.0-cuda11.7-cudnn8-runtime",  "2.1.0-cuda11.8-cudnn8-runtime"]
+    return []
+}
+
+// define which TensorFlow versions to use
+def getTFVers(){
+    //return ["2.9.3", "2.10.0", "2.11.0", "2.12.0", "2.13.0", "2.14.0"]
+    return ["2.14.0"]
 }
 //////////
 
@@ -128,6 +131,7 @@ pipeline {
                                 changeset 'Dockerfile'
                                 changeset 'entrypoint.sh'
                             }
+                            expression { getUbuntuVers().size() > 0 }
                         }
                     }
                     steps{
@@ -161,6 +165,7 @@ pipeline {
                                 changeset 'Dockerfile'
                                 changeset 'entrypoint.sh'
                             }
+                            expression { getNVCudaVers().size() > 0 }
                         }
                     }
                     steps{
@@ -194,6 +199,7 @@ pipeline {
                                 changeset 'Dockerfile'
                                 changeset 'entrypoint.sh'
                             }
+                            expression { getPyTorchVers().size() > 0 }
                         }
                     }
                     steps{
@@ -227,6 +233,7 @@ pipeline {
                                 changeset 'Dockerfile'
                                 changeset 'entrypoint.sh'
                             }
+                            expression { getTFVers().size() > 0 }
                         }
                     }
                     steps{
@@ -260,6 +267,7 @@ pipeline {
                                 changeset 'Dockerfile'
                                 changeset 'entrypoint.sh'
                             }
+                            expression { getTFVers().size() > 0 }
                         }
                     }
                     steps{
