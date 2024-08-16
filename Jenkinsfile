@@ -2,40 +2,25 @@
 
 //////////        !!! IMPORTANT !!!        //////////
 //////////  DEFINE WHAT VERSIONS TO BUILD  //////////
-// define which Ubuntu versions to use
-def getUbuntuVers(){
-    //return ["20.04", "22.04"]
-    return []
-}
 
-// define which nvidia/cuda versions to use
-def getNVCudaVers(){
-    //return["11.3.1","12.3.2"]
-    return []
-}
-// define which nvidia/cuda tags to use
-def getNVCudaTags(){
-    //return ["11.3.1-cudnn8-runtime-ubuntu20.04", "12.3.2-cudnn9-runtime-ubuntu22.04"]
-    return []
-}
+// define which flavors of ai4os-dev-env to build
+def builds = ['Ubuntu': false, 'NVCuda': true, 'PyTorch': false, 'TF': true]
 
-// define which pytorch versions to use
-def getPyTorchVers(){
-    //return ["1.11", "1.12", "1.13", "2.0", "2.1"]
-    return []
-}
-// define which pytorch tags to use
-def getPyTorchTags(){
-    //return ["1.11.0-cuda11.3-cudnn8-runtime", "1.12.0-cuda11.3-cudnn8-runtime", "1.13.0-cuda11.6-cudnn8-runtime", 
-    //        "2.0.0-cuda11.7-cudnn8-runtime",  "2.1.0-cuda11.8-cudnn8-runtime"]
-    return []
-}
+// Ubuntu versions to use
+def UbuntuVers = ["20.04", "22.04"]
 
-// define which TensorFlow versions to use
-def getTFVers(){
-    //return ["2.9.3", "2.10.0", "2.11.0", "2.12.0", "2.13.0", "2.14.0"]
-    return ["2.14.0"]
-}
+// nvidia/cuda versions to use
+def NVCudaVers = ["11.3.1","12.3.2"]
+def NVCudaTags = ["11.3.1-cudnn8-runtime-ubuntu20.04", "12.3.2-cudnn9-runtime-ubuntu22.04"]
+
+// pytorch versions and tags to use
+def PyTorchVers = ["1.11", "1.12", "1.13", "2.0", "2.1"]
+def PyTorchTags = ["1.11.0-cuda11.3-cudnn8-runtime", "1.12.0-cuda11.3-cudnn8-runtime", "1.13.0-cuda11.6-cudnn8-runtime", 
+                   "2.0.0-cuda11.7-cudnn8-runtime",  "2.1.0-cuda11.8-cudnn8-runtime"]
+
+// tensorflow versions to use
+def TFVers = ["2.9.3", "2.10.0", "2.11.0", "2.12.0", "2.13.0", "2.14.0"]
+
 //////////
 
 // function to build a docker image
@@ -131,7 +116,7 @@ pipeline {
                                 changeset 'Dockerfile'
                                 changeset 'entrypoint.sh'
                             }
-                            expression { getUbuntuVers().size() > 0 }
+                            expression { builds['Ubuntu'] }
                         }
                     }
                     steps{
@@ -139,9 +124,9 @@ pipeline {
                         script {
                             // Ubuntu versions
                             def dev_env_u_tags = []
-                            def ubuntu_vers = getUbuntuVers()
+                            def ubuntu_vers = UbuntuVers
                             ubuntu_vers.each { dev_env_u_tags.add("u$it")}
-                            dev_env_build("ubuntu", getUbuntuVers(), dev_env_u_tags, true)
+                            dev_env_build("ubuntu", UbuntuVers, dev_env_u_tags, true)
                         }
                     }
                     post {
@@ -165,7 +150,7 @@ pipeline {
                                 changeset 'Dockerfile'
                                 changeset 'entrypoint.sh'
                             }
-                            expression { getNVCudaVers().size() > 0 }
+                            expression { builds['NVCuda'] }
                         }
                     }
                     steps{
@@ -173,9 +158,9 @@ pipeline {
                         script {
                             // nvidia CUDA versions
                             def dev_env_cuda_tags = []
-                            def cuda_vers = getNVCudaVers()
-                            cuda_vers.each { dev_env_cuda_tags.add("cuda$it")}
-                            dev_env_build("nvidia/cuda", getNVCudaTags(), dev_env_cuda_tags, true)
+                            def nvcuda_vers = NVCudaVers
+                            nvcuda_vers.each { dev_env_cuda_tags.add("cuda$it")}
+                            dev_env_build("nvidia/cuda", NVCudaTags, dev_env_cuda_tags, true)
                        }
                     }
                     post {
@@ -186,7 +171,7 @@ pipeline {
                     }
                 }
 
-                stage('Docker images building (pytorch)') {
+                stage('Docker images building (PyTorch)') {
                     agent { label 'docker-build' }
                     when {
                         allOf {
@@ -199,7 +184,7 @@ pipeline {
                                 changeset 'Dockerfile'
                                 changeset 'entrypoint.sh'
                             }
-                            expression { getPyTorchVers().size() > 0 }
+                            expression { builds['PyTorch'] }
                         }
                     }
                     steps{
@@ -207,43 +192,9 @@ pipeline {
                         script {
                             // Pytorch versions
                             def dev_env_torch_tags = []
-                            def pytorch_vers = getPyTorchVers()
+                            def pytorch_vers = PyTorchVers
                             pytorch_vers.each { dev_env_torch_tags.add("pytorch$it")}
-                            dev_env_build("pytorch/pytorch", getPyTorchTags(), dev_env_torch_tags, true)
-                       }
-                    }
-                    post {
-                        failure {
-                            docker_clean()
-                            sh "rm -rf ai4os-hub-check-artifact"
-                        }
-                    }
-                }
-
-                stage('Docker images building (tensorflow-cpu)') {
-                    agent { label 'docker-build' }
-                    when {
-                        allOf {
-                            anyOf {
-                                branch 'main'
-                                buildingTag()
-                            }
-                            anyOf {
-                                changeset 'Jenkinsfile'
-                                changeset 'Dockerfile'
-                                changeset 'entrypoint.sh'
-                            }
-                            expression { getTFVers().size() > 0 }
-                        }
-                    }
-                    steps{
-                        checkout scm
-                        script {
-                            // TensorFlow - CPU versions
-                            def tfcpu_vers = getTFVers()
-                            def dev_env_tfcpu_tags = []
-                            tfcpu_vers.each { dev_env_tfcpu_tags.add("tf$it"+"-cpu")}
-                            dev_env_build("tensorflow/tensorflow", tfcpu_vers, dev_env_tfcpu_tags, true)
+                            dev_env_build("pytorch/pytorch", PyTorchTags, dev_env_torch_tags, true)
                        }
                     }
                     post {
@@ -254,7 +205,7 @@ pipeline {
                     }
                 }
                 
-                stage('Docker images building (tensorflow-gpu)') {
+                stage('Docker images building (TensorFlow)') {
                     agent { label 'docker-build' }
                     when {
                         allOf {
@@ -267,19 +218,20 @@ pipeline {
                                 changeset 'Dockerfile'
                                 changeset 'entrypoint.sh'
                             }
-                            expression { getTFVers().size() > 0 }
+                            expression { builds['TF'] }
                         }
                     }
                     steps{
                         checkout scm
                         script {
-                            // TensorFlow - GPU versions
-                            def base_image_tfgpu_tags = []
-                            def tfgpu_vers = getTFVers()
-                            tfgpu_vers.each { base_image_tfgpu_tags.add("$it"+"-gpu")}
-                            def dev_env_tfgpu_tags = []
-                            tfgpu_vers.each { dev_env_tfgpu_tags.add("tf$it"+"-gpu")}
-                            dev_env_build("tensorflow/tensorflow", base_image_tfgpu_tags, dev_env_tfgpu_tags, false)
+                            // TensorFlow : since 16-Aug-2024 we use only TF GPU versions,
+                            // as they can also work on CPU-only instances
+                            def base_image_tf_tags = []
+                            def tf_vers = TFVers
+                            tf_vers.each { base_image_tf_tags.add("$it"+"-gpu")}
+                            def dev_env_tf_tags = []
+                            tf_vers.each { dev_env_tf_tags.add("tf$it")}
+                            dev_env_build("tensorflow/tensorflow", base_image_tf_tags, dev_env_tf_tags, true)
                        }
                     }
                     post {
