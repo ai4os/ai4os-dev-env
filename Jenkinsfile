@@ -1,7 +1,7 @@
 #!/usr/bin/groovy
 
-//////////        !!! IMPORTANT !!!        //////////
-//////////  DEFINE WHAT VERSIONS TO BUILD  //////////
+//////////              !!! IMPORTANT !!!             //////////
+//////////  DEFINE WHAT FLAVOR and VERSIONS TO BUILD  //////////
 
 // define which flavors of ai4os-dev-env to build
 def builds = ['Ubuntu': false, 'NVCuda': true, 'PyTorch': false, 'TF': true]
@@ -19,7 +19,8 @@ def PyTorchTags = ["1.11.0-cuda11.3-cudnn8-runtime", "1.12.0-cuda11.3-cudnn8-run
                    "2.0.0-cuda11.7-cudnn8-runtime",  "2.1.0-cuda11.8-cudnn8-runtime"]
 
 // tensorflow versions to use
-def TFVers = ["2.9.3", "2.10.0", "2.11.0", "2.12.0", "2.13.0", "2.14.0"]
+//def TFVers = ["2.9.3", "2.10.0", "2.11.0", "2.12.0", "2.13.0", "2.14.0"]
+def TFVers = ["2.12.0", "2.13.0", "2.14.0"]
 
 //////////
 
