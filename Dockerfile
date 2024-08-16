@@ -20,7 +20,8 @@ ARG orchentVer=1.2.9
 # Install ubuntu updates, python3 related stuff, some tools
 # gcc is needed in Pytorch images because deepaas installation might break otherwise (see docs) 
 # (gcc is already installed in tensorflow images)
-RUN DEBIAN_FRONTEND=noninteractive apt-get update && \
+ARG DEBIAN_FRONTEND=noninteractive
+RUN apt-get update && \
     apt-get install -y --no-install-recommends \
         curl \
         gnupg \
