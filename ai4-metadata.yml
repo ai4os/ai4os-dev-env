@@ -13,7 +13,8 @@ dates:
 links:
   source_code: https://github.com/ai4os/ai4os-dev-env
   docker_image: ai4oshub/ai4os-dev-env
-tags: []
+tags:
+  - general purpose
 tasks:
   - Other
 categories:
