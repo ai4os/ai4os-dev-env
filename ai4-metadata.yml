@@ -13,6 +13,9 @@ description: |-
   * nvidia-cuda based but without a deep leaning framework
   * Tensorflow version is included
   * PyTorch version is included
+
+  <img class='fit', src='https://docs.ai4os.eu/en/latest/_images/vscode.png'/>
+
 dates:
   created: '2019-03-01'
   updated: '2024-09-27'
