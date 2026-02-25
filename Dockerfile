@@ -1,4 +1,4 @@
-# Dockerfile has following arguments: image, tag, and orchentVer
+# Dockerfile has following arguments: image, tag, and orchentVer 
 # image - base image (default: tensorflow/tensorflow)
 # tag - tag for Tensorflow Image (default: 2.10.0)
 # orchentVer - version of orchent (see https://github.com/indigo-dc/orchent/releases/)
