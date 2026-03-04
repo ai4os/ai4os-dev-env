@@ -2,7 +2,7 @@
 <img src="https://ai4eosc.eu/wp-content/uploads/sites/10/2022/09/horizontal-transparent.png" alt="logo" width="300"/>
 </div>
 
-# Welcome to AI4OS Developement Environment
+# Welcome to AI4OS Development Environment
 
 ## Table of Content
 
