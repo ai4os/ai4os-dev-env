@@ -7,75 +7,99 @@
 [![Build Status](https://jenkins.services.ai4os.eu/buildStatus/icon?job=AI4OS/ai4os-dev-env/main)](https://jenkins.services.ai4os.eu/job/AI4OS/job/ai4os-dev-env/job/main)
 [![Contributor Covenant](https://img.shields.io/badge/Contributor%20Covenant-1.4-4baaaa.svg)](CODE_OF_CONDUCT.md)
 
-This is a container that exposes Jupyter notebook and Jupyter Lab or VSCode together with the DEEP as a Service API component. There is **no application code** inside!
+This is a containerized development environment for AI/ML workloads on AI4EOSC-like platforms. It provides **JupyterLab**, **VSCode (code-server)**, and the **DEEPaaS API** component. There is **no application code** inside -- you bring your own code!
 
-You can either mount host volume with the code into the container, or run jupyterlab terminal (e.g. http://127.0.0.1:8888/lab) to use git to pull your code and use either jupyter notebook or jupyter lab or vscode for the development of your application. Test it immediately and when ready, commit your changes back to your repository.
+You can either:
+- Mount a host volume with your code into the container, or
+- Use git inside the container to pull your code 
 
+Develop using JupyterLab or VSCode and test your application immediately in the cloud environment, and when ready, commit your changes back to your repository.
 
-The resulting Docker image has pre-installed:
-* Tensorflow or PyTorch or (just) Ubuntu
-* [cookiecutter](https://github.com/cookiecutter/cookiecutter)
-* git
-* curl
-* [deepaas](https://github.com/ai4os/DEEPaaS)
-* [deep-start](https://github.com/ai4os/deep-start)
+The resulting Docker image has pre-installed (Aug-2026):
+* TensorFlow or PyTorch or NVIDIA CUDA or (just) Ubuntu
+* [deepaas](https://github.com/ai4os/DEEPaaS) ≥2.1.0
+* [deep-start](https://github.com/deephdc/deep-start) launcher script
 * [flaat](https://github.com/indigo-dc/flaat)
-* jupyter, jupyterlab OR vscode ([code-server](https://github.com/coder/code-server))
-* mc
-* nano
+* Development IDE: 
+   * JupyterLab
+   * VSCode ([code-server](https://github.com/coder/code-server))
+* Python: python3, pip3
+* (cloud) File management:
+   * [rclone](https://rclone.org) (cloud storage sync - S3, Nextcloud, Google Drive, 40+ backends)
+   * [oneclient](https://onedata.org) (Onedata access)
+* Archive tools: unzip, zip, bzip2
+* Monitoring & debugging: htop, iputils-ping, net-tools
+* [cookiecutter](https://github.com/cookiecutter/cookiecutter)
+* git, git-lfs
+* curl, wget, jq
+* mc, nano
 * [oidc-agent](https://github.com/indigo-dc/oidc-agent)
 * openssh-client
-* python3
-* pip3
-* rclone
-* wget
 
 
 ## Running the container
 
 ### Directly from Docker Hub
 
-To run the Docker container directly from Docker Hub and start using jupyter notebook / jupyterlab or vscode run the following command:
+#### Default: JupyterLab
 
 ```bash
 $ docker run -ti -p 5000:5000 -p 6006:6006 -p 8888:8888 ai4oshub/ai4os-dev-env
 ```
 
-This command will pull the Docker image from the Docker Hub and start the default command `deep-start -j´, which starts Jupyter Lab.
+This starts JupyterLab (default). Access at: http://127.0.0.1:8888
 
-Then go either to http://127.0.0.1:8888/tree for jupyter notebook or to http://127.0.0.1:8888/lab for jupyterlab.
-
-If you want to start DEEPaaS API service, go to the jupyterlab, i.e. http://127.0.0.1:8888/lab, open terminal, type:
+#### Alternative: VSCode (code-server)
 
 ```bash
-$ deep-start
+$ docker run -ti -p 5000:5000 -p 6006:6006 -p 8888:8888 \
+    -e PASSWORD=your_secure_password \
+    ai4oshub/ai4os-dev-env deep-start -s
 ```
 
-direct your browser to http://127.0.0.1:5000
+Access VSCode at: http://127.0.0.1:8888
 
-Since Jan-2023, [deep-start](https://github.com/ai4os/deep-start) also allows to start VSCode ([code-server](https://github.com/coder/code-server)) via `deep-start -s´ :
+⚠️ **Important**: The `PASSWORD` environment variable is **required** for VSCode in cloud deployments.
+
+#### DEEPaaS API Only
+
+To start only the DEEPaaS API service (without IDE):
 
 ```bash
-$ docker run -ti -p 5000:5000 -p 6006:6006 -p 8888:8888 ai4oshub/ai4os-dev-env deep-start -s
+$ docker run -ti -p 5000:5000 -p 6006:6006 ai4oshub/ai4os-dev-env deep-start
 ```
+Access at: http://127.0.0.1:5000  (or http://127.0.0.1:5000/api to get Swagger interface)
 
-If you need to mount some directories from your host into the container, please, use usual Docker way, e.g.
+💡 **Hint:**: You can start DEEPaaS API also in either Jupyterlab or VSCode: go to terminal and execute `deep-start`, then direct your browser to http://127.0.0.1:5000/api to access DEEPaaS API Swagger interface.
+
+#### Mount Host Volumes
+
+Mount your local code directory into the container:
 
 ```bash
-$ docker run -ti -p 5000:5000 -p 6006:6006 -p 8888:8888 -v $HOME/data:/srv/app/data ai4oshub/ai4os-dev-env
+$ docker run -ti -p 8888:8888 \
+    -v $HOME/my-project:/srv/app/my-project \
+    ai4oshub/ai4os-dev-env
 ```
 
-mounts your host directory `$HOME/data` into container's path `/srv/app/data`.
+This mounts your host directory `$HOME/my-project` into the container at `/srv/app/my-project`.
 
-N.B. For either CPU-based or GPU-based images you can also use [udocker](https://github.com/indigo-dc/udocker) to run containers.
+**Note**: For both CPU-based and GPU-based images, you can also use [udocker](https://github.com/indigo-dc/udocker) to run containers.
 
 ### Running via docker-compose
 
-docker-compose.yml allows you to run the application with various configurations via docker-compose.
+The `docker-compose.yml` file provides pre-configured services for different scenarios:
 
-**N.B!** docker-compose.yml is of version '2.3', one needs docker 17.06.0+ and docker-compose ver.1.16.0+, see https://docs.docker.com/compose/install/
+```bash
+$ docker-compose up generic-cpu          # JupyterLab on CPU
+$ docker-compose up generic-cpu-vscode   # VSCode on CPU
+$ docker-compose up generic-gpu          # JupyterLab on GPU (requires nvidia-docker)
+$ docker-compose up generic-gpu-vscode   # VSCode on GPU (requires nvidia-docker)
+```
 
-If you want to use Nvidia GPU (generic-gpu), you need nvidia-docker and docker-compose ver1.19.0+ , see [nvidia/FAQ](https://github.com/NVIDIA/nvidia-docker/wiki/Frequently-Asked-Questions#do-you-support-docker-compose)
+**Requirements:**
+- Docker 17.06.0+ and docker-compose 1.16.0+
+- For GPU support: you need [nvidia-container-toolkit](https://github.com/NVIDIA/nvidia-container-toolkit)
 
 
 ### Building the container
@@ -91,7 +115,7 @@ Building the container:
     $ git clone https://github.com/ai4os/ai4os-dev-env
     ```
 
-2. Build the container (default is CPU and Python3 support):
+2. Build the container:
 
     ```bash
     $ cd ai4os-dev-env
@@ -103,28 +127,46 @@ Docker container locally on your machine. You can inspect and modify the
 `Dockerfile` in order to check what is going on. For example, Dockerfile has three ARGs:
 
 * image: base image (default: tensorflow/tensorflow)
-* tag: to define tag for the Tensorflow Base image, e.g. '2.10.0' (default)
+* tag: to define tag for the Tensorflow Base image, e.g. '2.16.2' (default)
 
 e.g.
 
 ```bash
 $ cd ai4os-dev-env
-$ docker build -t ai4oshub/ai4os-dev-env:tf2.10.0-cpu --build-arg tag=2.10.0 .
+$ docker build --build-arg tag=2.16.2-gpu -t ai4oshub/ai4os-dev-env:tf2.16.2 .
 ```
 
-builds `ai4oshub/ai4os-dev-env:tf2.10.0-cpu` with CPU version of Tensorflow 2.10.0.
+builds `ai4oshub/ai4os-dev-env:tf2.16.2` with GPU version of Tensorflow 2.16.2.
 
 
-## Authenticating to Jupyter Notebook or Jupyterlab or VSCode
+## Security & Authentication
 
-If you call http://127.0.0.1:8888/tree or http://127.0.0.1:8888/lab for the first time, you will get to "login" page. If you run the container locally, 
-you will see in the terminal where the container started printed token to access Jupyter Notebook or Jupyter Lab. 
-You can also see logs of your running container by envoking ```$ docker logs containerID```
+### JupyterLab
 
-One other way is to specify the jupyter password at the time of container instantiation:
+When running locally without a password, JupyterLab displays a token in the terminal output. Copy this token to access the interface.
+
+To set a custom password:
 
 ```bash
-$ docker run -ti -p 5000:5000 -p 6006:6006 -p 8888:8888 -e idePASSWORD=the_pass_for_ide ai4oshub/ai4os-dev-env
+$ docker run -ti -p 8888:8888 -e idePASSWORD=my_secure_password ai4oshub/ai4os-dev-env
 ```
 
-N.B. The quotes are treated as parts of the password. The password has to be more than 8 characters long!
+**Password requirements:**
+- Minimum 8 characters
+- Quoted if containing special characters: `-e idePASSWORD='my$ecret!'`
+
+### VSCode (code-server)
+
+⚠️ **Cloud Deployment**: Always set the `idePASSWORD` environment variable
+
+```bash
+$ docker run -p 8888:8888 -e idePASSWORD=my_secure_password ai4oshub/ai4os-dev-env deep-start -s
+```
+
+### Check Container Logs
+
+To retrieve authentication tokens or debug issues:
+
+```bash
+$ docker logs <container-id>
+```
