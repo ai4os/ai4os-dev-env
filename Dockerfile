@@ -176,7 +176,7 @@ RUN set -eux; \
 # See: https://opencode.ai/docs#install
 # Binary installed to: $HOME/.opencode/bin/opencode (~200-300MB)
 RUN curl -fsSL https://opencode.ai/install | bash && \
-    # ln -s $HOME/.opencode/bin/opencode /usr/local/bin/opencode && \
+    # ln -s ${HOME}/.opencode/bin/opencode /usr/local/bin/opencode && \
     # Clean any temporary files (install script auto-cleans, but ensure completeness)
     rm -rf /tmp/*
 
