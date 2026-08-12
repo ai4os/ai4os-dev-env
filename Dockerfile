@@ -6,7 +6,7 @@
 #
 # Build arguments:
 #   image       - Base image (default: tensorflow/tensorflow)
-#   tag         - Base image tag (default: 2.16.0)
+#   tag         - Base image tag (default: 2.16.2)
 #
 # Examples:
 #   docker build -t ai4oshub/ai4os-dev-env .
@@ -164,7 +164,20 @@ RUN set -eux; \
         echo "[INFO] GLIBC < 2.28, installing code-server v4.16.1 for compatibility"; \
         curl -fsSL https://code-server.dev/install.sh | sh -s -- --version 4.16.1; \
     fi && \
-    mkdir -p /srv/.deep-start/vscode/code-server && \
+    # Clean up downloaded .deb installer files (~250MB)
+    find / -maxdepth 3 -name "code-server*.deb" -delete 2>/dev/null || true && \
+    rm -rf ${HOME}/.cache/code-server /tmp/* && \
+    mkdir -p /srv/.deep-start/vscode/code-server
+
+# -----------------------------------------------------------------------------
+# OpenCode AI Assistant
+# -----------------------------------------------------------------------------
+# Terminal-based AI coding agent for interactive development
+# See: https://opencode.ai/docs#install
+# Binary installed to: $HOME/.opencode/bin/opencode (~200-300MB)
+RUN curl -fsSL https://opencode.ai/install | bash && \
+    # ln -s $HOME/.opencode/bin/opencode /usr/local/bin/opencode && \
+    # Clean any temporary files (install script auto-cleans, but ensure completeness)
     rm -rf /tmp/*
 
 # -----------------------------------------------------------------------------
