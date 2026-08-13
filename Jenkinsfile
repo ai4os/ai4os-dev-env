@@ -4,23 +4,33 @@
 //////////  DEFINE WHAT FLAVOR and VERSIONS TO BUILD  //////////
 
 // define which flavors of ai4os-dev-env to build
-def builds = ['Ubuntu': false, 'NVCuda': true, 'PyTorch': false, 'TF': true]
+def builds = ['Ubuntu': true, 'NVCuda': true, 'PyTorch': true, 'TF': true]
 
 // Ubuntu versions to use
-def UbuntuVers = ["20.04", "22.04"]
+def UbuntuVers = ["24.04", "26.04"]
+// legacy
+//def UbuntuVers = ["20.04", "22.04"]
 
 // nvidia/cuda versions to use
-def NVCudaVers = ["11.3.1","12.3.2"]
-def NVCudaTags = ["11.3.1-cudnn8-runtime-ubuntu20.04", "12.3.2-cudnn9-runtime-ubuntu22.04"]
+def NVCudaVers = ["12.4.1","12.6.3"]
+def NVCudaTags = ["12.4.1-cudnn-runtime-ubuntu22.04","12.6.3-cudnn-runtime-ubuntu24.04"]
+// legacy
+//def NVCudaVers = ["11.3.1","12.3.2"]
+//def NVCudaTags = ["11.3.1-cudnn8-runtime-ubuntu20.04", "12.3.2-cudnn9-runtime-ubuntu22.04"]
+
 
 // pytorch versions and tags to use
-def PyTorchVers = ["1.11", "1.12", "1.13", "2.0", "2.1"]
-def PyTorchTags = ["1.11.0-cuda11.3-cudnn8-runtime", "1.12.0-cuda11.3-cudnn8-runtime", "1.13.0-cuda11.6-cudnn8-runtime", 
-                   "2.0.0-cuda11.7-cudnn8-runtime",  "2.1.0-cuda11.8-cudnn8-runtime"]
+def PyTorchVers = ["2.3", "2.4"]
+def PyTorchTags = ["2.3.1-cuda11.8-cudnn8-runtime", "2.4.1-cuda12.4-cudnn9-runtime"]
+// legacy
+//def PyTorchVers = ["1.11", "1.12", "1.13", "2.0", "2.1"]
+//def PyTorchTags = ["1.11.0-cuda11.3-cudnn8-runtime", "1.12.0-cuda11.3-cudnn8-runtime", "1.13.0-cuda11.6-cudnn8-runtime", 
+//                   "2.0.0-cuda11.7-cudnn8-runtime",  "2.1.0-cuda11.8-cudnn8-runtime"]
 
 // tensorflow versions to use
+def TFVers = ["2.15.0", "2.16.0"]
+// legacy
 //def TFVers = ["2.9.3", "2.10.0", "2.11.0", "2.12.0", "2.13.0", "2.14.0"]
-def TFVers = ["2.12.0", "2.13.0", "2.14.0"]
 
 //////////
 
@@ -83,6 +93,9 @@ pipeline {
             agent any
             environment {
                 AI4OS_REGISTRY_CREDENTIALS = credentials('AIOS-registry-credentials')
+                // Remove .git from the GIT_URL link
+                REPO_URL = "${env.GIT_URL.endsWith(".git") ? env.GIT_URL[0..-5] : env.GIT_URL}"
+                REPO_NAME = "${REPO_URL.tokenize('/')[-1]}"                
             }
             steps {
                 checkout scm
@@ -92,9 +105,8 @@ pipeline {
                         docker_registry_credentials = env.AI4OS_REGISTRY_CREDENTIALS
                         docker_registry_org = env.AI4OS_REGISTRY_REPOSITORY
                     }
-                    // get docker image name from metadata.json
-                    meta = readJSON file: "metadata.json"
-                    image_name = meta["sources"]["docker_registry_repo"].split("/")[1]
+                    // docker image name is the same as the repository name, e.g. ai4os-dev-env
+                    image_name = env.REPO_NAME
                     docker_repository = docker_registry_org + "/" + image_name
                 }
             }

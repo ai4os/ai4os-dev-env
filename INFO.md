@@ -1,5 +1,5 @@
 <div align="center">
-<img src="https://ai4eosc.eu/wp-content/uploads/sites/10/2022/09/horizontal-transparent.png" alt="logo" width="300"/>
+<img src="https://raw.githubusercontent.com/ai4os/ai4-docs/refs/heads/master/source/_static/images/ai4eosc/logo.png" alt="logo" width="300"/>
 </div>
 
 # Welcome to AI4OS Development Environment
@@ -45,41 +45,46 @@ $ cookiecutter https://github.com/ai4os/ai4-template
 ## Access remote storages
 
 You can use 
-* [rclone](https://rclone.org) to sync with a remote cloud storage (e.g. [AI4OS Nextcloud](https://share.services.ai4os.eu/))
+* [rclone](https://rclone.org) to sync with a remote cloud storage (e.g. [AI4OS Nextcloud](https://share.cloud.ai4eosc.eu/))
 
 
 ## AI4OS Documentation
 
 Comprehensive documentation on AI4OS tools and components can be found in:
 
-* [AI4OS documentation](https://docs.ai4os.eu/)
-    * [Quickstart guide](https://docs.ai4os.eu/en/latest/user/quickstart.html)
-    * [Overview](https://docs.ai4os.eu/en/latest/user/index.html#overview)
-    * [HowTo's](https://docs.ai4os.eu/en/latest/user/index.html#how-to-s)
-* [YouTube channel](https://www.youtube.com/playlist?list=PLJ9x9Zk1O-J_UZfNO2uWp2pFMmbwLvzXa) with tutorials
+* [AI4OS documentation](https://docs.ai4eosc.eu/)
+    * [Quickstart guide](https://docs.ai4eosc.eu/en/latest/getting-started/quickstart.html)
+    * [Overview](https://docs.ai4eosc.eu/en/latest/getting-started/overview.html)
+    * [HowTo's](https://docs.ai4eosc.eu/en/latest/howtos/index.html)
+* [YouTube channel](https://www.youtube.com/@ai4eosc) with tutorials
 
 ## AI4OS related services
-* [AI4OS AAI](https://aai.egi.eu/registry/co_petitions/start/coef:550) : Join our Virtual Organisation (VO) in order to access the services
-* [AI4OS Open Catalog and the Dashboard](https://dashboard.cloud.ai4eosc.eu/) : a curated repository of applications ready to be used or extended. Logged-in users can deploy modules directly on the platform.
-* [Nextcloud storage](https://share.services.ai4os.eu/) :  a sync&share solution to host and share data.
+* [AI4OS Helpdesk](https://helpdesk.cloud.ai4eosc.eu) : Ask for support, including registration on the platform
+* [AI4OS AAI](https://login.cloud.ai4eosc.eu/realms/ai4eosc/account) : Central login service
+* [AI4OS Open Catalog and the Dashboard](https://dashboard.cloud.ai4eosc.eu/) : A curated repository of applications ready to be used or extended. Logged-in users can deploy modules directly on the platform.
+* [Nextcloud storage](https://share.cloud.ai4eosc.eu/) :  A Sync&Share solution to host and share data.
+* [MLflow](https://mlflow.cloud.ai4eosc.eu) : track, evaluate, monitor your AI/ML and LLM applications
+* [OSCAR](https://oscar.grycap.net/) : Inference infrastructure
 
 ## List of installed tools
 AI4OS Development Environment uses as a base a Docker Image of either 
-* [TensorFlow](https://tensorflow.org) framework (2.10.0 | 2.11.0)
-* [PyTorch](https://pytorch.org/) (1.12 | 1.13)
-* or Ubuntu 20.04 (Focal)
+* [TensorFlow](https://tensorflow.org) framework
+* [PyTorch](https://pytorch.org/)
+* [NVIDIA/Cuda](https://developer.nvidia.com/cuda)
+* [Ubuntu Linux](https://ubuntu.com/)
 
-It leverages 
-* [JupyterLab](https://jupyterlab.readthedocs.io/en/stable/index.html) web-based user interface for developing and debugging your code (hint: use **Shift+Right click** to copy/paste);
+It leverages: 
+* [JupyterLab](https://jupyterlab.readthedocs.io/en/stable/index.html) Web-based user interface for developing and debugging your code (hint: use **Shift+Right click** to copy/paste);
 * [VS Code in the browser](https://coder.com/docs/code-server/latest) VS Code that runs in the browser, see [code-server](https://github.com/coder/code-server)
+* [OpenCode](https://opencode.ai/) - An open source agent that helps you write code in your terminal, IDE, or (web) desktop
 
 Includes: 
 * [cookiecutter](https://cookiecutter.readthedocs.io/en/latest/) template tool to start or integrate your project with AI4OS solutions profiting from [AI4OS Data Science templates](https://github.com/orgs/ai4os/repositories?q=ai4-template):
 
 Contains AI4OS components:
-* [DEEP as a Service API](https://docs.ai4os.eu/projects/deepaas/en/stable/) is REST API that provids access to machine learning models;
+* [DEEP as a Service API](https://docs.ai4os.eu/projects/deepaas/en/stable/) is REST API that provides access to machine learning models;
 * [flaat](https://github.com/indigo-dc/flaat) : FLAsk support for handling oidc Access Tokens;
-* [oidc-agent](https://github.com/indigo-dc/oidc-agent) : a set of tools to manage OpenID Connect tokens and make them easily usable from the command line;
+* [oidc-agent](https://indigo-dc.github.io/oidc-agent/) : a set of tools to manage OpenID Connect tokens and make them easily usable from the command line;
 
 Python related packages:
 * python
@@ -92,7 +97,7 @@ And a number of external tools to facilitate the development:
 * jq : lightweight and flexible command-line JSON processor
 * [mc](https://midnight-commander.org/) : Midnight Commander, a visual file manager
 * nano : a simple terminal-based text editor
-* [oneclient](https://onedata.org/docs/doc/using_onedata/oneclient.html) : a command-line based client for Onedata
+* oneclient : a command-line based client for [Onedata](https://onedata.org/docs)
 * openssh-client
 * [rclone](https://rclone.org) : a command line program to sync files and directories to and from cloud storages
 * wget : a free utility for non-interactive download of files from the Web
@@ -100,6 +105,8 @@ And a number of external tools to facilitate the development:
 ## Acknowledgements
 
 This work is co-funded by [AI4EOSC](https://ai4eosc.eu/) project that has received funding from the European Union's Horizon Europe 2022 research and innovation programme under agreement No 101058593
+> Ignacio Heredia, Álvaro López García, et al. [AI4EOSC: A federated cloud platform for Artificial Intelligence in scientific research](https://doi.org/10.1016/j.future.2026.108672) Future Generation Computer Systems 185 (2026) 108672,
+ISSN 0167-739X.
 
 This work is co-funded by [DEEP Hybrid-DataCloud](https://deep-hybrid-datacloud.eu/) project that has received funding from the European Union’s Horizon 2020 research and innovation programme under grant agreement No 777435.
 Please consider citing the DEEP Hybrid DataCloud project:

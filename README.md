@@ -1,5 +1,5 @@
 <div align="center">
-<img src="https://ai4eosc.eu/wp-content/uploads/sites/10/2022/09/horizontal-transparent.png" alt="logo" width="300"/>
+<img src="https://raw.githubusercontent.com/ai4os/ai4-docs/refs/heads/master/source/_static/images/ai4eosc/logo.png" alt="logo" width="300"/>
 </div>
 
 # AI4OS Development Environment (AI4OSDev)
@@ -18,7 +18,7 @@ Develop using JupyterLab or VSCode and test your application immediately in the 
 The resulting Docker image has pre-installed (Aug-2026):
 * TensorFlow or PyTorch or NVIDIA CUDA or (just) Ubuntu
 * [deepaas](https://github.com/ai4os/DEEPaaS) ≥2.1.0
-* [deep-start](https://github.com/deephdc/deep-start) launcher script
+* [deep-start](https://github.com/ai4os/deep-start) launcher script
 * [flaat](https://github.com/indigo-dc/flaat)
 * Development IDE: 
    * JupyterLab

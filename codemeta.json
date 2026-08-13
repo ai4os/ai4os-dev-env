@@ -10,7 +10,9 @@
         "docker",
         "development environment",
         "jupyter",
-        "vscode"
+        "vscode",
+        "opencode",
+        "deepaas"
     ],
     "programmingLanguage": [
         "docker"

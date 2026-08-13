@@ -84,7 +84,7 @@ WORKDIR /srv
 # -----------------------------------------------------------------------------
 # OIDC Agent
 # -----------------------------------------------------------------------------
-RUN curl -sSL repo.data.kit.edu/repo-data-kit-edu-key.gpg | gpg --dearmor -o /etc/apt/trusted.gpg.d/kitrepo-archive.gpg && \
+RUN curl -sSL https://repo.data.kit.edu/repo-data-kit-edu-key.gpg | gpg --dearmor -o /etc/apt/trusted.gpg.d/kitrepo-archive.gpg && \
     echo "deb https://repo.data.kit.edu/ubuntu/$(lsb_release -sr) ./" >> /etc/apt/sources.list && \
     apt-get update && \
     apt-get install -y --no-install-recommends oidc-agent-cli && \
@@ -135,7 +135,7 @@ ENV DISABLE_AUTHENTICATION_AND_ASSUME_AUTHENTICATED_USER=yes
 # -----------------------------------------------------------------------------
 # deep-start Launcher
 # -----------------------------------------------------------------------------
-RUN git clone --depth 1 https://github.com/deephdc/deep-start /srv/.deep-start && \
+RUN git clone --depth 1 https://github.com/ai4os/deep-start /srv/.deep-start && \
     ln -s /srv/.deep-start/deep-start.sh /usr/local/bin/deep-start
 
 # -----------------------------------------------------------------------------
@@ -174,11 +174,12 @@ RUN set -eux; \
 # -----------------------------------------------------------------------------
 # Terminal-based AI coding agent for interactive development
 # See: https://opencode.ai/docs#install
-# Binary installed to: $HOME/.opencode/bin/opencode (~200-300MB)
-RUN curl -fsSL https://opencode.ai/install | bash && \
-    # ln -s ${HOME}/.opencode/bin/opencode /usr/local/bin/opencode && \
-    # Clean any temporary files (install script auto-cleans, but ensure completeness)
-    rm -rf /tmp/*
+# Install system-wide: binary moved to /usr/local/bin so it is on PATH for
+# any runtime user (the installer hardcodes INSTALL_DIR=$HOME/.opencode/bin
+# and only edits .bashrc, which non-interactive shells don't source).
+RUN curl -fsSL https://opencode.ai/install | bash -s -- --no-modify-path && \
+    mv "${HOME}/.opencode/bin/opencode" /usr/local/bin/opencode && \
+    rm -rf /tmp/* "${HOME}/.opencode"
 
 # -----------------------------------------------------------------------------
 # Ports & Entrypoint
