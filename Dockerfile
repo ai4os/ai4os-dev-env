@@ -145,12 +145,19 @@ RUN curl -sS http://get.onedata.org/oneclient.sh | bash && \
 # -----------------------------------------------------------------------------
 # Python Packages (AI4OS Stack)
 # -----------------------------------------------------------------------------
-RUN pip install --no-cache-dir \
-    cookiecutter \
-    'deepaas>=2.1.0' \
-    flaat \
-    jupyterlab \
+# Ubuntu 24.04+ enforces PEP 668 (externally-managed-environment), blocking
+# system-wide pip install. We use a venv with --system-site-packages so the
+# base image's framework (TF/PyTorch/CUDA) remains visible.
+RUN python3 -m venv --system-site-packages /opt/venv && \
+    /opt/venv/bin/pip install --no-cache-dir --upgrade pip && \
+    /opt/venv/bin/pip install --no-cache-dir \
+        cookiecutter \
+        'deepaas>=2.1.0' \
+        flaat \
+        jupyterlab \
     && rm -rf /root/.cache/pip/*
+
+ENV PATH="/opt/venv/bin:${PATH}"
 
 ENV DISABLE_AUTHENTICATION_AND_ASSUME_AUTHENTICATED_USER=yes
 
