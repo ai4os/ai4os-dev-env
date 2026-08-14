@@ -108,6 +108,7 @@ pipeline {
                     // docker image name is the same as the repository name, e.g. ai4os-dev-env
                     image_name = env.REPO_NAME
                     docker_repository = docker_registry_org + "/" + image_name
+                    sh "docker --version"
                 }
             }
         }
@@ -119,17 +120,21 @@ pipeline {
                 stage('Docker images building (ubuntu)') {
                     agent { label 'docker-build' }
                     when {
-                        allOf {
-                            anyOf {
-                                branch 'main'
-                                buildingTag()
+                        anyOf {
+                            triggeredBy 'UserIdCause'
+
+                            allOf {
+                                anyOf {
+                                    branch 'main'
+                                    buildingTag()
+                                }
+                                anyOf {
+                                    changeset 'Jenkinsfile'
+                                    changeset 'Dockerfile'
+                                    changeset 'entrypoint.sh'
+                                }
+                                expression { builds['Ubuntu'] }
                             }
-                            anyOf {
-                                changeset 'Jenkinsfile'
-                                changeset 'Dockerfile'
-                                changeset 'entrypoint.sh'
-                            }
-                            expression { builds['Ubuntu'] }
                         }
                     }
                     steps{
@@ -153,17 +158,21 @@ pipeline {
                 stage('Docker images building (nvidia/cuda)') {
                     agent { label 'docker-build' }
                     when {
-                        allOf {
-                            anyOf {
-                                branch 'main'
-                                buildingTag()
+                        anyOf {
+                            triggeredBy 'UserIdCause'
+
+                            allOf {
+                                anyOf {
+                                    branch 'main'
+                                    buildingTag()
+                                }
+                                anyOf {
+                                    changeset 'Jenkinsfile'
+                                    changeset 'Dockerfile'
+                                    changeset 'entrypoint.sh'
+                                }
+                                expression { builds['NVCuda'] }
                             }
-                            anyOf {
-                                changeset 'Jenkinsfile'
-                                changeset 'Dockerfile'
-                                changeset 'entrypoint.sh'
-                            }
-                            expression { builds['NVCuda'] }
                         }
                     }
                     steps{
@@ -187,17 +196,21 @@ pipeline {
                 stage('Docker images building (PyTorch)') {
                     agent { label 'docker-build' }
                     when {
-                        allOf {
-                            anyOf {
-                                branch 'main'
-                                buildingTag()
+                        anyOf {
+                            triggeredBy 'UserIdCause'
+
+                            allOf {
+                                anyOf {
+                                    branch 'main'
+                                    buildingTag()
+                                }
+                                anyOf {
+                                    changeset 'Jenkinsfile'
+                                    changeset 'Dockerfile'
+                                    changeset 'entrypoint.sh'
+                                }
+                                expression { builds['PyTorch'] }
                             }
-                            anyOf {
-                                changeset 'Jenkinsfile'
-                                changeset 'Dockerfile'
-                                changeset 'entrypoint.sh'
-                            }
-                            expression { builds['PyTorch'] }
                         }
                     }
                     steps{
@@ -221,17 +234,21 @@ pipeline {
                 stage('Docker images building (TensorFlow)') {
                     agent { label 'docker-build' }
                     when {
-                        allOf {
-                            anyOf {
-                                branch 'main'
-                                buildingTag()
+                        anyOf {
+                            triggeredBy 'UserIdCause'
+
+                            allOf {
+                                anyOf {
+                                    branch 'main'
+                                    buildingTag()
+                                }
+                                anyOf {
+                                    changeset 'Jenkinsfile'
+                                    changeset 'Dockerfile'
+                                    changeset 'entrypoint.sh'
+                                }
+                                expression { builds['TF'] }
                             }
-                            anyOf {
-                                changeset 'Jenkinsfile'
-                                changeset 'Dockerfile'
-                                changeset 'entrypoint.sh'
-                            }
-                            expression { builds['TF'] }
                         }
                     }
                     steps{
