@@ -63,6 +63,8 @@ RUN apt-get update && \
         python3-pip \
         python3-setuptools \
         python3-wheel \
+    # Update certificates
+    && update-ca-certificates \
     # Cleanup
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* \
@@ -80,6 +82,26 @@ ENV LANG=C.UTF-8 \
     HOME=/root
 
 WORKDIR /srv
+
+# DEBUG cURL issue with installing opencode.ai ():
+# curl: (60) SSL certificate problem: unable to get local issuer certificate
+RUN set -eux; \
+    echo "=== curl version ==="; \
+    curl --version || true; \
+    echo "=== CA bundle ==="; \
+    ls -l /etc/ssl/certs/ca-certificates.crt || true; \
+    echo "=== curl code-server (github) ==="; \
+    curl -v https://github.com/coder/code-server/releases/latest/download/code-server-linux-amd64.tar.gz -o /dev/null || true; \
+    echo "=== curl OpenCode ==="; \
+    curl -v https://opencode.ai/install -o /dev/null || true; \
+    curl -Iv https://opencode.ai/install -o /dev/null || true; \
+    echo "=== openssl OpenCode ==="; \
+    openssl s_client \
+        -connect opencode.ai:443 \
+        -servername opencode.ai \
+        -CAfile /etc/ssl/certs/ca-certificates.crt \
+        </dev/null || true
+RUN echo "End of debugging" && exit 1
 
 # -----------------------------------------------------------------------------
 # OIDC Agent
