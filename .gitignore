@@ -1,0 +1,22 @@
+# Temporary
+tmp/
+
+# OS artifacts
+.DS_Store
+Thumbs.db
+
+# Editor artifacts
+*.swp
+*.swo
+*~
+\#*\#
+.\#*
+
+# Python (for local testing)
+__pycache__/
+*.pyc
+*.pyo
+
+# Environment files (may contain secrets)
+.env
+.env.*

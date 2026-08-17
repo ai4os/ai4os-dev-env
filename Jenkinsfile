@@ -126,7 +126,6 @@ pipeline {
                             allOf {
                                 anyOf {
                                     branch 'main'
-                                    branch 'debug-curl-ca'
                                     buildingTag()
                                 }
                                 anyOf {
@@ -165,7 +164,6 @@ pipeline {
                             allOf {
                                 anyOf {
                                     branch 'main'
-                                    branch 'debug-curl-ca'
                                     buildingTag()
                                 }
                                 anyOf {
@@ -204,7 +202,6 @@ pipeline {
                             allOf {
                                 anyOf {
                                     branch 'main'
-                                    branch 'debug-curl-ca'
                                     buildingTag()
                                 }
                                 anyOf {
@@ -243,7 +240,6 @@ pipeline {
                             allOf {
                                 anyOf {
                                     branch 'main'
-                                    branch 'debug-curl-ca'
                                     buildingTag()
                                 }
                                 anyOf {

@@ -1,0 +1,11 @@
+# Version control
+.git
+.gitignore
+.dockerignore
+
+# Debugging artifacts
+tmp/
+
+# CI (not needed in image)
+Jenkinsfile
+docker-compose.yml

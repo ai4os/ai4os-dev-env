@@ -49,6 +49,7 @@ RUN apt-get update && \
     # File management & editors
         mc \
         nano \
+        tmux \
     # Archive tools
         unzip \
         zip \
@@ -62,6 +63,7 @@ RUN apt-get update && \
         python3-dev \
         python3-pip \
         python3-setuptools \
+        python3-venv \
         python3-wheel \
     # Update certificates
     && update-ca-certificates \
@@ -82,26 +84,6 @@ ENV LANG=C.UTF-8 \
     HOME=/root
 
 WORKDIR /srv
-
-# DEBUG cURL issue with installing opencode.ai ():
-# curl: (60) SSL certificate problem: unable to get local issuer certificate
-RUN set -eux; \
-    echo "=== curl version ==="; \
-    curl --version || true; \
-    echo "=== CA bundle ==="; \
-    ls -l /etc/ssl/certs/ca-certificates.crt || true; \
-    echo "=== curl code-server (github) ==="; \
-    curl -v https://github.com/coder/code-server/releases/latest/download/code-server-linux-amd64.tar.gz -o /dev/null || true; \
-    echo "=== curl OpenCode ==="; \
-    curl -v https://opencode.ai/install -o /dev/null || true; \
-    curl -Iv https://opencode.ai/install -o /dev/null || true; \
-    echo "=== openssl OpenCode ==="; \
-    openssl s_client \
-        -connect opencode.ai:443 \
-        -servername opencode.ai \
-        -CAfile /etc/ssl/certs/ca-certificates.crt \
-        </dev/null || true
-RUN echo "End of debugging" && exit 1
 
 # -----------------------------------------------------------------------------
 # OIDC Agent
@@ -201,12 +183,23 @@ RUN set -eux; \
 # -----------------------------------------------------------------------------
 # OpenCode AI Assistant
 # -----------------------------------------------------------------------------
-# Terminal-based AI coding agent for interactive development
-# See: https://opencode.ai/docs#install
-# Install system-wide: binary moved to /usr/local/bin so it is on PATH for
-# any runtime user (the installer hardcodes INSTALL_DIR=$HOME/.opencode/bin
-# and only edits .bashrc, which non-interactive shells don't source).
-RUN curl -fsSL https://opencode.ai/install | bash -s -- --no-modify-path && \
+# Terminal-based AI coding agent for interactive development, see: https://opencode.ai/docs
+# Install via a local copy of the official script to avoid
+# SSL inspection issues in corporate CI environments (e.g. Cisco Umbrella).
+# Always provide --version to avoid GitHub API calls from the installation script
+COPY scripts/install-opencode.sh /tmp/install-opencode.sh
+RUN set -eux; \
+    OPENCODE_TAG=$(curl -sI https://github.com/anomalyco/opencode/releases/latest \
+                | grep -i "^location:" \
+                | sed 's|.*/tag/||' | tr -d '\r\n'); \
+    OPENCODE_VERSION="${OPENCODE_TAG#v}"; \
+    # GLIBC < 2.29 => install Open AI v1.14.48 for compatibility, otherwise - latest
+    GLIBC_VERSION=$(ldd --version | awk '/ldd/{print $NF}'); \
+    if [ "$(echo "$GLIBC_VERSION" | awk -F. '{printf("%d%03d%03d\n", $1,$2,$3)}')" -lt 2029000 ]; then \
+        OPENCODE_VERSION="1.14.48"; \
+    fi && \
+    echo "[INFO] GLIBC=${GLIBC_VERSION}, installing OpenCode ${OPENCODE_VERSION}"; \
+    bash /tmp/install-opencode.sh --no-modify-path --version "${OPENCODE_VERSION}" && \
     mv "${HOME}/.opencode/bin/opencode" /usr/local/bin/opencode && \
     rm -rf /tmp/* "${HOME}/.opencode"
 
