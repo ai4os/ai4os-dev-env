@@ -4,7 +4,7 @@
 //////////  DEFINE WHAT FLAVOR and VERSIONS TO BUILD  //////////
 
 // define which flavors of ai4os-dev-env to build
-def builds = ['Ubuntu': true, 'NVCuda': true, 'PyTorch': true, 'TF': true]
+def builds = ['Ubuntu': false, 'NVCuda': true, 'PyTorch': true, 'TF': true]
 
 // Ubuntu versions to use
 // OnneData not yet ready for Ubuntu:26.04
@@ -13,16 +13,18 @@ def UbuntuVers = ["24.04"]
 //def UbuntuVers = ["20.04", "22.04"]
 
 // nvidia/cuda versions to use
-def NVCudaVers = ["12.4.1","12.6.3"]
-def NVCudaTags = ["12.4.1-cudnn-runtime-ubuntu22.04","12.6.3-cudnn-runtime-ubuntu24.04"]
+def NVCudaVers = ["12.8.1","13.0.3"]
+def NVCudaTags = ["12.8.1-cudnn-runtime-ubuntu22.04","13.0.3-cudnn-runtime-ubuntu24.04"]
 // legacy
 //def NVCudaVers = ["11.3.1","12.3.2"]
 //def NVCudaTags = ["11.3.1-cudnn8-runtime-ubuntu20.04", "12.3.2-cudnn9-runtime-ubuntu22.04"]
 
 
 // pytorch versions and tags to use
-def PyTorchVers = ["2.3", "2.4"]
-def PyTorchTags = ["2.3.1-cuda11.8-cudnn8-runtime", "2.4.1-cuda12.4-cudnn9-runtime"]
+def PyTorchVers = ["2.5", "2.6"]
+def PyTorchTags = ["2.5.1-cuda12.4-cudnn9-runtime", "2.6.0-cuda12.6-cudnn9-runtime"]
+//def PyTorchVers = ["2.3", "2.4"]
+//def PyTorchTags = ["2.3.1-cuda11.8-cudnn8-runtime", "2.4.1-cuda12.4-cudnn9-runtime"]
 // legacy
 //def PyTorchVers = ["1.11", "1.12", "1.13", "2.0", "2.1"]
 //def PyTorchTags = ["1.11.0-cuda11.3-cudnn8-runtime", "1.12.0-cuda11.3-cudnn8-runtime", "1.13.0-cuda11.6-cudnn8-runtime", 
@@ -30,7 +32,8 @@ def PyTorchTags = ["2.3.1-cuda11.8-cudnn8-runtime", "2.4.1-cuda12.4-cudnn9-runti
 
 // tensorflow versions to use - only version number!
 // "-gpu" suffix is added below such that base images become e.g. tensorflow/tensorflow:2.16.2-gpu
-def TFVers = ["2.15.0", "2.16.2"]
+def TFVers = ["2.17.0", "2.18.0"]
+//def TFVers = ["2.15.0", "2.16.2"]
 // legacy
 //def TFVers = ["2.9.3", "2.10.0", "2.11.0", "2.12.0", "2.13.0", "2.14.0"]
 
@@ -122,20 +125,22 @@ pipeline {
                 stage('Docker images building (ubuntu)') {
                     agent { label 'docker-build' }
                     when {
-                        anyOf {
-                            triggeredBy 'UserIdCause'
+                        allOf {
+                            expression { builds['Ubuntu'] }
+                            anyOf {
+                                triggeredBy 'UserIdCause'
 
-                            allOf {
-                                anyOf {
-                                    branch 'main'
-                                    buildingTag()
+                                allOf {
+                                    anyOf {
+                                        branch 'main'
+                                        buildingTag()
+                                    }
+                                    anyOf {
+                                        changeset 'Jenkinsfile'
+                                        changeset 'Dockerfile'
+                                        changeset 'entrypoint.sh'
+                                    }
                                 }
-                                anyOf {
-                                    changeset 'Jenkinsfile'
-                                    changeset 'Dockerfile'
-                                    changeset 'entrypoint.sh'
-                                }
-                                expression { builds['Ubuntu'] }
                             }
                         }
                     }
@@ -160,20 +165,22 @@ pipeline {
                 stage('Docker images building (nvidia/cuda)') {
                     agent { label 'docker-build' }
                     when {
-                        anyOf {
-                            triggeredBy 'UserIdCause'
+                        allOf {
+                            expression { builds['NVCuda'] }
+                            anyOf {
+                                triggeredBy 'UserIdCause'
 
-                            allOf {
-                                anyOf {
-                                    branch 'main'
-                                    buildingTag()
+                                allOf {
+                                    anyOf {
+                                        branch 'main'
+                                        buildingTag()
+                                    }
+                                    anyOf {
+                                        changeset 'Jenkinsfile'
+                                        changeset 'Dockerfile'
+                                        changeset 'entrypoint.sh'
+                                    }
                                 }
-                                anyOf {
-                                    changeset 'Jenkinsfile'
-                                    changeset 'Dockerfile'
-                                    changeset 'entrypoint.sh'
-                                }
-                                expression { builds['NVCuda'] }
                             }
                         }
                     }
@@ -198,20 +205,22 @@ pipeline {
                 stage('Docker images building (PyTorch)') {
                     agent { label 'docker-build' }
                     when {
-                        anyOf {
-                            triggeredBy 'UserIdCause'
+                        allOf {
+                            expression { builds['PyTorch'] }
+                            anyOf {
+                                triggeredBy 'UserIdCause'
 
-                            allOf {
-                                anyOf {
-                                    branch 'main'
-                                    buildingTag()
+                                allOf {
+                                    anyOf {
+                                        branch 'main'
+                                        buildingTag()
+                                    }
+                                    anyOf {
+                                        changeset 'Jenkinsfile'
+                                        changeset 'Dockerfile'
+                                        changeset 'entrypoint.sh'
+                                    }
                                 }
-                                anyOf {
-                                    changeset 'Jenkinsfile'
-                                    changeset 'Dockerfile'
-                                    changeset 'entrypoint.sh'
-                                }
-                                expression { builds['PyTorch'] }
                             }
                         }
                     }
@@ -236,20 +245,22 @@ pipeline {
                 stage('Docker images building (TensorFlow)') {
                     agent { label 'docker-build' }
                     when {
-                        anyOf {
-                            triggeredBy 'UserIdCause'
+                        allOf {
+                            expression { builds['TF'] }
+                            anyOf {
+                                triggeredBy 'UserIdCause'
 
-                            allOf {
-                                anyOf {
-                                    branch 'main'
-                                    buildingTag()
+                                allOf {
+                                    anyOf {
+                                        branch 'main'
+                                        buildingTag()
+                                    }
+                                    anyOf {
+                                        changeset 'Jenkinsfile'
+                                        changeset 'Dockerfile'
+                                        changeset 'entrypoint.sh'
+                                    }
                                 }
-                                anyOf {
-                                    changeset 'Jenkinsfile'
-                                    changeset 'Dockerfile'
-                                    changeset 'entrypoint.sh'
-                                }
-                                expression { builds['TF'] }
                             }
                         }
                     }
