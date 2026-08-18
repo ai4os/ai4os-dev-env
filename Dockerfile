@@ -59,6 +59,7 @@ RUN apt-get update && \
         htop \
         iputils-ping \
         net-tools \
+        nvtop \
     # Python development
         python3-dev \
         python3-pip \
@@ -146,7 +147,7 @@ ENV DISABLE_AUTHENTICATION_AND_ASSUME_AUTHENTICATED_USER=yes
 # -----------------------------------------------------------------------------
 # deep-start Launcher
 # -----------------------------------------------------------------------------
-RUN git clone --depth 1 https://github.com/ai4os/deep-start /srv/.deep-start && \
+RUN git clone --depth 1 -b v3.0.0 https://github.com/ai4os/deep-start /srv/.deep-start && \
     ln -s /srv/.deep-start/deep-start.sh /usr/local/bin/deep-start
 
 # -----------------------------------------------------------------------------

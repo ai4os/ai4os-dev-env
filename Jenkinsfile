@@ -7,7 +7,8 @@
 def builds = ['Ubuntu': true, 'NVCuda': true, 'PyTorch': true, 'TF': true]
 
 // Ubuntu versions to use
-def UbuntuVers = ["24.04", "26.04"]
+// OnneData not yet ready for Ubuntu:26.04
+def UbuntuVers = ["24.04"]
 // legacy
 //def UbuntuVers = ["20.04", "22.04"]
 
@@ -27,8 +28,9 @@ def PyTorchTags = ["2.3.1-cuda11.8-cudnn8-runtime", "2.4.1-cuda12.4-cudnn9-runti
 //def PyTorchTags = ["1.11.0-cuda11.3-cudnn8-runtime", "1.12.0-cuda11.3-cudnn8-runtime", "1.13.0-cuda11.6-cudnn8-runtime", 
 //                   "2.0.0-cuda11.7-cudnn8-runtime",  "2.1.0-cuda11.8-cudnn8-runtime"]
 
-// tensorflow versions to use
-def TFVers = ["2.15.0", "2.16.0"]
+// tensorflow versions to use - only version number!
+// "-gpu" suffix is added below such that base images become e.g. tensorflow/tensorflow:2.16.2-gpu
+def TFVers = ["2.15.0", "2.16.2"]
 // legacy
 //def TFVers = ["2.9.3", "2.10.0", "2.11.0", "2.12.0", "2.13.0", "2.14.0"]
 
