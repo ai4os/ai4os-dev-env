@@ -13,16 +13,16 @@ def UbuntuVers = ["24.04"]
 //def UbuntuVers = ["20.04", "22.04"]
 
 // nvidia/cuda versions to use
-def NVCudaVers = ["12.8.1","13.0.3"]
-def NVCudaTags = ["12.8.1-cudnn-runtime-ubuntu22.04","13.0.3-cudnn-runtime-ubuntu24.04"]
+def NVCudaVers = ["12.8.1","13.0.3","13.4.2"]
+def NVCudaTags = ["12.8.1-cudnn-runtime-ubuntu22.04","13.0.3-cudnn-runtime-ubuntu24.04","13.4.2-cudnn-runtime-ubuntu24.04"]
 // legacy
 //def NVCudaVers = ["11.3.1","12.3.2"]
 //def NVCudaTags = ["11.3.1-cudnn8-runtime-ubuntu20.04", "12.3.2-cudnn9-runtime-ubuntu22.04"]
 
 
 // pytorch versions and tags to use
-def PyTorchVers = ["2.5", "2.6"]
-def PyTorchTags = ["2.5.1-cuda12.4-cudnn9-runtime", "2.6.0-cuda12.6-cudnn9-runtime"]
+def PyTorchVers = ["2.5", "2.6", "2.8","2.10","2.12"]
+def PyTorchTags = ["2.5.1-cuda12.4-cudnn9-runtime", "2.6.0-cuda12.6-cudnn9-runtime", "2.8.0-cuda12.8-cudnn9-runtime", "2.10.0-cuda12.8-cudnn9-runtime", "2.12.1-cuda13.2-cudnn9-runtime"]
 //def PyTorchVers = ["2.3", "2.4"]
 //def PyTorchTags = ["2.3.1-cuda11.8-cudnn8-runtime", "2.4.1-cuda12.4-cudnn9-runtime"]
 // legacy
@@ -32,7 +32,7 @@ def PyTorchTags = ["2.5.1-cuda12.4-cudnn9-runtime", "2.6.0-cuda12.6-cudnn9-runti
 
 // tensorflow versions to use - only version number!
 // "-gpu" suffix is added below such that base images become e.g. tensorflow/tensorflow:2.16.2-gpu
-def TFVers = ["2.17.0", "2.18.0"]
+def TFVers = ["2.17.0", "2.18.0","2.20.0"]
 //def TFVers = ["2.15.0", "2.16.2"]
 // legacy
 //def TFVers = ["2.9.3", "2.10.0", "2.11.0", "2.12.0", "2.13.0", "2.14.0"]

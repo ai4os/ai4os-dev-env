@@ -147,8 +147,13 @@ ENV DISABLE_AUTHENTICATION_AND_ASSUME_AUTHENTICATED_USER=yes
 # -----------------------------------------------------------------------------
 # deep-start Launcher
 # -----------------------------------------------------------------------------
-RUN git clone --depth 1 -b v3.0.0 https://github.com/ai4os/deep-start /srv/.deep-start && \
+# Branch of the deep-start repository, used both for the baked-in clone below
+# and for the runtime update in the entrypoint (propagated via ENV).
+# Override per flavor with --build-arg DEEP_START_BRANCH=<branch> if needed.
+ARG DEEP_START_BRANCH=v3.0.0
+RUN git clone --depth 1 -b ${DEEP_START_BRANCH} https://github.com/ai4os/deep-start /srv/.deep-start && \
     ln -s /srv/.deep-start/deep-start.sh /usr/local/bin/deep-start
+ENV DEEP_START_BRANCH=${DEEP_START_BRANCH}
 
 # -----------------------------------------------------------------------------
 # JupyterLab Configuration
@@ -188,7 +193,8 @@ RUN set -eux; \
 # Install via a local copy of the official script to avoid
 # SSL inspection issues in corporate CI environments (e.g. Cisco Umbrella).
 # Always provide --version to avoid GitHub API calls from the installation script
-COPY scripts/install-opencode.sh /tmp/install-opencode.sh
+COPY scripts/install-opencode-v1.sh /tmp/install-opencode-v1.sh
+COPY scripts/install-opencode-v2.sh /tmp/install-opencode-v2.sh
 RUN set -eux; \
     OPENCODE_TAG=$(curl -sI https://github.com/anomalyco/opencode/releases/latest \
                 | grep -i "^location:" \
@@ -198,9 +204,11 @@ RUN set -eux; \
     GLIBC_VERSION=$(ldd --version | awk '/ldd/{print $NF}'); \
     if [ "$(echo "$GLIBC_VERSION" | awk -F. '{printf("%d%03d%03d\n", $1,$2,$3)}')" -lt 2029000 ]; then \
         OPENCODE_VERSION="1.14.48"; \
+        echo "[INFO] GLIBC=${GLIBC_VERSION}, installing OpenCode ${OPENCODE_VERSION}"; \
+        bash /tmp/install-opencode-v1.sh --no-modify-path --version "${OPENCODE_VERSION}"; \
     fi && \
-    echo "[INFO] GLIBC=${GLIBC_VERSION}, installing OpenCode ${OPENCODE_VERSION}"; \
-    bash /tmp/install-opencode.sh --no-modify-path --version "${OPENCODE_VERSION}" && \
+    echo "[INFO] GLIBC=${GLIBC_VERSION}, installing latest OpenCode (v2+)"; \
+    bash /tmp/install-opencode-v2.sh --no-modify-path && \
     mv "${HOME}/.opencode/bin/opencode" /usr/local/bin/opencode && \
     rm -rf /tmp/* "${HOME}/.opencode"
 
