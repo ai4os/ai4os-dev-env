@@ -4,7 +4,7 @@
 //////////  DEFINE WHAT FLAVOR and VERSIONS TO BUILD  //////////
 
 // define which flavors of ai4os-dev-env to build
-def builds = ['Ubuntu': false, 'NVCuda': true, 'PyTorch': true, 'TF': true, 'Legacy': true]
+def builds = ['Ubuntu': false, 'NVCuda': false, 'PyTorch': true, 'TF': true, 'Legacy': true]
 
 // Ubuntu versions to use
 // OnneData not yet ready for Ubuntu:26.04
@@ -17,8 +17,8 @@ def NVCudaTags = ["12.8.1-cudnn-runtime-ubuntu22.04"]
 //def NVCudaTags = ["12.8.1-cudnn-runtime-ubuntu22.04","13.0.3-cudnn-runtime-ubuntu24.04","13.4.2-cudnn-runtime-ubuntu24.04"]
 
 // pytorch versions and tags to use
-def PyTorchVers = ["2.8"]
-def PyTorchTags = ["2.8.0-cuda12.8-cudnn9-runtime"]
+def PyTorchVers = ["2.6"]
+def PyTorchTags = ["2.6.0-cuda12.6-cudnn9-runtime"]
 //def PyTorchVers = ["2.5", "2.6", "2.8","2.10","2.12"]
 //def PyTorchTags = ["2.5.1-cuda12.4-cudnn9-runtime", "2.6.0-cuda12.6-cudnn9-runtime", "2.8.0-cuda12.8-cudnn9-runtime", "2.10.0-cuda12.8-cudnn9-runtime", "2.12.1-cuda13.2-cudnn9-runtime"]
 //def PyTorchVers = ["2.3", "2.4"]
@@ -26,7 +26,7 @@ def PyTorchTags = ["2.8.0-cuda12.8-cudnn9-runtime"]
 
 // tensorflow versions to use - only version number!
 // "-gpu" suffix is added below such that base images become e.g. tensorflow/tensorflow:2.16.2-gpu
-def TFVers = ["2.18.0"]
+def TFVers = ["2.17.0"]
 //def TFVers = ["2.17.0", "2.18.0","2.20.0"]
 //def TFVers = ["2.15.0", "2.16.2"]
 
@@ -85,7 +85,7 @@ def harbor_api(verb, path, body = "") {
     def data_arg = body ? "--data '${body}'" : ""
     return sh(
         returnStdout: true,
-        script: "curl -s -o /tmp/harbor_resp.json -w '%{http_code}' -u \"\${HARBOR_USR}:\${HARBOR_PSW}\" -H 'Content-Type: application/json' -X ${verb} ${data_arg} '${url}'"
+        script: "curl -s -o /tmp/harbor_resp.json -w '%{http_code}' -u \"\${AI4OS_REGISTRY_CREDENTIALS_USR}:\${AI4OS_REGISTRY_CREDENTIALS_PSW}\" -H 'Content-Type: application/json' -X ${verb} ${data_arg} '${url}'"
     ).trim()
 }
 
@@ -196,12 +196,16 @@ def dev_env_build(base_image, base_image_tags, dev_env_tags, check){
 
 pipeline {
     agent none
+    environment {
+        // Harbor credentials, available to ALL stages: the legacy re-tagging
+        // stage reads AI4OS_REGISTRY_CREDENTIALS_USR / _PSW from the environment
+        AI4OS_REGISTRY_CREDENTIALS = credentials('AIOS-registry-credentials')
+    }
     stages {
 
         stage("Variable initialization") {
             agent any
             environment {
-                AI4OS_REGISTRY_CREDENTIALS = credentials('AIOS-registry-credentials')
                 // Remove .git from the GIT_URL link
                 REPO_URL = "${env.GIT_URL.endsWith(".git") ? env.GIT_URL[0..-5] : env.GIT_URL}"
                 REPO_NAME = "${REPO_URL.tokenize('/')[-1]}"                
@@ -406,15 +410,10 @@ pipeline {
                     }
                     steps {
                         script {
-                            withCredentials([usernamePassword(
-                                credentialsId: 'AIOS-registry-credentials',
-                                usernameVariable: 'HARBOR_USR',
-                                passwordVariable: 'HARBOR_PSW')]) {
-                                echo "HARBOR_USR is set: ${HARBOR_USR ? 'YES' : 'NO'}"
-                                echo "HARBOR_PSW is set: ${HARBOR_PSW ? 'YES' : 'NO'}"
-                                legacy_tag_images()
-                                echo "[DEBUG-LEGACY] Function completed"
-                            }
+                            echo "[DEBUG-LEGACY] Entering legacy stage script"
+                            echo "[DEBUG-LEGACY] Harbor USR set: ${env.AI4OS_REGISTRY_CREDENTIALS_USR ? 'YES' : 'NO'}, PSW set: ${env.AI4OS_REGISTRY_CREDENTIALS_PSW ? 'YES' : 'NO'}"
+                            legacy_tag_images()
+                            echo "[DEBUG-LEGACY] Function completed"
                         }
                     }
                 }
