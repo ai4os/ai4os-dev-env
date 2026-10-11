@@ -94,7 +94,7 @@ def harbor_api(verb, path, body = "") {
     def data_arg = body ? "--data '${body}'" : ""
     return sh(
         returnStdout: true,
-        script: "curl -s -o /tmp/harbor_resp.json -w '%{http_code}' -H 'Authorization: Bearer \${AI4OS_REGISTRY_CREDENTIALS}' -H 'Content-Type: application/json' -X ${verb} ${data_arg} '${url}'"
+        script: "curl -s -o /tmp/harbor_resp.json -w '%{http_code}' -u \"\${HARBOR_ROBOT_USER}:\${HARBOR_ROBOT_PSW}\" -H 'Content-Type: application/json' -X ${verb} ${data_arg} '${url}'"
     ).trim()
 }
 
@@ -420,18 +420,27 @@ pipeline {
                     steps {
                         script {
                             echo "[DEBUG-LEGACY] Entering legacy stage script"
-                            // 'AIOS-registry-credentials' is a Secret text credential:
-                            // only the base variable exists (no _USR/_PSW). Probe which
-                            // auth the Harbor API accepts, without revealing the secret.
-                            echo "[DEBUG-LEGACY] Harbor CREDENTIALS set: ${env.AI4OS_REGISTRY_CREDENTIALS ? 'YES' : 'NO'}"
-                            def harbor_url = harbor_base_url()
-                            def probe_bearer = sh(returnStdout: true, script:
-                                "curl -s -o /dev/null -w '%{http_code}' -H 'Authorization: Bearer \${AI4OS_REGISTRY_CREDENTIALS}' '${harbor_url}/api/v2.0/users/current'").trim()
-                            def probe_basic = sh(returnStdout: true, script:
-                                "curl -s -o /dev/null -w '%{http_code}' -u '\${AI4OS_REGISTRY_CREDENTIALS}' '${harbor_url}/api/v2.0/users/current'").trim()
-                            echo "[DEBUG-LEGACY] Auth probes: Bearer=${probe_bearer}, Basic(secret as user:pass)=${probe_basic}"
-                            legacy_tag_images()
-                            echo "[DEBUG-LEGACY] Function completed"
+                            // 'AIOS-registry-credentials' is a Secret text credential which
+                            // appears to hold the ID of *another* credential (username:password
+                            // for the Harbor robot account) - this is exactly what the docker
+                            // push path consumes via docker.withRegistry(). Try to resolve it
+                            // as a nested credential; on success run the re-tagging with its
+                            // username/password.
+                            boolean nested_ok = false
+                            try {
+                                withCredentials([usernamePassword(
+                                    credentialsId: env.AI4OS_REGISTRY_CREDENTIALS,
+                                    usernameVariable: 'HARBOR_ROBOT_USER',
+                                    passwordVariable: 'HARBOR_ROBOT_PSW')]) {
+                                    nested_ok = true
+                                    echo "[DEBUG-LEGACY] Nested credential resolved (USR/PSW bound)"
+                                    legacy_tag_images()
+                                    echo "[DEBUG-LEGACY] Function completed"
+                                }
+                            } catch (Exception e) {
+                                echo "[DEBUG-LEGACY] nested credential resolution failed (resolved=${nested_ok})"
+                                throw e
+                            }
                         }
                     }
                 }
