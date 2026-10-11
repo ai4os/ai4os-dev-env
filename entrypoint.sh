@@ -12,8 +12,14 @@ ln -s $HOME /srv/home 2>/dev/null || true
 [ -d /storage ] && ln -s /storage /srv/storage || true
 
 # update INFO.md from remote URL
-curl -o /srv/INFO.md.remote https://raw.githubusercontent.com/ai4os/ai4os-dev-env/main/INFO.md
-[[ $? -eq 0 ]] && mv /srv/INFO.md.remote /srv/INFO.md
+# bounded and error-tolerant: under 'set -e' a failing curl would kill the
+# entrypoint, and without -f a rate-limit/error page would replace INFO.md
+if curl -fsSL --max-time 15 -o /srv/INFO.md.remote \
+        https://raw.githubusercontent.com/ai4os/ai4os-dev-env/main/INFO.md; then
+    mv /srv/INFO.md.remote /srv/INFO.md
+else
+    echo "[WARNING] INFO.md fetch failed, keeping the baked-in copy"
+fi
 
 # -----------------------------------------------------------------------------
 # Runtime update of the deep-start launcher

@@ -4,21 +4,21 @@
 //////////  DEFINE WHAT FLAVOR and VERSIONS TO BUILD  //////////
 
 // define which flavors of ai4os-dev-env to build
-def builds = ['Ubuntu': false, 'NVCuda': true, 'PyTorch': true, 'TF': true, 'Legacy': true]
+def builds = ['Ubuntu': true, 'NVCuda': true, 'PyTorch': true, 'TF': true, 'Legacy': true]
 
 // Ubuntu versions to use
 // OnneData not yet ready for Ubuntu:26.04
 def UbuntuVers = ["24.04"]
 
 // nvidia/cuda versions to use
-def NVCudaVers = ["13.4.2"]
-def NVCudaTags = ["13.4.2-cudnn-runtime-ubuntu24.04"]
+def NVCudaVers = ["13.0.3"]
+def NVCudaTags = ["13.0.3-cudnn-runtime-ubuntu24.04"]
 //def NVCudaVers = ["12.8.1","13.0.3","13.4.2"]
 //def NVCudaTags = ["12.8.1-cudnn-runtime-ubuntu22.04","13.0.3-cudnn-runtime-ubuntu24.04","13.4.2-cudnn-runtime-ubuntu24.04"]
 
 // pytorch versions and tags to use
-def PyTorchVers = ["2.12"]
-def PyTorchTags = ["2.12.1-cuda13.2-cudnn9-runtime"]
+def PyTorchVers = ["2.10"]
+def PyTorchTags = ["2.10.0-cuda12.8-cudnn9-runtime"]
 //def PyTorchVers = ["2.5", "2.6", "2.8","2.10","2.12"]
 //def PyTorchTags = ["2.5.1-cuda12.4-cudnn9-runtime", "2.6.0-cuda12.6-cudnn9-runtime", "2.8.0-cuda12.8-cudnn9-runtime", "2.10.0-cuda12.8-cudnn9-runtime", "2.12.1-cuda13.2-cudnn9-runtime"]
 //def PyTorchVers = ["2.3", "2.4"]

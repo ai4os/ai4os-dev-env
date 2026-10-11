@@ -233,6 +233,9 @@ CMD ["deep-start", "-j"]
 # -----------------------------------------------------------------------------
 # Health Check
 # -----------------------------------------------------------------------------
-# Generic check - works for both JupyterLab and VSCode on port 8888
-HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
+# Generic check - works for both JupyterLab and VSCode on port 8888.
+# NOTE: The start-period only shields the boot phase from the retry counter (the
+# container still becomes 'healthy' immediately at the first successful probe);
+# after it expires, an unreachable service is declared unhealthy quickly.
+HEALTHCHECK --interval=20s --timeout=10s --start-period=40s --retries=3 \
     CMD curl -f http://localhost:8888/ || exit 1
