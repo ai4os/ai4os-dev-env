@@ -191,24 +191,26 @@ RUN set -eux; \
 # -----------------------------------------------------------------------------
 # Terminal-based AI coding agent for interactive development, see: https://opencode.ai/docs
 # Install via a local copy of the official script to avoid
-# SSL inspection issues in corporate CI environments (e.g. Cisco Umbrella).
-# Always provide --version to avoid GitHub API calls from the installation script
+# SSL inspection issues and DNS blocking of opencode.ai in corporate CI
+# environments (e.g. Cisco Umbrella).
+# NOTE: v2 binaries are distributed via npm (GitHub has no releases above
+# v1.19, only tags), so the latest v2 version is resolved from the npm
+# registry. '--version' is always passed to keep the installer away from
+# opencode.ai entirely.
 COPY scripts/install-opencode-v1.sh /tmp/install-opencode-v1.sh
 COPY scripts/install-opencode-v2.sh /tmp/install-opencode-v2.sh
 RUN set -eux; \
-    OPENCODE_TAG=$(curl -sI https://github.com/anomalyco/opencode/releases/latest \
-                | grep -i "^location:" \
-                | sed 's|.*/tag/||' | tr -d '\r\n'); \
-    OPENCODE_VERSION="${OPENCODE_TAG#v}"; \
-    # GLIBC < 2.29 => install Open AI v1.14.48 for compatibility, otherwise - latest
     GLIBC_VERSION=$(ldd --version | awk '/ldd/{print $NF}'); \
+    # GLIBC < 2.29 => install OpenCode v1.14.48 for compatibility, otherwise - latest from npm
     if [ "$(echo "$GLIBC_VERSION" | awk -F. '{printf("%d%03d%03d\n", $1,$2,$3)}')" -lt 2029000 ]; then \
-        OPENCODE_VERSION="1.14.48"; \
-        echo "[INFO] GLIBC=${GLIBC_VERSION}, installing OpenCode ${OPENCODE_VERSION}"; \
-        bash /tmp/install-opencode-v1.sh --no-modify-path --version "${OPENCODE_VERSION}"; \
+        echo "[INFO] GLIBC=${GLIBC_VERSION}, installing OpenCode 1.14.48 (v1)"; \
+        bash /tmp/install-opencode-v1.sh --no-modify-path --version "1.14.48"; \
+    else \
+        OPENCODE_VERSION=$(curl -fsSL https://registry.npmjs.org/@opencode%2fcli-linux-x64/latest \
+                    | sed -n 's/.*"version":"\([^"]*\)".*/\1/p'); \
+        echo "[INFO] GLIBC=${GLIBC_VERSION}, installing latest OpenCode (v2+, npm ${OPENCODE_VERSION})"; \
+        bash /tmp/install-opencode-v2.sh --no-modify-path --version "${OPENCODE_VERSION}"; \
     fi && \
-    echo "[INFO] GLIBC=${GLIBC_VERSION}, installing latest OpenCode (v2+)"; \
-    bash /tmp/install-opencode-v2.sh --no-modify-path && \
     mv "${HOME}/.opencode/bin/opencode" /usr/local/bin/opencode && \
     rm -rf /tmp/* "${HOME}/.opencode"
 
