@@ -15,8 +15,8 @@ def NVCudaVers = ["12.8.1","13.0.3","13.4.2"]
 def NVCudaTags = ["12.8.1-cudnn-runtime-ubuntu22.04","13.0.3-cudnn-runtime-ubuntu24.04","13.4.2-cudnn-runtime-ubuntu24.04"]
 
 // pytorch versions and tags to use
-def PyTorchVers = ["2.5"]
-def PyTorchTags = ["2.5.1-cuda12.4-cudnn9-runtime"]
+def PyTorchVers = ["2.4"]
+def PyTorchTags = ["2.4.1-cuda12.4-cudnn9-runtime"]
 //def PyTorchVers = ["2.5", "2.6", "2.8","2.10","2.12"]
 //def PyTorchTags = ["2.5.1-cuda12.4-cudnn9-runtime", "2.6.0-cuda12.6-cudnn9-runtime", "2.8.0-cuda12.8-cudnn9-runtime", "2.10.0-cuda12.8-cudnn9-runtime", "2.12.1-cuda13.2-cudnn9-runtime"]
 //def PyTorchVers = ["2.3", "2.4"]
@@ -24,16 +24,19 @@ def PyTorchTags = ["2.5.1-cuda12.4-cudnn9-runtime"]
 
 // tensorflow versions to use - only version number!
 // "-gpu" suffix is added below such that base images become e.g. tensorflow/tensorflow:2.16.2-gpu
-def TFVers = ["2.18.0"]
+def TFVers = ["2.16.2"]
 //def TFVers = ["2.17.0", "2.18.0","2.20.0"]
 //def TFVers = ["2.15.0", "2.16.2"]
 
 // legacy images to handle: for each entry, the image tag is re-tagged to
 // "<tag>-legacy" in the registry and the original tag is then removed
 // (Harbor server-side operations, no image pulls; see legacy_tag_images())
-def legacy_tags = ["u20.04", "u22.04", "cuda11.3.1", "cuda12.3.2",
-                   "pytorch1.11", "pytorch1.12", "pytorch1.13", "pytorch2.0", "pytorch2.1",
-                   "tf2.9.3", "tf2.10.0", "tf2.11.0", "tf2.12.0", "tf2.13.0", "tf2.14.0"]
+// NOTE: no 'def' here: top-level 'def' variables are locals of the pipeline
+// script and are NOT visible inside methods; without 'def' the variable lives
+// in the script binding and legacy_tag_images() can use it.
+legacy_tags = ["u20.04", "u22.04", "cuda11.3.1", "cuda12.3.2",
+               "pytorch1.11", "pytorch1.12", "pytorch1.13", "pytorch2.0", "pytorch2.1",
+               "tf2.9.3", "tf2.10.0", "tf2.11.0", "tf2.12.0", "tf2.13.0", "tf2.14.0"]
 
 //////////
 
@@ -76,10 +79,18 @@ def docker_clean() {
 // is marked UNSTABLE at the end, leaving the other items done.
 // -----------------------------------------------------------------------------
 
+// Harbor API base: host only. AI4OS_REGISTRY may carry the project path and a
+// trailing slash (e.g. 'registry.cloud.ai4eosc.eu/ai4os-hub/'), but the v2 API
+// lives at the host root (/api/v2.0/...). Requests with the project prefix land
+// on the Harbor UI, which answers HTTP 200 with HTML for *any* path!
+def harbor_base_url() {
+    def host = docker_registry.replaceFirst('^https?://', '').split('/')[0]
+    return "https://${host}"
+}
+
 // Harbor API request; returns the HTTP status code (body kept in the file)
 def harbor_api(verb, path, body = "") {
-    def harbor_url = docker_registry.startsWith("http") ? docker_registry : "https://" + docker_registry
-    def url = "${harbor_url}/api/v2.0${path}"
+    def url = "${harbor_base_url()}/api/v2.0${path}"
     def data_arg = body ? "--data '${body}'" : ""
     return sh(
         returnStdout: true,
@@ -413,7 +424,7 @@ pipeline {
                             // only the base variable exists (no _USR/_PSW). Probe which
                             // auth the Harbor API accepts, without revealing the secret.
                             echo "[DEBUG-LEGACY] Harbor CREDENTIALS set: ${env.AI4OS_REGISTRY_CREDENTIALS ? 'YES' : 'NO'}"
-                            def harbor_url = docker_registry.startsWith("http") ? docker_registry : "https://" + docker_registry
+                            def harbor_url = harbor_base_url()
                             def probe_bearer = sh(returnStdout: true, script:
                                 "curl -s -o /dev/null -w '%{http_code}' -H 'Authorization: Bearer \${AI4OS_REGISTRY_CREDENTIALS}' '${harbor_url}/api/v2.0/users/current'").trim()
                             def probe_basic = sh(returnStdout: true, script:
