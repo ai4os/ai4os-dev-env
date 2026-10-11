@@ -4,38 +4,38 @@
 //////////  DEFINE WHAT FLAVOR and VERSIONS TO BUILD  //////////
 
 // define which flavors of ai4os-dev-env to build
-def builds = ['Ubuntu': false, 'NVCuda': true, 'PyTorch': true, 'TF': true]
+def builds = ['Ubuntu': false, 'NVCuda': true, 'PyTorch': true, 'TF': true, 'Legacy': true]
 
 // Ubuntu versions to use
 // OnneData not yet ready for Ubuntu:26.04
 def UbuntuVers = ["24.04"]
-// legacy
-//def UbuntuVers = ["20.04", "22.04"]
 
 // nvidia/cuda versions to use
-def NVCudaVers = ["12.8.1","13.0.3","13.4.2"]
-def NVCudaTags = ["12.8.1-cudnn-runtime-ubuntu22.04","13.0.3-cudnn-runtime-ubuntu24.04","13.4.2-cudnn-runtime-ubuntu24.04"]
-// legacy
-//def NVCudaVers = ["11.3.1","12.3.2"]
-//def NVCudaTags = ["11.3.1-cudnn8-runtime-ubuntu20.04", "12.3.2-cudnn9-runtime-ubuntu22.04"]
-
+def NVCudaVers = ["13.4.2"]
+def NVCudaTags = ["13.4.2-cudnn-runtime-ubuntu24.04"]
+//def NVCudaVers = ["12.8.1","13.0.3","13.4.2"]
+//def NVCudaTags = ["12.8.1-cudnn-runtime-ubuntu22.04","13.0.3-cudnn-runtime-ubuntu24.04","13.4.2-cudnn-runtime-ubuntu24.04"]
 
 // pytorch versions and tags to use
-def PyTorchVers = ["2.5", "2.6", "2.8","2.10","2.12"]
-def PyTorchTags = ["2.5.1-cuda12.4-cudnn9-runtime", "2.6.0-cuda12.6-cudnn9-runtime", "2.8.0-cuda12.8-cudnn9-runtime", "2.10.0-cuda12.8-cudnn9-runtime", "2.12.1-cuda13.2-cudnn9-runtime"]
+def PyTorchVers = ["2.12"]
+def PyTorchTags = ["2.12.1-cuda13.2-cudnn9-runtime"]
+//def PyTorchVers = ["2.5", "2.6", "2.8","2.10","2.12"]
+//def PyTorchTags = ["2.5.1-cuda12.4-cudnn9-runtime", "2.6.0-cuda12.6-cudnn9-runtime", "2.8.0-cuda12.8-cudnn9-runtime", "2.10.0-cuda12.8-cudnn9-runtime", "2.12.1-cuda13.2-cudnn9-runtime"]
 //def PyTorchVers = ["2.3", "2.4"]
 //def PyTorchTags = ["2.3.1-cuda11.8-cudnn8-runtime", "2.4.1-cuda12.4-cudnn9-runtime"]
-// legacy
-//def PyTorchVers = ["1.11", "1.12", "1.13", "2.0", "2.1"]
-//def PyTorchTags = ["1.11.0-cuda11.3-cudnn8-runtime", "1.12.0-cuda11.3-cudnn8-runtime", "1.13.0-cuda11.6-cudnn8-runtime", 
-//                   "2.0.0-cuda11.7-cudnn8-runtime",  "2.1.0-cuda11.8-cudnn8-runtime"]
 
 // tensorflow versions to use - only version number!
 // "-gpu" suffix is added below such that base images become e.g. tensorflow/tensorflow:2.16.2-gpu
-def TFVers = ["2.17.0", "2.18.0","2.20.0"]
+def TFVers = ["2.20.0"]
+//def TFVers = ["2.17.0", "2.18.0","2.20.0"]
 //def TFVers = ["2.15.0", "2.16.2"]
-// legacy
-//def TFVers = ["2.9.3", "2.10.0", "2.11.0", "2.12.0", "2.13.0", "2.14.0"]
+
+// legacy images to handle: for each entry, the image tag is re-tagged to
+// "<tag>-legacy" in the registry and the original tag is then removed
+// (Harbor server-side operations, no image pulls; see legacy_tag_images())
+def legacy_tags = ["u20.04", "u22.04", "cuda11.3.1", "cuda12.3.2",
+                   "pytorch1.11", "pytorch1.12", "pytorch1.13", "pytorch2.0", "pytorch2.1",
+                   "tf2.9.3", "tf2.10.0", "tf2.11.0", "tf2.12.0", "tf2.13.0", "tf2.14.0"]
 
 //////////
 
@@ -61,6 +61,109 @@ def docker_clean() {
 	)
     if (dangling_images) {
         sh(script: "docker rmi --force $dangling_images")
+    }
+}
+
+// -----------------------------------------------------------------------------
+// Legacy images handling (Harbor REST API, server-side; no image pulls)
+// -----------------------------------------------------------------------------
+// For every entry in legacy_tags:
+// 1. check that <repo>:<tag> exists in the registry (HTTP 404 -> skip)
+// 2. safety: if <repo>:<tag>-legacy exists, compare digests; a DIFFERENT
+//    digest means the item is marked failed and the original is NOT removed
+// 3. re-tag the artifact to <tag>-legacy (POST a tag on the same digest)
+// 4. verify the <tag>-legacy tag is retrievable
+// 5. delete the original tag reference (NOT the whole artifact!)
+// Items are processed independently: failures are collected and the stage
+// is marked UNSTABLE at the end, leaving the other items done.
+// -----------------------------------------------------------------------------
+
+// Harbor API request; returns the HTTP status code (body kept in the file)
+def harbor_api(verb, path, body = "") {
+    def harbor_url = docker_registry.startsWith("http") ? docker_registry : "https://" + docker_registry
+    def url = "${harbor_url}/api/v2.0${path}"
+    def data_arg = body ? "--data '${body}'" : ""
+    return sh(
+        returnStdout: true,
+        script: "curl -s -o /tmp/harbor_resp.json -w '%{http_code}' -u \"\${HARBOR_USR}:\${HARBOR_PSW}\" -H 'Content-Type: application/json' -X ${verb} ${data_arg} '${url}'"
+    ).trim()
+}
+
+// extract a field from the JSON response stored in /tmp/harbor_resp.json
+// (jq when available, python3 as fallback)
+def harbor_json_field(field) {
+    return sh(
+        returnStdout: true,
+        script: """
+if command -v jq >/dev/null 2>&1; then
+    jq -r '.${field} // empty' /tmp/harbor_resp.json 2>/dev/null
+else
+    python3 -c "import json; print(json.load(open('/tmp/harbor_resp.json')).get('${field}', ''))" 2>/dev/null
+fi"""
+    ).trim()
+}
+
+// handle all legacy tags
+def legacy_tag_images() {
+    def project = docker_registry_org
+    def repo = image_name
+    def failed = []
+    def renamed = 0
+    legacy_tags.each { tag ->
+        def legacy_tag = "${tag}-legacy"
+        println("[LEGACY] Processing ${repo}:${tag}")
+        try {
+            // 1. does the original tag exist?
+            def code = harbor_api("GET", "/projects/${project}/repositories/${repo}/artifacts/${tag}")
+            if (code == "404") {
+                println("[LEGACY][SKIP] ${repo}:${tag} does not exist in the registry")
+                return
+            }
+            if (code != "200") {
+                throw new Exception("existence check failed (HTTP ${code})")
+            }
+            def digest = harbor_json_field("digest")
+            // 2. does the legacy tag already exist?
+            code = harbor_api("GET", "/projects/${project}/repositories/${repo}/artifacts/${legacy_tag}")
+            if (code == "200") {
+                def legacy_digest = harbor_json_field("digest")
+                if (legacy_digest == digest) {
+                    println("[LEGACY][INFO] ${repo}:${legacy_tag} already exists (same digest), skipping re-tag")
+                } else {
+                    throw new Exception("${repo}:${legacy_tag} exists with a DIFFERENT digest (${legacy_digest} vs ${digest}) - manual review needed, original tag NOT removed")
+                }
+            } else if (code == "404") {
+                // 3. re-tag server-side: add the legacy tag to the same artifact
+                code = harbor_api("POST", "/projects/${project}/repositories/${repo}/artifacts/${tag}/tags", "{\"name\": \"${legacy_tag}\"}")
+                if (code != "201" && code != "200") {
+                    throw new Exception("re-tag to ${legacy_tag} failed (HTTP ${code})")
+                }
+                println("[LEGACY] Created tag ${legacy_tag} for ${repo}:${tag} (${digest})")
+            } else {
+                throw new Exception("check of ${legacy_tag} failed (HTTP ${code})")
+            }
+            // 4. verify the legacy tag is retrievable before touching the original
+            code = harbor_api("GET", "/projects/${project}/repositories/${repo}/artifacts/${legacy_tag}")
+            if (code != "200") {
+                throw new Exception("verification of ${legacy_tag} failed (HTTP ${code}) - original tag NOT removed")
+            }
+            // 5. delete the original tag reference only (the artifact with the
+            //    legacy tag remains; storage is reclaimed by Harbor GC later)
+            code = harbor_api("DELETE", "/projects/${project}/repositories/${repo}/artifacts/${tag}/tags/${tag}")
+            if (code != "200" && code != "202") {
+                throw new Exception("deletion of ${tag} failed (HTTP ${code}) - ${legacy_tag} is already in place")
+            }
+            println("[LEGACY][OK] ${repo}:${tag} renamed to ${repo}:${legacy_tag}")
+            renamed++
+        } catch (Exception e) {
+            println("[LEGACY][ERROR] ${repo}:${tag}: ${e.getMessage()}")
+            failed << tag
+        }
+    }
+    println("[LEGACY] Finished: ${renamed} renamed, ${failed.size()} failed, ${legacy_tags.size() - renamed - failed.size()} skipped/absent")
+    if (failed) {
+        println("[LEGACY] Failed items: ${failed.join(', ')}")
+        currentBuild.result = 'UNSTABLE'
     }
 }
 
@@ -281,6 +384,33 @@ pipeline {
                         failure {
                             docker_clean()
                             sh "rm -rf ai4os-hub-check-artifact"
+                        }
+                    }
+                }
+
+                stage('Docker images legacy tagging') {
+                    agent { label 'docker-build' }
+                    when {
+                        allOf {
+                            expression { builds['Legacy'] }
+                            anyOf {
+                                triggeredBy 'UserIdCause'
+
+                                allOf {
+                                    branch 'main'
+                                    changeset 'Jenkinsfile'
+                                }
+                            }
+                        }
+                    }
+                    steps {
+                        script {
+                            withCredentials([usernamePassword(
+                                credentialsId: 'AIOS-registry-credentials',
+                                usernameVariable: 'HARBOR_USR',
+                                passwordVariable: 'HARBOR_PSW')]) {
+                                legacy_tag_images()
+                            }
                         }
                     }
                 }
